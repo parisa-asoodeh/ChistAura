@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import TeamCreateForm
 from .models import Team, TeamMembership
+from django.shortcuts import get_object_or_404
 
 @login_required
 def create_team(request):
@@ -101,5 +102,26 @@ def team_list(request):
         'games/team_list.html',
         {
             'teams': teams
+        }
+    )
+
+
+def team_detail(request, team_id):
+
+    team = get_object_or_404(
+        Team,
+        id=team_id
+    )
+
+    members = TeamMembership.objects.filter(
+        team=team
+    )
+
+    return render(
+        request,
+        'games/team_detail.html',
+        {
+            'team': team,
+            'members': members
         }
     )

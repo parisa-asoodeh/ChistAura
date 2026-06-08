@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ team.name }}
+{% endblock %}
+
+{% block content %}
+
+<h2>{{ team.name }}</h2>
+
+<p>
+    <strong>کاپیتان:</strong>
+    {{ team.captain.username }}
+</p>
+
+<p>
+    <strong>امتیاز تیم:</strong>
+    {{ team.total_score }}
+</p>
+
+<h3>اعضای تیم</h3>
+
+<ul>
+    {% for member in members %}
+        <li>
+            {{ member.user.username }}
+            -
+            امتیاز:
+            {{ member.individual_score }}
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
