@@ -7,90 +7,88 @@ from .models import Team, TeamMembership
 @login_required
 def create_team(request):
 
-```
-# ==========================
-# تغییر شماره 1
-# اگر کاربر قبلاً عضو یک تیم باشد
-# اجازه ساخت تیم جدید ندارد
-# ==========================
-if TeamMembership.objects.filter(user=request.user).exists():
-    return render(
-        request,
-        'games/error.html',
-        {
-            'message': 'شما قبلاً عضو یک تیم شده‌اید.'
-        }
-    )
-
-if request.method == 'POST':
-
-    form = TeamCreateForm(request.POST)
-
     # ==========================
-    # تغییر شماره 2
-    # جلوگیری از نمایش اعضای دارای تیم
-    # هنگام ارسال فرم نیز دوباره اعمال می‌شود
+    # تغییر شماره 1
+    # اگر کاربر قبلاً عضو یک تیم باشد
+    # اجازه ساخت تیم جدید ندارد
     # ==========================
-    used_users = TeamMembership.objects.values_list(
-        'user_id',
-        flat=True
-    )
-
-    form.fields['members'].queryset = (
-        form.fields['members']
-        .queryset
-        .exclude(id=request.user.id)
-        .exclude(id__in=used_users)
-    )
-
-    if form.is_valid():
-
-        # ایجاد تیم
-        team = form.save(commit=False)
-        team.captain = request.user
-        team.save()
-
-        # ثبت کاپیتان به عنوان عضو تیم
-        TeamMembership.objects.create(
-            team=team,
-            user=request.user
+    if TeamMembership.objects.filter(user=request.user).exists():
+        return render(
+            request,
+            'games/error.html',
+            {
+                'message': 'شما قبلاً عضو یک تیم شده‌اید.'
+            }
         )
 
-        # ثبت دو عضو انتخاب‌شده
-        for member in form.cleaned_data['members']:
+    if request.method == 'POST':
+
+        form = TeamCreateForm(request.POST)
+
+        # ==========================
+        # تغییر شماره 2
+        # جلوگیری از نمایش اعضای دارای تیم
+        # هنگام ارسال فرم نیز دوباره اعمال می‌شود
+        # ==========================
+        used_users = TeamMembership.objects.values_list(
+            'user_id',
+            flat=True
+        )
+
+        form.fields['members'].queryset = (
+            form.fields['members']
+            .queryset
+            .exclude(id=request.user.id)
+            .exclude(id__in=used_users)
+        )
+
+        if form.is_valid():
+
+            # ایجاد تیم
+            team = form.save(commit=False)
+            team.captain = request.user
+            team.save()
+
+            # ثبت کاپیتان به عنوان عضو تیم
             TeamMembership.objects.create(
                 team=team,
-                user=member
+                user=request.user
             )
 
-        return redirect('home')
+            # ثبت دو عضو انتخاب‌شده
+            for member in form.cleaned_data['members']:
+                TeamMembership.objects.create(
+                    team=team,
+                    user=member
+                )
 
-else:
+            return redirect('home')
 
-    form = TeamCreateForm()
+    else:
 
-    # ==========================
-    # تغییر شماره 3
-    # کاپیتان خودش را نبیند
-    # اعضای تیم‌های دیگر نیز دیده نشوند
-    # ==========================
-    used_users = TeamMembership.objects.values_list(
-        'user_id',
-        flat=True
+        form = TeamCreateForm()
+
+        # ==========================
+        # تغییر شماره 3
+        # کاپیتان خودش را نبیند
+        # اعضای تیم‌های دیگر نیز دیده نشوند
+        # ==========================
+        used_users = TeamMembership.objects.values_list(
+            'user_id',
+            flat=True
+        )
+
+        form.fields['members'].queryset = (
+            form.fields['members']
+            .queryset
+            .exclude(id=request.user.id)
+            .exclude(id__in=used_users)
+        )
+
+    return render(
+        request,
+        'games/create_team.html',
+        {
+            'form': form
+        }
     )
-
-    form.fields['members'].queryset = (
-        form.fields['members']
-        .queryset
-        .exclude(id=request.user.id)
-        .exclude(id__in=used_users)
-    )
-
-return render(
-    request,
-    'games/create_team.html',
-    {
-        'form': form
-    }
-)
-```
