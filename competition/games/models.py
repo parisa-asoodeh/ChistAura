@@ -37,3 +37,46 @@ class TeamMembership(models.Model):
 
     def __str__(self):
         return f"{self.user.username} در {self.team.name}"
+
+class Match(models.Model):
+
+    team1 = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='home_matches',
+        verbose_name='تیم اول'
+    )
+
+    team2 = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='away_matches',
+        verbose_name='تیم دوم'
+    )
+
+    score_team1 = models.IntegerField(
+        default=0,
+        verbose_name='امتیاز تیم اول'
+    )
+
+    score_team2 = models.IntegerField(
+        default=0,
+        verbose_name='امتیاز تیم دوم'
+    )
+
+    winner = models.ForeignKey(
+        Team,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='won_matches',
+        verbose_name='برنده'
+    )
+
+    played_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='تاریخ مسابقه'
+    )
+
+    def __str__(self):
+        return f"{self.team1.name} vs {self.team2.name}"
