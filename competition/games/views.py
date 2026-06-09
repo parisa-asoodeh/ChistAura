@@ -5,6 +5,7 @@ from .forms import TeamCreateForm
 from .models import Team, TeamMembership
 from django.shortcuts import get_object_or_404
 from .models import Match
+from collections import defaultdict
 
 @login_required
 def create_team(request):
@@ -158,5 +159,59 @@ def match_list(request):
         'games/match_list.html',
         {
             'matches': matches
+        }
+    )
+
+
+def leaderboard(request):
+
+    teams = Team.objects.all()
+
+    table = []
+
+    for team in teams:
+
+        wins = Match.objects.filter(
+            winner=team
+        ).count()
+
+        draws = Match.objects.filter(
+            team1=team,
+            winner=None
+        ).count()
+
+        draws += Match.objects.filter(
+            team2=team,
+            winner=None
+        ).count()
+
+        played = (
+            Match.objects.filter(team1=team).count()
+            +
+            Match.objects.filter(team2=team).count()
+        )
+
+        losses = played - wins - draws
+
+        points = (wins * 3) + draws
+
+        table.append({
+            'team': team,
+            'points': points,
+            'wins': wins,
+            'draws': draws,
+            'losses': losses,
+        })
+
+    table.sort(
+        key=lambda x: x['points'],
+        reverse=True
+    )
+
+    return render(
+        request,
+        'games/leaderboard.html',
+        {
+            'table': table
         }
     )

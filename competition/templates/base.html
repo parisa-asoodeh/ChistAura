@@ -16,6 +16,9 @@
             <a href="{% url 'match_list' %}">
                 مسابقات
             </a>
+            <a href="{% url 'leaderboard' %}">
+                رتبه‌بندی
+            </a>
             <!-- <a href="{% url 'logout' %}">خروج</a> -->
              <form action="{% url 'logout' %}" method="post" style="display:inline;">
                 {% csrf_token %}

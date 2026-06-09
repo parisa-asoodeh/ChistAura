@@ -7,4 +7,5 @@ urlpatterns = [
     path('team/<int:team_id>/',views.team_detail,name='team_detail'),
     path('my-team/',views.my_team,name='my_team'),
     path('matches/',views.match_list,name='match_list'),
+    path('leaderboard/',views.leaderboard,name='leaderboard'),
 ]

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}
+جدول رتبه‌بندی
+{% endblock %}
+
+{% block content %}
+
+<h2>جدول رتبه‌بندی تیم‌ها</h2>
+
+<table border="1" cellpadding="10">
+
+    <tr>
+        <th>رتبه</th>
+        <th>تیم</th>
+        <th>امتیاز</th>
+        <th>برد</th>
+        <th>مساوی</th>
+        <th>باخت</th>
+    </tr>
+
+    {% for row in table %}
+
+    <tr>
+
+        <td>{{ forloop.counter }}</td>
+
+        <td>
+            {{ row.team.name }}
+        </td>
+
+        <td>
+            {{ row.points }}
+        </td>
+
+        <td>
+            {{ row.wins }}
+        </td>
+
+        <td>
+            {{ row.draws }}
+        </td>
+
+        <td>
+            {{ row.losses }}
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}
