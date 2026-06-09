@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+مسابقات
+{% endblock %}
+
+{% block content %}
+
+<h2>لیست مسابقات</h2>
+
+{% if matches %}
+
+    {% for match in matches %}
+
+        <hr>
+
+        <h3>
+            {{ match.team1.name }}
+            {{ match.score_team1 }}
+
+            -
+
+            {{ match.score_team2 }}
+            {{ match.team2.name }}
+        </h3>
+
+        <p>
+
+            <strong>برنده:</strong>
+
+            {% if match.winner %}
+                {{ match.winner.name }}
+            {% else %}
+                مساوی
+            {% endif %}
+
+        </p>
+
+        <p>
+            {{ match.played_at }}
+        </p>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>هنوز مسابقه‌ای ثبت نشده است.</p>
+
+{% endif %}
+
+{% endblock %}

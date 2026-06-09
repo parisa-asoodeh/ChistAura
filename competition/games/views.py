@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import TeamCreateForm
 from .models import Team, TeamMembership
 from django.shortcuts import get_object_or_404
+from .models import Match
 
 @login_required
 def create_team(request):
@@ -145,4 +146,17 @@ def my_team(request):
     return redirect(
         'team_detail',
         team_id=membership.team.id
+    )
+
+
+def match_list(request):
+
+    matches = Match.objects.all().order_by('-played_at')
+
+    return render(
+        request,
+        'games/match_list.html',
+        {
+            'matches': matches
+        }
     )
