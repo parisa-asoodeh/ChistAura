@@ -119,12 +119,41 @@ def team_detail(request, team_id):
         team=team
     )
 
+    wins = Match.objects.filter(
+        winner=team
+    ).count()
+
+    draws = Match.objects.filter(
+        team1=team,
+        winner=None
+    ).count()
+
+    draws += Match.objects.filter(
+        team2=team,
+        winner=None
+    ).count()
+
+    played = (
+        Match.objects.filter(team1=team).count()
+        +
+        Match.objects.filter(team2=team).count()
+    )
+
+    losses = played - wins - draws
+
+    points = (wins * 3) + draws
+
     return render(
         request,
         'games/team_detail.html',
         {
             'team': team,
-            'members': members
+            'members': members,
+            'wins': wins,
+            'draws': draws,
+            'losses': losses,
+            'played': played,
+            'points': points,
         }
     )
 

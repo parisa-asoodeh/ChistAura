@@ -15,8 +15,34 @@
 
 <p>
     <strong>امتیاز تیم:</strong>
-    {{ team.total_score }}
+    {{ points }}
 </p>
+
+<hr>
+
+<h3>آمار تیم</h3>
+
+<p>
+    <strong>تعداد مسابقات:</strong>
+    {{ played }}
+</p>
+
+<p>
+    <strong>برد:</strong>
+    {{ wins }}
+</p>
+
+<p>
+    <strong>مساوی:</strong>
+    {{ draws }}
+</p>
+
+<p>
+    <strong>باخت:</strong>
+    {{ losses }}
+</p>
+
+<hr>
 
 <h3>اعضای تیم</h3>
 
@@ -25,7 +51,7 @@
         <li>
             {{ member.user.username }}
             -
-            امتیاز:
+            امتیاز فردی:
             {{ member.individual_score }}
         </li>
     {% endfor %}
