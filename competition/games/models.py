@@ -39,6 +39,7 @@ class TeamMembership(models.Model):
     def __str__(self):
         return f"{self.user.username} در {self.team.name}"
 
+
 class Match(models.Model):
 
     team1 = models.ForeignKey(
@@ -85,6 +86,20 @@ class Match(models.Model):
             raise ValidationError(
                 "یک تیم نمی‌تواند با خودش مسابقه بدهد."
             )
+        
+    def save(self, *args, **kwargs):
+
+        if self.score_team1 > self.score_team2:
+            self.winner = self.team1
+
+        elif self.score_team2 > self.score_team1:
+            self.winner = self.team2
+
+        else:
+            self.winner = None
+
+        super().save(*args, **kwargs)    
+    
     
     def __str__(self):
         return f"{self.team1.name} vs {self.team2.name}"
