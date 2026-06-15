@@ -60,19 +60,3 @@ class Match(models.Model):
             self.winner = None
 
         super().save(*args, **kwargs)
-
-        # 🔥 آپدیت امتیاز تیم‌ها
-        self.update_team_scores() 
-
-
-def update_team_scores(self):
-
-    for team in [self.team1, self.team2]:
-
-        team.total_score = team.get_points()
-        team.save()
-    
-    
-    def __str__(self):
-        return f"{self.team1.name} vs {self.team2.name}"
-    

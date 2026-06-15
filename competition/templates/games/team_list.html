@@ -16,7 +16,7 @@
                 <a href="{% url 'team_detail' team.id %}">
                     {{ team.name }}
                 </a>
-                (امتیاز: {{ team.total_score }})
+                (امتیاز: {{ team.get_points }})
             </li>
         {% endfor %}
     </ul>

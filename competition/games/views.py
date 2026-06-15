@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
-from .forms import TeamCreateForm
+from teams.forms import TeamCreateForm
 from teams.models import Team, TeamMembership
+from teams.services import TeamService
 from django.shortcuts import get_object_or_404
 from .models import Match
 from collections import defaultdict
@@ -10,11 +12,7 @@ from collections import defaultdict
 @login_required
 def create_team(request):
 
-    # ==========================
-    # تغییر شماره 1
-    # اگر کاربر قبلاً عضو یک تیم باشد
-    # اجازه ساخت تیم جدید ندارد
-    # ==========================
+    # اگر کاربر قبلاً عضو تیم باشد
     if TeamMembership.objects.filter(user=request.user).exists():
         return render(
             request,
@@ -28,65 +26,18 @@ def create_team(request):
 
         form = TeamCreateForm(request.POST)
 
-        # ==========================
-        # تغییر شماره 2
-        # جلوگیری از نمایش اعضای دارای تیم
-        # هنگام ارسال فرم نیز دوباره اعمال می‌شود
-        # ==========================
-        used_users = TeamMembership.objects.values_list(
-            'user_id',
-            flat=True
-        )
-
-        form.fields['members'].queryset = (
-            form.fields['members']
-            .queryset
-            .exclude(id=request.user.id)
-            .exclude(id__in=used_users)
-        )
-
         if form.is_valid():
 
-            # ایجاد تیم
-            team = form.save(commit=False)
-            team.captain = request.user
-            team.save()
-
-            # ثبت کاپیتان به عنوان عضو تیم
-            TeamMembership.objects.create(
-                team=team,
-                user=request.user
+            TeamService.create_team(
+                captain=request.user,
+                team_name=form.cleaned_data['name'],
+                members=form.cleaned_data['members']
             )
-
-            # ثبت دو عضو انتخاب‌شده
-            for member in form.cleaned_data['members']:
-                TeamMembership.objects.create(
-                    team=team,
-                    user=member
-                )
 
             return redirect('home')
 
     else:
-
         form = TeamCreateForm()
-
-        # ==========================
-        # تغییر شماره 3
-        # کاپیتان خودش را نبیند
-        # اعضای تیم‌های دیگر نیز دیده نشوند
-        # ==========================
-        used_users = TeamMembership.objects.values_list(
-            'user_id',
-            flat=True
-        )
-
-        form.fields['members'].queryset = (
-            form.fields['members']
-            .queryset
-            .exclude(id=request.user.id)
-            .exclude(id__in=used_users)
-        )
 
     return render(
         request,
@@ -96,8 +47,14 @@ def create_team(request):
         }
     )
 
+
+
 def team_list(request):
-    teams = Team.objects.all().order_by('-total_score')
+    teams = sorted(
+        Team.objects.all(),
+        key=lambda t: t.get_points(),
+        reverse=True
+    )
 
     return render(
         request,
@@ -110,20 +67,8 @@ def team_list(request):
 
 def team_detail(request, team_id):
 
-    team = get_object_or_404(
-        Team,
-        id=team_id
-    )
-
-    members = TeamMembership.objects.filter(
-        team=team
-    )
-
-    wins = team.get_wins()
-    draws = team.get_draws()
-    played = team.get_played()
-    losses = team.get_losses()
-    points = team.get_points()
+    team = get_object_or_404(Team, id=team_id)
+    members = TeamMembership.objects.filter(team=team)
 
     return render(
         request,
@@ -131,11 +76,12 @@ def team_detail(request, team_id):
         {
             'team': team,
             'members': members,
-            'wins': wins,
-            'draws': draws,
-            'losses': losses,
-            'played': played,
-            'points': points,
+
+            'wins': team.get_wins(),
+            'draws': team.get_draws(),
+            'losses': team.get_losses(),
+            'played': team.get_played(),
+            'points': team.get_points(),
         }
     )
 
@@ -182,7 +128,6 @@ def leaderboard(request):
     table = []
 
     for team in teams:
-
         table.append({
             'team': team,
             'points': team.get_points(),
@@ -191,10 +136,7 @@ def leaderboard(request):
             'losses': team.get_losses(),
         })
 
-    table.sort(
-        key=lambda x: x['points'],
-        reverse=True
-    )
+    table.sort(key=lambda x: x['points'], reverse=True)
 
     return render(
         request,
