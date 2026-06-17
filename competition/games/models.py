@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from teams.models import Team
 from competitions.models import Tournament
+from django.utils import timezone
 
 
 class Match(models.Model):
@@ -78,3 +79,22 @@ class Match(models.Model):
             self.winner = None
 
         super().save(*args, **kwargs)
+        
+        unfinished_matches = self.tournament.matches.filter(
+            score_team1__isnull=True
+        ).exists()
+
+        if (
+            not unfinished_matches and
+            self.tournament.status == 'active'
+        ):
+
+            self.tournament.status = 'finished'
+            self.tournament.finished_at = timezone.now()
+
+            self.tournament.save(
+                update_fields=[
+                    'status',
+                    'finished_at'
+                ]
+            )
