@@ -42,6 +42,10 @@ class TeamService:
         # -------------------------
         # CREATE TEAM
         # -------------------------
+        if len(members) < 2:
+            raise ValidationError(
+                "حداقل ۲ عضو باید انتخاب شود."
+            )
         team = Team.objects.create(
             name=team_name,
             captain=captain

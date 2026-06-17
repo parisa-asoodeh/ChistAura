@@ -10,7 +10,7 @@ class TeamCreateForm(forms.ModelForm):
     members = forms.ModelMultipleChoiceField(
         queryset=User.objects.none(),
         widget=forms.CheckboxSelectMultiple,
-        label="انتخاب ۲ هم‌تیمی"
+        label="انتخاب هم‌تیمی‌ها"
     )
 
     class Meta:
@@ -56,13 +56,13 @@ class TeamCreateForm(forms.ModelForm):
     def clean_members(self):
         # -----------------------------
         # اعتبارسنجی تعداد اعضا
-        # باید دقیقاً ۲ نفر انتخاب شود
+        # باید حداقل ۲ نفر انتخاب شود
         # -----------------------------
         members = self.cleaned_data.get('members')
 
-        if members.count() != 2:
+        if members.count() < 2:
             raise forms.ValidationError(
-                "شما باید دقیقاً ۲ هم‌تیمی انتخاب کنید."
+                "حداقل ۲ هم‌تیمی انتخاب کنید."
             )
 
         # -----------------------------
