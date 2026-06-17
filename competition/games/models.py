@@ -28,12 +28,14 @@ class Match(models.Model):
     )
 
     score_team1 = models.IntegerField(
-        default=0,
+        null=True,
+        blank=True,
         verbose_name='امتیاز تیم اول'
     )
 
     score_team2 = models.IntegerField(
-        default=0,
+        null=True,
+        blank=True,
         verbose_name='امتیاز تیم دوم'
     )
 
@@ -60,10 +62,13 @@ class Match(models.Model):
             )
         
     def save(self, *args, **kwargs):
-        
+
         self.full_clean()
 
-        if self.score_team1 > self.score_team2:
+        if self.score_team1 is None or self.score_team2 is None:
+            self.winner = None
+
+        elif self.score_team1 > self.score_team2:
             self.winner = self.team1
 
         elif self.score_team2 > self.score_team1:

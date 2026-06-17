@@ -34,13 +34,13 @@ class Team(models.Model):
         return self.home_matches.all() | self.away_matches.all()
 
     def get_wins(self):
-        return self.won_matches.count()
+        return self.won_matches.filter(score_team1__isnull=False,score_team2__isnull=False).count()
 
     def get_draws(self):
-        return self.matches().filter(winner__isnull=True).count()
+        return self.matches().filter(score_team1__isnull=False,score_team2__isnull=False,winner__isnull=True).count()
 
     def get_played(self):
-        return self.matches().count()
+        return self.matches().exclude(score_team1__isnull=True).count()
 
     def get_losses(self):
         return self.get_played() - self.get_wins() - self.get_draws()
