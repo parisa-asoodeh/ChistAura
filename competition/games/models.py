@@ -88,6 +88,20 @@ class Match(models.Model):
             not unfinished_matches and
             self.tournament.status == 'active'
         ):
+            
+            teams = [
+                tt.team
+                for tt in self.tournament.teams.select_related('team')
+            ]
+            teams.sort(
+                key=lambda team: team.get_points_in_tournament(
+                    self.tournament
+                ),
+                reverse=True
+            )
+            if teams:
+                self.tournament.champion = teams[0]
+
 
             self.tournament.status = 'finished'
             self.tournament.finished_at = timezone.now()
@@ -95,6 +109,7 @@ class Match(models.Model):
             self.tournament.save(
                 update_fields=[
                     'status',
-                    'finished_at'
+                    'finished_at',
+                    'champion'
                 ]
             )

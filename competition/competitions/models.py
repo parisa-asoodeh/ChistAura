@@ -40,6 +40,14 @@ class Tournament(models.Model):
         verbose_name="تاریخ پایان"
     )
 
+    champion = models.ForeignKey(
+    'teams.Team',
+    null=True,
+    blank=True,
+    on_delete=models.SET_NULL,
+    related_name='won_tournaments',
+    verbose_name='قهرمان'
+    )
 
     def __str__(self):
         return self.name
