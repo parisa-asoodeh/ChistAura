@@ -75,6 +75,12 @@ class TeamMemberService:
             raise ValidationError(
                 "این کاربر قبلاً عضو تیم است."
             )
+        if TeamMembership.objects.filter(
+            user=user
+        ).exists():
+            raise ValidationError(
+                "این کاربر قبلاً عضو تیم دیگری است."
+            )
 
         active_team = TournamentTeam.objects.filter(
             team=team,
