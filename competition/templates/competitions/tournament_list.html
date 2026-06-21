@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+لیگ‌ها
+{% endblock %}
+
+{% block content %}
+
+<h2>
+لیگ‌ها
+</h2>
+
+{% if tournaments %}
+
+<ul>
+
+{% for tournament in tournaments %}
+
+<li>
+
+<a href="{% url 'tournament_detail' tournament.id %}">
+    {{ tournament.name }}
+</a>
+
+-
+
+{{ tournament.get_status_display }}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<p>
+هنوز لیگی ساخته نشده است.
+</p>
+
+{% endif %}
+
+{% endblock %}

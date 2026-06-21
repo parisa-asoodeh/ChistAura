@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ tournament.name }}
+{% endblock %}
+
+{% block content %}
+
+<h2>
+{{ tournament.name }}
+</h2>
+
+<p>
+<strong>وضعیت:</strong>
+{{ tournament.get_status_display }}
+</p>
+
+<p>
+<strong>قهرمان:</strong>
+
+{% if tournament.champion %}
+    {{ tournament.champion.name }}
+{% else %}
+    هنوز مشخص نشده
+{% endif %}
+</p>
+
+<hr>
+<p>
+<strong>تعداد تیم‌ها:</strong>
+{{ teams.count }}
+</p>
+
+<p>
+<strong>تعداد مسابقات:</strong>
+{{ total_matches }}
+</p>
+
+<p>
+<strong>مسابقات انجام شده:</strong>
+{{ played_matches }}
+</p>
+
+<p>
+<strong>پیشرفت لیگ:</strong>
+{{ progress }}%
+</p>
+
+<hr>
+
+<h3>
+تیم‌های لیگ
+</h3>
+
+<ul>
+
+{% for tt in teams %}
+
+<li>
+{{ tt.team.name }}
+</li>
+
+{% endfor %}
+
+</ul>
+
+<hr>
+
+<h3>
+مسابقات لیگ
+</h3>
+
+<ul>
+
+{% for match in matches %}
+
+<li>
+
+<a href="{% url 'match_detail' match.id %}">
+
+{{ match.team1.name }}
+{{ match.score_team1 }}
+
+-
+
+{{ match.score_team2 }}
+{{ match.team2.name }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+<hr>
+
+<a href="{% url 'tournament_leaderboard' tournament.id %}">
+مشاهده جدول لیگ
+</a>
+
+{% endblock %}
