@@ -34,13 +34,29 @@ class Team(models.Model):
         return self.home_matches.all() | self.away_matches.all()
 
     def get_wins(self):
-        return self.won_matches.filter(score_team1__isnull=False,score_team2__isnull=False).count()
+        return sum(
+            1
+            for match in self.won_matches.all()
+            if match.is_complete
+        )
 
     def get_draws(self):
-        return self.matches().filter(score_team1__isnull=False,score_team2__isnull=False,winner__isnull=True).count()
+        return sum(
+            1
+            for match in self.matches()
+            if (
+                match.is_complete
+                and
+                match.winner is None
+            )
+        )
 
     def get_played(self):
-        return self.matches().exclude(score_team1__isnull=True).count()
+        return sum(
+            1
+            for match in self.matches()
+            if match.is_complete
+        )
 
     def get_losses(self):
         return self.get_played() - self.get_wins() - self.get_draws()
@@ -54,28 +70,45 @@ class Team(models.Model):
             tournament=tournament
         )
     
-    def get_wins_in_tournament(self, tournament):
-        return self.won_matches.filter(
-            tournament=tournament,
-            score_team1__isnull=False,
-            score_team2__isnull=False
-        ).count()
+    def get_wins_in_tournament(
+        self,
+        tournament
+    ):
+        return sum(
+            1
+            for match in self.won_matches.filter(
+                tournament=tournament
+            )
+            if match.is_complete
+        )
     
-    def get_draws_in_tournament(self, tournament):
-        return self.matches_in_tournament(
-            tournament
-        ).filter(
-            score_team1__isnull=False,
-            score_team2__isnull=False,
-            winner__isnull=True
-        ).count()
+    def get_draws_in_tournament(
+        self,
+        tournament
+    ):
+        return sum(
+            1
+            for match in self.matches_in_tournament(
+                tournament
+            )
+            if (
+                match.is_complete
+                and
+                match.winner is None
+            )
+        )
     
-    def get_played_in_tournament(self, tournament):
-        return self.matches_in_tournament(
-            tournament
-        ).exclude(
-            score_team1__isnull=True
-        ).count()
+    def get_played_in_tournament(
+        self,
+        tournament
+    ):
+        return sum(
+            1
+            for match in self.matches_in_tournament(
+                tournament
+            )
+            if match.is_complete
+        )
     
     def get_losses_in_tournament(self, tournament):
         return (

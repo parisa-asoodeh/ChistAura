@@ -8,6 +8,10 @@ from django.dispatch import receiver
 from .models import MatchPlayerScore
 from .scoring import MatchScoringService
 
+from competitions.status_service import (
+    TournamentStatusService
+)
+
 
 @receiver(
     post_save,
@@ -23,6 +27,10 @@ def recalculate_after_save(
         instance.match
     )
 
+    TournamentStatusService.refresh_tournament(
+        instance.match.tournament
+    )
+
 
 @receiver(
     post_delete,
@@ -36,4 +44,8 @@ def recalculate_after_delete(
 
     MatchScoringService.recalculate_match(
         instance.match
+    )
+
+    TournamentStatusService.refresh_tournament(
+        instance.match.tournament
     )

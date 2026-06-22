@@ -83,9 +83,11 @@ def tournament_detail(request, tournament_id):
 
     total_matches = matches.count()
 
-    played_matches = matches.exclude(
-        score_team1__isnull=True
-    ).count()
+    played_matches = sum(
+        1
+        for match in matches
+        if match.is_complete
+    )
 
     progress = 0
 

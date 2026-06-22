@@ -24,28 +24,13 @@ class MatchAdmin(admin.ModelAdmin):
         'played_at',
     )
 
+    readonly_fields = (
+        'winner',
+        'score_team1',
+        'score_team2',
+        'played_at',
+    )
 
-    actions = [
-        'finish_match',
-    ]
-
-
-    @admin.action(description="ثبت نتیجه مسابقه")
-    def finish_match(self, request, queryset):
-
-        for match in queryset:
-
-            MatchService.set_result(
-                match,
-                match.score_team1,
-                match.score_team2
-            )
-
-        self.message_user(
-            request,
-            "نتیجه مسابقات ثبت شد.",
-            messages.SUCCESS
-        )
 
 
 @admin.register(MatchPlayerScore)

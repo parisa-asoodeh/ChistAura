@@ -86,39 +86,15 @@ class Match(models.Model):
 
         super().save(*args, **kwargs)
         
-        unfinished_matches = self.tournament.matches.filter(
-            score_team1__isnull=True
-        ).exists()
+        
+    @property
+    def is_complete(self):
 
-        if (
-            not unfinished_matches and
-            self.tournament.status == 'active'
-        ):
-            
-            teams = [
-                tt.team
-                for tt in self.tournament.teams.select_related('team')
-            ]
-            teams.sort(
-                key=lambda team: team.get_points_in_tournament(
-                    self.tournament
-                ),
-                reverse=True
-            )
-            if teams:
-                self.tournament.champion = teams[0]
-
-
-            self.tournament.status = 'finished'
-            self.tournament.finished_at = timezone.now()
-
-            self.tournament.save(
-                update_fields=[
-                    'status',
-                    'finished_at',
-                    'champion'
-                ]
-            )
+        return (
+            self.score_team1 is not None
+            and
+            self.score_team2 is not None
+        )  
 
 
 class MatchPlayerScore(models.Model):
