@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from teams.models import Team
 from competitions.models import Tournament
 from django.utils import timezone
+from django.conf import settings
+
 
 
 class Match(models.Model):
@@ -117,3 +119,81 @@ class Match(models.Model):
                     'champion'
                 ]
             )
+
+
+class MatchPlayerScore(models.Model):
+
+    match = models.ForeignKey(
+        Match,
+        on_delete=models.CASCADE,
+        related_name='player_scores',
+        verbose_name='مسابقه'
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='match_scores',
+        verbose_name='بازیکن'
+    )
+
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='player_scores',
+        verbose_name='تیم'
+    )
+
+    score = models.IntegerField(
+        default=0,
+        verbose_name='امتیاز'
+    )
+
+    class Meta:
+
+        unique_together = (
+            'match',
+            'user',
+        )
+
+        verbose_name = 'امتیاز بازیکن'
+        verbose_name_plural = 'امتیازات بازیکنان'
+
+    def clean(self):
+
+        from teams.models import TeamMembership
+
+        if self.team not in (
+            self.match.team1,
+            self.match.team2
+        ):
+            raise ValidationError(
+                "تیم انتخاب شده در این مسابقه حضور ندارد."
+            )
+
+        is_member = TeamMembership.objects.filter(
+            team=self.team,
+            user=self.user
+        ).exists()
+
+        if not is_member:
+            raise ValidationError(
+                "این بازیکن عضو تیم انتخاب شده نیست."
+            )
+        
+
+    def save(self, *args, **kwargs):
+
+        self.full_clean()
+
+        super().save(*args, **kwargs)
+
+
+
+    def __str__(self):
+
+        return (
+            f"{self.user.username} | "
+            f"{self.match.id} | "
+            f"{self.score}"
+        )

@@ -3,6 +3,7 @@ from django.contrib import messages
 
 from .models import Match
 from .services import MatchService
+from .models import Match, MatchPlayerScore
 
 
 @admin.register(Match)
@@ -45,3 +46,24 @@ class MatchAdmin(admin.ModelAdmin):
             "نتیجه مسابقات ثبت شد.",
             messages.SUCCESS
         )
+
+
+@admin.register(MatchPlayerScore)
+class MatchPlayerScoreAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'match',
+        'user',
+        'team',
+        'score',
+    )
+
+    list_filter = (
+        'team',
+        'match',
+    )
+
+    search_fields = (
+        'user__username',
+        'team__name',
+    )
