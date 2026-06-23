@@ -10,6 +10,9 @@ from .models import Match
 from collections import defaultdict
 from teams.services import TeamMemberService
 from django.contrib.auth import get_user_model
+from .player_ranking_service import (
+    PlayerRankingService
+)
 
 
 
@@ -234,5 +237,20 @@ def manage_team_members(request, team_id):
             'team': team,
             'members': members,
             'available_users': available_users,
+        }
+    )
+
+
+def player_leaderboard(request):
+
+    table = (
+        PlayerRankingService.build_leaderboard()
+    )
+
+    return render(
+        request,
+        'games/player_leaderboard.html',
+        {
+            'table': table,
         }
     )

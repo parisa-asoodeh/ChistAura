@@ -22,6 +22,9 @@
             <a href="{% url 'leaderboard' %}">
                 رتبه‌بندی
             </a>
+            <a href="{% url 'player_leaderboard' %}">
+                بازیکنان
+            </a>
             <!-- <a href="{% url 'logout' %}">خروج</a> -->
              <form action="{% url 'logout' %}" method="post" style="display:inline;">
                 {% csrf_token %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}
+رتبه‌بندی بازیکنان
+{% endblock %}
+
+{% block content %}
+
+<h2>
+رتبه‌بندی بازیکنان
+</h2>
+
+<table border="1" cellpadding="10">
+
+<tr>
+    <th>رتبه</th>
+    <th>بازیکن</th>
+    <th>امتیاز کل</th>
+    <th>تعداد مسابقات</th>
+    <th>میانگین امتیاز</th>
+</tr>
+
+{% for row in table %}
+
+<tr>
+
+    <td>
+        {{ forloop.counter }}
+    </td>
+
+    <td>
+        {{ row.user.username }}
+    </td>
+
+    <td>
+        {{ row.total_score }}
+    </td>
+
+    <td>
+        {{ row.matches_played }}
+    </td>
+
+    <td>
+        {{ row.average_score }}
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}
