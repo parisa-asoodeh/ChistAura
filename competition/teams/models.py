@@ -160,6 +160,29 @@ class Team(models.Model):
                     match.score_team1
                 )
         return difference
+    
+
+    def get_total_time_in_tournament(
+        self,
+        tournament
+    ):
+
+        from django.db.models import Sum
+        from games.models import MatchPlayerScore
+
+        total_time = (
+            MatchPlayerScore.objects.filter(
+                match__tournament=tournament,
+                team=self,
+                completion_time__isnull=False,
+            )
+            .aggregate(
+                total=Sum(
+                    'completion_time'
+                )
+            )['total']
+        )
+        return total_time or 0
 
 
 class TeamMembership(models.Model):

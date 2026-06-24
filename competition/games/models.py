@@ -125,6 +125,12 @@ class MatchPlayerScore(models.Model):
         verbose_name='امتیاز'
     )
 
+    completion_time = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name='زمان (ثانیه)'
+    )
+
     class Meta:
 
         unique_together = (

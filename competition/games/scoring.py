@@ -91,20 +91,14 @@ class MatchScoringService:
         match.score_team2 = team2_score
 
 
-        if team1_score > team2_score:
-
-            match.winner = match.team1
-
-
-        elif team2_score > team1_score:
-
-            match.winner = match.team2
-
-
-        else:
-
-            match.winner = None
-
+        from .game_types import ScoreBasedGameType
+        match.winner = (
+            ScoreBasedGameType.determine_winner(
+                match,
+                team1_score,
+                team2_score
+            )
+        )
 
         match.save(
             update_fields=[

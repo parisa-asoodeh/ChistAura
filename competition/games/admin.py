@@ -41,6 +41,7 @@ class MatchPlayerScoreAdmin(admin.ModelAdmin):
         'user',
         'team',
         'score',
+        'completion_time',
     )
 
     list_filter = (

@@ -240,7 +240,7 @@ def manage_team_members(request, team_id):
         }
     )
 
-
+@login_required
 def player_leaderboard(request):
 
     table = (

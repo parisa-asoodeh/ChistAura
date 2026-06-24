@@ -10,7 +10,12 @@ class TournamentRankingService:
             team.get_points_in_tournament(
                 tournament
             ),
+
             team.get_score_difference_in_tournament(
+                tournament
+            ),
+
+            -team.get_total_time_in_tournament(
                 tournament
             ),
         )

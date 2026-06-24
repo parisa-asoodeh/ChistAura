@@ -37,6 +37,10 @@ def tournament_leaderboard(request, tournament_id):
                 team.get_score_difference_in_tournament(
                     tournament
                 ),
+            'total_time':
+                team.get_total_time_in_tournament(
+                    tournament
+                ),
         })
 
     return render(

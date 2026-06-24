@@ -15,7 +15,8 @@
     <th>برد</th>
     <th>مساوی</th>
     <th>باخت</th>
-    <th>تفاضل</th>
+    <th>اختلاف امتیاز</th>
+    <th>زمان کل (ثانیه)</th>
 </tr>
 
 {% for row in table %}
@@ -48,6 +49,10 @@
 
 <td>
 {{ row.score_difference }}
+</td>
+
+<td>
+{{ row.total_time }}
 </td>
 
 </tr>
