@@ -179,3 +179,70 @@ class MatchPlayerScore(models.Model):
             f"{self.match.id} | "
             f"{self.score}"
         )
+    
+
+class GameSession(models.Model):
+
+    STATUS_CHOICES = [
+        ('pending', 'در انتظار'),
+        ('started', 'شروع شده'),
+        ('completed', 'تکمیل شده'),
+        ('abandoned', 'رها شده'),
+    ]
+
+    match = models.ForeignKey(
+        Match,
+        on_delete=models.CASCADE,
+        related_name='sessions'
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='game_sessions'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+
+    started_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    finished_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    raw_score = models.IntegerField(
+        null=True,
+        blank=True
+    )
+
+    completion_time = models.PositiveIntegerField(
+        null=True,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+    auto_now_add=True
+    )
+
+
+    class Meta:
+
+        unique_together = (
+            'match',
+            'user',
+        )
+
+    def __str__(self):
+
+        return (
+            f"{self.user.username}"
+            f" - Match {self.match_id}"
+        )

@@ -6,6 +6,16 @@ class ScoreBasedGameType:
         value2
     ):
         return value1 > value2
+    
+
+    @classmethod
+    def calculate_score(
+        cls,
+        raw_score,
+        completion_time
+    ):
+        return raw_score
+    
 
     @classmethod
     def determine_winner(
