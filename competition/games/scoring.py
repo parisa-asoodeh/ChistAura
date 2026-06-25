@@ -1,8 +1,7 @@
 from django.db.models import Sum
-
 from .models import MatchPlayerScore
-
 from teams.models import TeamMembership
+from .game_types.registry import get_game_type
 
 
 class MatchScoringService:
@@ -91,9 +90,12 @@ class MatchScoringService:
         match.score_team2 = team2_score
 
 
-        from .game_types import ScoreBasedGameType
+        game_type = get_game_type(
+            match.tournament.game_type
+        )
+
         match.winner = (
-            ScoreBasedGameType.determine_winner(
+            game_type.determine_winner(
                 match,
                 team1_score,
                 team2_score

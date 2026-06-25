@@ -5,11 +5,20 @@ from django.core.exceptions import ValidationError
 
 class GameType(models.Model):
 
+    key = models.CharField(
+        max_length=50,
+        unique=True,
+        null=True,
+        blank=True,
+        verbose_name='کلید فنی'
+    )
+
     name = models.CharField(
         max_length=100,
         unique=True,
         verbose_name='نوع بازی'
     )
+
     def __str__(self):
         return self.name
     
@@ -64,8 +73,6 @@ class Tournament(models.Model):
     game_type = models.ForeignKey(
     'GameType',
     on_delete=models.PROTECT,
-    null=True,
-    blank=True,
     related_name='tournaments',
     verbose_name='نوع بازی'
     )
