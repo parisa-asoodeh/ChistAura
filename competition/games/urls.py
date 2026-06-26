@@ -11,4 +11,5 @@ urlpatterns = [
     path('team/<int:team_id>/members/',manage_team_members,name='manage_team_members'),
     path('matches/<int:match_id>/',match_detail,name='match_detail'),
     path('players/',player_leaderboard,name='player_leaderboard'),
+    path('sessions/<int:session_id>/play/',game_play,name='game_play'),
 ]

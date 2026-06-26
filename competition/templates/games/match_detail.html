@@ -8,6 +8,8 @@
 
 <h2>
 
+{% if match.is_complete %}
+
 {{ match.team1.name }}
 {{ match.score_team1 }}
 
@@ -15,6 +17,16 @@
 
 {{ match.score_team2 }}
 {{ match.team2.name }}
+
+{% else %}
+
+{{ match.team1.name }}
+
+-
+
+{{ match.team2.name }}
+
+{% endif %}
 
 </h2>
 
@@ -37,7 +49,9 @@
 <p>
 <strong>برنده:</strong>
 
-{% if match.winner %}
+{% if not match.is_complete %}
+    در حال برگزاری
+{% elif match.winner %}
     {{ match.winner.name }}
 {% else %}
     مساوی

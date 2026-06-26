@@ -101,8 +101,17 @@ class TournamentService:
         # -----------------------------
         # 6. ذخیره یکجای مسابقات
         # -----------------------------
-        Match.objects.bulk_create(matches)
+        from games.session_creation_service import (
+            GameSessionCreationService,
+        )
 
+        for match in matches:
+
+            match.save()
+
+            GameSessionCreationService.create_sessions(
+                match
+            )
 
         # -----------------------------
         # 7. فعال کردن لیگ

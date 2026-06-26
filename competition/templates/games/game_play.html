@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+بازی
+{% endblock %}
+
+{% block content %}
+
+<h2>Game Session</h2>
+
+<p>Session ID: {{ session.id }}</p>
+
+<p>بازیکن: {{ session.user }}</p>
+
+<p>مسابقه: {{ session.match.id }}</p>
+
+<p>وضعیت: {{ session.get_status_display }}</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        ثبت نتیجه
+    </button>
+</form>
+
+{% endblock %}
