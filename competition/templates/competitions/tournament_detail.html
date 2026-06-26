@@ -23,18 +23,19 @@
 {% else %}
     تعریف نشده
 {% endif %}
-
 </p>
-
-<p>
-<strong>قهرمان:</strong>
 
 {% if tournament.champion %}
-    {{ tournament.champion.name }}
-{% else %}
-    هنوز مشخص نشده
-{% endif %}
+<hr>
+<h3>
+🏆 قهرمان لیگ
+</h3>
+<p>
+<strong>
+{{ tournament.champion.name }}
+</strong>
 </p>
+{% endif %}
 
 <hr>
 <p>
@@ -54,7 +55,11 @@
 
 <p>
 <strong>پیشرفت لیگ:</strong>
-{{ progress }}%
+{{ played_matches }}
+/
+{{ total_matches }}
+مسابقه
+({{ progress }}%)
 </p>
 
 <hr>
@@ -64,15 +69,15 @@
 </h3>
 
 <ul>
-
 {% for tt in teams %}
-
 <li>
+<strong>
 {{ tt.team.name }}
+</strong>
+—
+{{ tt.team.get_points }} امتیاز
 </li>
-
 {% endfor %}
-
 </ul>
 
 <hr>
@@ -89,6 +94,8 @@
 
 <a href="{% url 'match_detail' match.id %}">
 
+{% if match.is_complete %}
+
 {{ match.team1.name }}
 {{ match.score_team1 }}
 
@@ -97,7 +104,28 @@
 {{ match.score_team2 }}
 {{ match.team2.name }}
 
+{% else %}
+
+{{ match.team1.name }}
+
+vs
+
+{{ match.team2.name }}
+
+{% endif %}
+
 </a>
+<br>
+
+{% if match.is_complete %}
+
+🟢 پایان یافته
+
+{% else %}
+
+🟡 در حال برگزاری
+
+{% endif %}
 
 </li>
 

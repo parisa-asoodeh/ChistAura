@@ -46,6 +46,44 @@
 {% endif %}
 </p>
 
+<hr>
+
+<h3>وضعیت مسابقه</h3>
+
+{% if match.is_complete %}
+
+<p>🟢 پایان یافته</p>
+
+{% else %}
+
+<p>🟡 در حال برگزاری</p>
+
+{% endif %}
+
+<p>
+
+{{ completed_players }}
+
+/
+
+{{ total_players }}
+
+بازیکن بازی کرده‌اند.
+
+</p>
+
+{% if not match.is_complete %}
+
+<p>
+
+{{ remaining_players }}
+
+بازیکن باقی مانده‌اند.
+
+</p>
+
+{% endif %}
+
 <p>
 <strong>برنده:</strong>
 
@@ -68,7 +106,141 @@
 
 <hr>
 
+<h3>{{ match.team1.name }}</h3>
 
+<table border="1" cellpadding="6">
+
+<tr>
+    <th>بازیکن</th>
+    <th>وضعیت</th>
+    <th>امتیاز</th>
+    <th>زمان</th>
+</tr>
+
+{% for player in team1_players %}
+
+<tr>
+
+<td>{{ player.user.username }}</td>
+
+<td>
+
+{% if player.session.status == "completed" %}
+
+✅ انجام شده
+
+{% else %}
+
+⏳ در انتظار
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if player.score %}
+
+{{ player.score.score }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if player.score %}
+
+{{ player.score.completion_time }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+
+<br>
+
+
+<h3>{{ match.team2.name }}</h3>
+
+<table border="1" cellpadding="6">
+
+<tr>
+    <th>بازیکن</th>
+    <th>وضعیت</th>
+    <th>امتیاز</th>
+    <th>زمان</th>
+</tr>
+
+{% for player in team2_players %}
+
+<tr>
+
+<td>{{ player.user.username }}</td>
+
+<td>
+
+{% if player.session.status == "completed" %}
+
+✅ انجام شده
+
+{% else %}
+
+⏳ در انتظار
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if player.score %}
+
+{{ player.score.score }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if player.score %}
+
+{{ player.score.completion_time }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<hr>
 <h3>
 گزارش مسابقه
 </h3>

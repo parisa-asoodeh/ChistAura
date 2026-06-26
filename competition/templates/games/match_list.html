@@ -14,8 +14,15 @@
 
         <hr>
 
+        <p>
+        <strong>لیگ:</strong>
+        {{ match.tournament.name }}
+        </p>
+
         <h3>
             <a href="{% url 'match_detail' match.id %}">
+
+                {% if match.is_complete %}
 
                 {{ match.team1.name }}
                 {{ match.score_team1 }}
@@ -25,6 +32,15 @@
                 {{ match.score_team2 }}
                 {{ match.team2.name }}
 
+                {% else %}
+
+                {{ match.team1.name }}
+
+                vs
+
+                {{ match.team2.name }}
+
+                {% endif %}
             </a>
         </h3>
 
@@ -32,10 +48,19 @@
 
             <strong>برنده:</strong>
 
-            {% if match.winner %}
-                {{ match.winner.name }}
+            {% if not match.is_complete %}
+
+            🟡 در حال برگزاری
+
+            {% elif match.winner %}
+
+            🟢 برنده:
+            {{ match.winner.name }}
+
             {% else %}
-                مساوی
+
+            🤝 مساوی
+
             {% endif %}
 
         </p>
