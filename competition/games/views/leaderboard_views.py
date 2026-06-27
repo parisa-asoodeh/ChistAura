@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from ..player_ranking_service import (
     PlayerRankingService
 )
+from teams.statistics.team_statistics_service import TeamStatisticsService
 
 def leaderboard(request):
 
@@ -14,7 +15,7 @@ def leaderboard(request):
     for team in teams:
         table.append({
             'team': team,
-            'points': team.get_points(),
+            'points': TeamStatisticsService.get_points(team),
             'wins': team.get_wins(),
             'draws': team.get_draws(),
             'losses': team.get_losses(),

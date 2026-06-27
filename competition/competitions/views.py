@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Tournament
 from games.models import Match
 from .ranking_service import TournamentRankingService
+from teams.statistics.team_statistics_service import TeamStatisticsService
 
 
 def tournament_leaderboard(request, tournament_id):
@@ -21,24 +22,30 @@ def tournament_leaderboard(request, tournament_id):
 
         table.append({
             'team': team,
-            'points': team.get_points_in_tournament(
+            'points': TeamStatisticsService.get_points_in_tournament(
+                team,
                 tournament
             ),
-            'wins': team.get_wins_in_tournament(
+            'wins': TeamStatisticsService.get_wins_in_tournament(
+                team,
                 tournament
             ),
-            'draws': team.get_draws_in_tournament(
+            'draws': TeamStatisticsService.get_draws_in_tournament(
+                team,
                 tournament
             ),
-            'losses': team.get_losses_in_tournament(
+            'losses': TeamStatisticsService.get_losses_in_tournament(
+                team,
                 tournament
             ),
             'score_difference':
-                team.get_score_difference_in_tournament(
+                TeamStatisticsService.get_score_difference_in_tournament(
+                    team,
                     tournament
                 ),
             'total_time':
-                team.get_total_time_in_tournament(
+                TeamStatisticsService.get_total_time_in_tournament(
+                    team,
                     tournament
                 ),
         })

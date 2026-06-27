@@ -6,7 +6,7 @@ from teams.services import TeamService
 from django.shortcuts import get_object_or_404
 from teams.services import TeamMemberService
 from django.contrib.auth import get_user_model
-
+from teams.statistics.team_statistics_service import TeamStatisticsService
 
 
 @login_required
@@ -73,11 +73,11 @@ def team_detail(request, team_id):
             'team': team,
             'members': members,
 
-            'wins': team.get_wins(),
-            'draws': team.get_draws(),
-            'losses': team.get_losses(),
-            'played': team.get_played(),
-            'points': team.get_points(),
+            'wins': TeamStatisticsService.get_wins(team),
+            'draws': TeamStatisticsService.get_draws(team),
+            'losses': TeamStatisticsService.get_losses(team),
+            'played': TeamStatisticsService.get_played(team),
+            'points': TeamStatisticsService.get_points(team),
         }
     )
 
