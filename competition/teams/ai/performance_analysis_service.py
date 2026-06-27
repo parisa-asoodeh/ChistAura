@@ -8,6 +8,9 @@ from .analyzers.balance_analyzer import (
 from .analyzers.star_dependency_analyzer import (
     StarDependencyAnalyzer
 )
+from .analyzers.average_analyzer import (
+    AverageAnalyzer
+)
 
 
 class PerformanceAnalysisService:
@@ -23,6 +26,7 @@ class PerformanceAnalysisService:
 
             StarDependencyAnalyzer.analyze(match),
 
+            AverageAnalyzer.analyze(match),
         ]
 
         summaries = []
