@@ -14,6 +14,9 @@ from .analyzers.average_analyzer import (
 from .analyzers.momentum_analyzer import (
     MomentumAnalyzer
 )
+from .analyzers.consistency_analyzer import (
+    ConsistencyAnalyzer
+)
 
 
 
@@ -49,6 +52,7 @@ class PerformanceAnalysisService:
                     analyzer
                 )
 
+        # MomentumAnalyzer با بقیه فرق دارد چون Match Analyzer است
         team1_momentum = (
             MomentumAnalyzer.analyze(
                 match.team1
@@ -67,6 +71,27 @@ class PerformanceAnalysisService:
 
         summaries.append(
             team2_momentum["summary"]
+        )
+
+        # ConsistencyAnalyzer هم یک Match Analyzer است
+        team1_consistency = (
+            ConsistencyAnalyzer.analyze(
+                match.team1
+            )
+        )
+
+        team2_consistency = (
+            ConsistencyAnalyzer.analyze(
+                match.team2
+            )
+        )
+
+        summaries.append(
+            team1_consistency["summary"]
+        )
+
+        summaries.append(
+            team2_consistency["summary"]
         )
 
         return " ".join(summaries)
