@@ -35,8 +35,6 @@ class PerformanceAnalysisService:
             BalanceAnalyzer.analyze(match),
 
             StarDependencyAnalyzer.analyze(match),
-
-            AverageAnalyzer.analyze(match),
         ]
 
         summaries = []
@@ -58,10 +56,12 @@ class PerformanceAnalysisService:
 
         team_analyzers = [
 
+            AverageAnalyzer,
+
             MomentumAnalyzer,
 
             ConsistencyAnalyzer,
-            
+
             MatchDifficultyAnalyzer,
         ]
 
