@@ -11,6 +11,10 @@ from .analyzers.star_dependency_analyzer import (
 from .analyzers.average_analyzer import (
     AverageAnalyzer
 )
+from .analyzers.momentum_analyzer import (
+    MomentumAnalyzer
+)
+
 
 
 class PerformanceAnalysisService:
@@ -44,5 +48,25 @@ class PerformanceAnalysisService:
                 summaries.append(
                     analyzer
                 )
+
+        team1_momentum = (
+            MomentumAnalyzer.analyze(
+                match.team1
+            )
+        )
+
+        team2_momentum = (
+            MomentumAnalyzer.analyze(
+                match.team2
+            )
+        )
+
+        summaries.append(
+            team1_momentum["summary"]
+        )
+
+        summaries.append(
+            team2_momentum["summary"]
+        )
 
         return " ".join(summaries)
