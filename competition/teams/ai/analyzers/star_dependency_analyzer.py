@@ -1,55 +1,34 @@
-from django.db.models import Sum
-
 from games.models import MatchPlayerScore
 
 
 class StarDependencyAnalyzer:
 
     @staticmethod
-    def analyze(match):
+    def analyze(team):
 
-        team1_scores = list(
+        scores = list(
             MatchPlayerScore.objects.filter(
-                match=match,
-                team=match.team1
+                team=team
             ).values_list(
                 "score",
                 flat=True
             )
         )
 
-        team2_scores = list(
-            MatchPlayerScore.objects.filter(
-                match=match,
-                team=match.team2
-            ).values_list(
-                "score",
-                flat=True
-            )
-        )
-
-        team1_dependency = (
+        result = (
             StarDependencyAnalyzer.dependency_percentage(
-                team1_scores
+                scores
             )
         )
 
-        team2_dependency = (
-            StarDependencyAnalyzer.dependency_percentage(
-                team2_scores
+        result["summary"] = (
+            StarDependencyAnalyzer.build_summary(
+                team,
+                result,
             )
         )
 
-        return {
-            "team1": team1_dependency,
-            "team2": team2_dependency,
-            "summary": StarDependencyAnalyzer.build_summary(
-                match,
-                team1_dependency,
-                team2_dependency,
-            ),
-        }
-
+        return result
 
     @staticmethod
     def dependency_percentage(scores):
@@ -83,84 +62,39 @@ class StarDependencyAnalyzer:
             "top_score": top_score,
             "percentage": percentage,
         }
-    
 
     @staticmethod
     def build_summary(
-        match,
-        team1_dependency,
-        team2_dependency,
+        team,
+        result,
     ):
 
-        team1_percentage = (
-            team1_dependency["percentage"]
-        )
+        percentage = result["percentage"]
 
-        team2_percentage = (
-            team2_dependency["percentage"]
-        )
-
-        if (
-            team1_percentage < 40
-            and
-            team2_percentage < 40
-        ):
+        if percentage < 40:
 
             return (
-                "امتیازات هر دو تیم "
-                "به شکل متوازن بین اعضا "
-                "تقسیم شده بود و وابستگی "
-                "زیادی به یک بازیکن وجود نداشت."
+                f"امتیازگیری اعضای تیم "
+                f"{team.name} "
+                f"متعادل بوده و وابستگی "
+                f"زیادی به یک بازیکن وجود ندارد."
             )
 
-        if team1_percentage > team2_percentage:
-
-            if team1_percentage >= 60:
-
-                return (
-                    f"بیش از "
-                    f"{team1_percentage:.0f}٪ "
-                    f"از امتیازات تیم "
-                    f"{match.team1.name} "
-                    f"توسط یک بازیکن کسب شد و "
-                    f"این تیم وابستگی زیادی "
-                    f"به او داشت."
-                )
+        if percentage < 60:
 
             return (
                 f"بهترین بازیکن تیم "
-                f"{match.team1.name} "
-                f"{team1_percentage:.0f}٪ "
+                f"{team.name} "
+                f"{percentage:.0f}٪ "
                 f"از امتیازات تیم را "
-                f"کسب کرد و نقش مهمی "
-                f"در نتیجه مسابقه داشت."
-            )
-
-        if team2_percentage > team1_percentage:
-
-            if team2_percentage >= 60:
-
-                return (
-                    f"بیش از "
-                    f"{team2_percentage:.0f}٪ "
-                    f"از امتیازات تیم "
-                    f"{match.team2.name} "
-                    f"توسط یک بازیکن کسب شد و "
-                    f"این تیم وابستگی زیادی "
-                    f"به او داشت."
-                )
-
-            return (
-                f"بهترین بازیکن تیم "
-                f"{match.team2.name} "
-                f"{team2_percentage:.0f}٪ "
-                f"از امتیازات تیم را "
-                f"کسب کرد و نقش مهمی "
-                f"در نتیجه مسابقه داشت."
+                f"کسب کرده است."
             )
 
         return (
-            "هر دو تیم میزان وابستگی "
-            "مشابهی به بهترین بازیکن "
-            "خود داشتند."
+            f"بیش از "
+            f"{percentage:.0f}٪ "
+            f"از امتیازات تیم "
+            f"{team.name} "
+            f"توسط یک بازیکن کسب شده و "
+            f"تیم وابستگی زیادی به او دارد."
         )

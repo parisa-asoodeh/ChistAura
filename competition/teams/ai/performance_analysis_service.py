@@ -33,8 +33,6 @@ class PerformanceAnalysisService:
             ScoreAnalyzer.analyze(match),
 
             BalanceAnalyzer.analyze(match),
-
-            StarDependencyAnalyzer.analyze(match),
         ]
 
         summaries = []
@@ -63,6 +61,8 @@ class PerformanceAnalysisService:
             ConsistencyAnalyzer,
 
             MatchDifficultyAnalyzer,
+            
+            StarDependencyAnalyzer,
         ]
 
         for analyzer in team_analyzers:
