@@ -92,3 +92,49 @@ class TeamAnalysisService:
                 )
 
         return scores
+    
+
+    @staticmethod
+    def get_recent_score_differences(
+        team,
+        limit=5,
+    ):
+
+        matches = (
+            Match.objects.filter(
+                winner__isnull=False
+            )
+            .filter(team1=team)
+            |
+            Match.objects.filter(
+                winner__isnull=False
+            )
+            .filter(team2=team)
+        )
+
+        matches = (
+            matches
+            .order_by("-played_at")[:limit]
+        )
+
+        differences = []
+
+        for match in reversed(matches):
+
+            if match.team1 == team:
+
+                diff = abs(
+                    match.score_team1 -
+                    match.score_team2
+                )
+
+            else:
+
+                diff = abs(
+                    match.score_team2 -
+                    match.score_team1
+                )
+
+            differences.append(diff)
+
+        return differences

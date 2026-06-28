@@ -17,6 +17,9 @@ from .analyzers.momentum_analyzer import (
 from .analyzers.consistency_analyzer import (
     ConsistencyAnalyzer
 )
+from .analyzers.match_difficulty_analyzer import (
+    MatchDifficultyAnalyzer
+)
 
 
 
@@ -58,6 +61,8 @@ class PerformanceAnalysisService:
             MomentumAnalyzer,
 
             ConsistencyAnalyzer,
+            
+            MatchDifficultyAnalyzer,
         ]
 
         for analyzer in team_analyzers:
