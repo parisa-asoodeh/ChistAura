@@ -124,9 +124,7 @@ class PowerRankingService:
 
                     "games": games,
                 }
-
             )
-
 
 
         ranking.sort(
@@ -134,8 +132,41 @@ class PowerRankingService:
             key=lambda item: item["score"],
 
             reverse=True,
-
         )
+        ranking = PowerRankingService.normalize(
+            ranking
+        )
+        
+        return ranking
 
+    @staticmethod
+    def normalize(
+        ranking,
+    ):
+
+        if not ranking:
+            return ranking
+
+        max_score = ranking[0]["score"]
+        min_score = ranking[-1]["score"]
+
+        diff = max_score - min_score
+
+        for item in ranking:
+
+            if diff == 0:
+
+                item["power_rating"] = 100
+
+            else:
+
+                item["power_rating"] = round(
+                    (
+                        (item["score"] - min_score)
+                        /
+                        diff
+                    ) * 100,
+                    1,
+                )
 
         return ranking
