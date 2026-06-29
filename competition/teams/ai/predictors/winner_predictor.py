@@ -79,9 +79,9 @@ class WinnerPredictor:
 
             "votes": votes,
 
-            "scores": scores,
+            "vote_scores": scores,
 
-            "summary": summary,
+            "prediction_summary": summary,
         }
 
     @staticmethod
