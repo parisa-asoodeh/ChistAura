@@ -6,11 +6,13 @@ from teams.analysis.team_analysis_service import (
 class ConsistencyAnalyzer:
 
     @staticmethod
-    def analyze(team):
+    def analyze(team_context):
+
+        team = team_context["team"]
 
         scores = (
-            TeamAnalysisService.get_recent_scores(
-                team
+            TeamAnalysisService.get_recent_scores_from_context(
+                team_context
             )
         )
 

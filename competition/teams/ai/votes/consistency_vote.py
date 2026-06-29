@@ -7,20 +7,19 @@ class ConsistencyVote:
 
     @staticmethod
     def vote(
-        team1,
-        team2,
+        team1_context,
+        team2_context,
     ):
 
-        team1_result = (
-            ConsistencyAnalyzer.analyze(
-                team1
-            )
+        team1 = team1_context["team"]
+        team2 = team2_context["team"]
+
+        team1_result = ConsistencyAnalyzer.analyze(
+            team1_context,
         )
 
-        team2_result = (
-            ConsistencyAnalyzer.analyze(
-                team2
-            )
+        team2_result = ConsistencyAnalyzer.analyze(
+            team2_context,
         )
 
         team1_consistency = (
