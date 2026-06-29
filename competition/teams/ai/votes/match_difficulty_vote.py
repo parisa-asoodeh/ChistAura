@@ -7,20 +7,19 @@ class MatchDifficultyVote:
 
     @staticmethod
     def vote(
-        team1,
-        team2,
+        team1_context,
+        team2_context,
     ):
 
-        team1_result = (
-            MatchDifficultyAnalyzer.analyze(
-                team1
-            )
+        team1 = team1_context["team"]
+        team2 = team2_context["team"]
+
+        team1_result = MatchDifficultyAnalyzer.analyze(
+            team1_context,
         )
 
-        team2_result = (
-            MatchDifficultyAnalyzer.analyze(
-                team2
-            )
+        team2_result = MatchDifficultyAnalyzer.analyze(
+            team2_context,
         )
 
         team1_difficulty = (

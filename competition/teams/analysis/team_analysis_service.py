@@ -149,3 +149,27 @@ class TeamAnalysisService:
         scores = team_context["scores"]
 
         return scores[-limit:]
+    
+
+    @staticmethod
+    def get_recent_score_differences_from_context(
+        team_context,
+    ):
+
+        scores = team_context["scores"]
+
+        differences = []
+
+        for i in range(
+            1,
+            len(scores),
+        ):
+
+            differences.append(
+                abs(
+                    scores[i] -
+                    scores[i - 1]
+                )
+            )
+
+        return differences

@@ -6,11 +6,13 @@ from teams.analysis.team_analysis_service import (
 class MatchDifficultyAnalyzer:
 
     @staticmethod
-    def analyze(team):
+    def analyze(team_context):
+
+        team = team_context["team"]
 
         differences = (
-            TeamAnalysisService.get_recent_score_differences(
-                team
+            TeamAnalysisService.get_recent_score_differences_from_context(
+                team_context
             )
         )
 
