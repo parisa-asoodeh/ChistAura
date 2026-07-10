@@ -27,6 +27,13 @@ bin/
 lib/
 include/
 
+# --- Environment variables ---
+.env
+
+# --- IDE settings ---
+.vscode/
+.idea/
+
 # --- OS Specific ---
 # Ignore macOS system files
 .DS_Store
