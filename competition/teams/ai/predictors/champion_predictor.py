@@ -5,6 +5,10 @@ from teams.ai.power_ranking_service import (
     PowerRankingService,
 )
 
+from teams.ai.explanation_service import (
+    ExplanationService,
+)
+
 
 class ChampionPredictor:
 
@@ -39,9 +43,6 @@ class ChampionPredictor:
             )
         )
 
-        from teams.ai.explanation_service import (
-            ExplanationService,
-        )
         summary = (
             ChampionPredictor.build_summary(
                 champion,
