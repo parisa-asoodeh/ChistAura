@@ -68,30 +68,20 @@ class PerformanceAnalysisService:
             StarDependencyAnalyzer,
         ]
 
+        team1_context = PerformanceDataProvider.get_team_context(
+            match.tournament,
+            match.team1,
+        )
+        
+        team2_context = PerformanceDataProvider.get_team_context(
+            match.tournament,
+            match.team2,
+        )
+
         for analyzer in team_analyzers:
 
-            team1_context = (
-                PerformanceDataProvider.get_team_context(
-                    match.tournament,
-                    match.team1,
-                )
-            )
-
-            team2_context = (
-                PerformanceDataProvider.get_team_context(
-                    match.tournament,
-                    match.team2,
-                )
-            )
-
-
-            team1_result = analyzer.analyze(
-                team1_context
-            )
-
-            team2_result = analyzer.analyze(
-                team2_context
-            )
+            team1_result = analyzer.analyze(team1_context)
+            team2_result = analyzer.analyze(team2_context)
 
 
             summaries.append(
