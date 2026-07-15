@@ -8,7 +8,7 @@ from .models import MatchPlayerScore
 from .game_types.registry import (
     get_game_type,
 )
-from .match_scoring_service import (
+from .scoring import (
     MatchScoringService,
 )
 

@@ -143,3 +143,13 @@ class MatchScoringService:
             and
             team2_scores == team2_members
         )
+    
+
+    @staticmethod
+    def can_finalize(match):
+        return MatchScoringService.is_match_complete(match)
+
+
+    @staticmethod
+    def finalize_match(match):
+        return MatchScoringService.recalculate_match(match)
