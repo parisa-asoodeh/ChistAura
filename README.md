@@ -1,9 +1,10 @@
-# Game Competition Platform
+# ChistAura
 
 ![Python](https://img.shields.io/badge/Python-3%2B-blue?logo=python)
 ![Django](https://img.shields.io/badge/Django-6%2B-darkgreen?logo=django)
 ![Backend](https://img.shields.io/badge/Project-Backend-success)
 ![Status](https://img.shields.io/badge/Status-Active_Development-orange)
+![GitHub license](https://img.shields.io/github/license/parisa-asoodeh/ChistAura)
 
 ---
 
@@ -64,7 +65,7 @@ game-competition-platform/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/parisa-asoodeh/game-competition-platform.git
+git clone https://github.com/parisa-asoodeh/ChistAura.git
 cd game-competition-platform
 ```
 
