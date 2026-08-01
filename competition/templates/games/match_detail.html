@@ -115,6 +115,7 @@
     <th>وضعیت</th>
     <th>امتیاز</th>
     <th>زمان</th>
+    <th>عملیات</th>
 </tr>
 
 {% for player in team1_players %}
@@ -164,6 +165,25 @@
 {% endif %}
 
 </td>
+<td>
+
+{% if player.session %}
+
+    {% if player.session.status != "completed" %}
+
+        {% if player.session.user == request.user %}
+
+            <a href="{% url 'game_play' player.session.id %}">
+                شروع بازی
+            </a>
+
+        {% endif %}
+
+    {% endif %}
+
+{% endif %}
+
+</td>
 
 </tr>
 
@@ -184,6 +204,7 @@
     <th>وضعیت</th>
     <th>امتیاز</th>
     <th>زمان</th>
+    <th>عملیات</th>
 </tr>
 
 {% for player in team2_players %}
@@ -229,6 +250,25 @@
 {% else %}
 
 -
+
+{% endif %}
+
+</td>
+<td>
+
+{% if player.session %}
+
+    {% if player.session.status != "completed" %}
+
+        {% if player.session.user == request.user %}
+
+            <a href="{% url 'game_play' player.session.id %}">
+                شروع بازی
+            </a>
+
+        {% endif %}
+
+    {% endif %}
 
 {% endif %}
 
