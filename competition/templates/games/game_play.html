@@ -6,15 +6,50 @@
 
 {% block content %}
 
-<h2>Game Session</h2>
+<h2>
+    شروع بازی
+</h2>
 
-<p>Session ID: {{ session.id }}</p>
+<hr>
 
-<p>بازیکن: {{ session.user }}</p>
+<h3>
+    مسابقه:
+</h3>
 
-<p>مسابقه: {{ session.match.id }}</p>
+<p>
+    {{ session.match.team1.name }}
+    -
+    {{ session.match.team2.name }}
+</p>
 
-<p>وضعیت: {{ session.get_status_display }}</p>
+
+<h3>
+    نوع بازی:
+</h3>
+
+<p>
+    {{ session.match.tournament.game_type.name }}
+</p>
+
+
+<h3>
+    بازیکن:
+</h3>
+
+<p>
+    {{ session.user.username }}
+</p>
+
+
+<h3>
+    وضعیت:
+</h3>
+
+<p>
+    {{ session.get_status_display }}
+</p>
+
+<hr>
 
 <form method="post">
     {% csrf_token %}
@@ -22,7 +57,7 @@
     {{ form.as_p }}
 
     <button type="submit">
-        ثبت نتیجه
+       ثبت عملکرد
     </button>
 </form>
 
