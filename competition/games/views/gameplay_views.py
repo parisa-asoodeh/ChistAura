@@ -1,3 +1,4 @@
+from ..quiz_service import QuizService
 from django.shortcuts import render
 
 from django.shortcuts import (
@@ -73,11 +74,14 @@ def game_play(request, session_id):
 
         form = GameResultForm()
 
+        questions = QuizService.get_questions_for_session(session)
+
     return render(
         request,
         "games/game_play.html",
         {
             "session": session,
             "form": form,
+            "questions": questions,
         }
     )

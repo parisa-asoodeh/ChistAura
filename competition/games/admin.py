@@ -1,10 +1,14 @@
 from django.contrib import admin
 from django.contrib import messages
 
-from .models import Match
 from .services import MatchService
 from .models import Match, MatchPlayerScore
 
+from .quiz_models import (
+    QuizCategory,
+    QuizQuestion,
+    QuizMatchQuestion,
+)
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
@@ -52,4 +56,41 @@ class MatchPlayerScoreAdmin(admin.ModelAdmin):
     search_fields = (
         'user__username',
         'team__name',
+    )
+
+
+@admin.register(QuizCategory)
+class QuizCategoryAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'name',
+    )
+
+
+@admin.register(QuizQuestion)
+class QuizQuestionAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'question',
+        'category',
+        'is_active',
+    )
+
+    list_filter = (
+        'category',
+        'is_active',
+    )
+
+
+@admin.register(QuizMatchQuestion)
+class QuizMatchQuestionAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'match',
+        'question',
+        'order',
+    )
+
+    list_filter = (
+        'match',
     )

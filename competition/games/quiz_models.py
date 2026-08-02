@@ -1,4 +1,5 @@
 from django.db import models
+from .models import Match
 
 class QuizCategory(models.Model):
 
@@ -69,3 +70,45 @@ class QuizQuestion(models.Model):
 
     def __str__(self):
         return self.question
+    
+
+
+class QuizMatchQuestion(models.Model):
+
+    match = models.ForeignKey(
+        Match,
+        on_delete=models.CASCADE,
+        related_name="quiz_questions",
+        verbose_name="مسابقه"
+    )
+
+    question = models.ForeignKey(
+        QuizQuestion,
+        on_delete=models.CASCADE,
+        related_name="matches",
+        verbose_name="سؤال"
+    )
+
+    order = models.PositiveIntegerField(
+        verbose_name="ترتیب سؤال"
+    )
+
+
+    class Meta:
+
+        ordering = [
+            "order"
+        ]
+
+        unique_together = (
+            "match",
+            "question",
+        )
+
+
+    def __str__(self):
+
+        return (
+            f"{self.match.id} - "
+            f"{self.question.question[:30]}"
+        )

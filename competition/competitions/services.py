@@ -5,6 +5,10 @@ from .models import TournamentTeam
 from games.models import Match
 from django.utils import timezone
 
+from games.quiz_match_question_service import (
+    QuizMatchQuestionService,
+)
+
 
 class TournamentService:
 
@@ -108,6 +112,12 @@ class TournamentService:
         for match in matches:
 
             match.save()
+
+            if match.tournament.game_type.key == "quiz":
+
+                QuizMatchQuestionService.create_questions_for_match(
+                    match
+                )
 
             GameSessionCreationService.create_sessions(
                 match
