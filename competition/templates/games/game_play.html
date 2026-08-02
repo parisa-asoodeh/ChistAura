@@ -53,39 +53,35 @@
 
 <h3>سؤال‌های مسابقه</h3>
 
-{% for item in questions %}
-
-<div style="margin-bottom:25px;">
-
-    <h4>
-        {{ item.order }}.
-        {{ item.question.question }}
-    </h4>
-
-    <ul>
-        <li>A) {{ item.question.option_a }}</li>
-        <li>B) {{ item.question.option_b }}</li>
-        <li>C) {{ item.question.option_c }}</li>
-        <li>D) {{ item.question.option_d }}</li>
-    </ul>
-
-</div>
-
-{% empty %}
-
-<p>برای این مسابقه سؤالی تعریف نشده است.</p>
-
-{% endfor %}
-<hr>
-
 <form method="post">
+
     {% csrf_token %}
 
-    {{ form.as_p }}
+    {% for field in form %}
+
+        <div style="margin-bottom:25px;">
+
+            <h4>
+                {{ field.label }}
+            </h4>
+
+            {{ field }}
+
+            {% if field.errors %}
+                {{ field.errors }}
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
 
     <button type="submit">
-       ثبت عملکرد
+        ثبت پاسخ‌ها
     </button>
+
 </form>
+<hr>
+
+
 
 {% endblock %}

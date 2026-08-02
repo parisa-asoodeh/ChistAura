@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import (
 from ..models import GameSession
 from django.shortcuts import redirect
 
-from ..forms import GameResultForm
+from ..quiz_forms import QuizPlayForm
 
 from ..session_service import (
     GameSessionService
@@ -49,7 +49,12 @@ def game_play(request, session_id):
 
     if request.method == "POST":
 
-        form = GameResultForm(request.POST)
+        questions = QuizPlayService.build(session)["questions"]
+
+        form = QuizPlayForm(
+            questions,
+            request.POST
+        )
 
         if form.is_valid():
 
@@ -73,13 +78,17 @@ def game_play(request, session_id):
 
     else:
 
-        form = GameResultForm()
+        questions = QuizPlayService.build(session)["questions"]
 
-    context = QuizPlayService.build(
-        session
-    )
+        form = QuizPlayForm(
+            questions
+        )
 
-    context["form"] = form
+    context = {
+        "session": session,
+        "questions": questions,
+        "form": form,
+    }
 
     return render(
         request,
