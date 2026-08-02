@@ -1,4 +1,3 @@
-from ..quiz_service import QuizService
 from django.shortcuts import render
 
 from django.shortcuts import (
@@ -17,6 +16,8 @@ from ..session_service import (
     GameSessionService
 )
 from django.core.exceptions import ValidationError
+
+from ..quiz_play_service import QuizPlayService
 
 
 @login_required
@@ -74,14 +75,14 @@ def game_play(request, session_id):
 
         form = GameResultForm()
 
-        questions = QuizService.get_questions_for_session(session)
+    context = QuizPlayService.build(
+        session
+    )
+
+    context["form"] = form
 
     return render(
         request,
         "games/game_play.html",
-        {
-            "session": session,
-            "form": form,
-            "questions": questions,
-        }
+        context
     )

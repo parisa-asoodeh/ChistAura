@@ -112,3 +112,64 @@ class QuizMatchQuestion(models.Model):
             f"{self.match.id} - "
             f"{self.question.question[:30]}"
         )
+
+
+class QuizAnswer(models.Model):
+
+    session = models.ForeignKey(
+        "GameSession",
+        on_delete=models.CASCADE,
+        related_name="quiz_answers",
+        verbose_name="جلسه بازی",
+    )
+
+    match_question = models.ForeignKey(
+        QuizMatchQuestion,
+        on_delete=models.CASCADE,
+        related_name="answers",
+        verbose_name="سؤال مسابقه",
+    )
+
+    selected_answer = models.CharField(
+        max_length=1,
+        choices=[
+            ("A", "A"),
+            ("B", "B"),
+            ("C", "C"),
+            ("D", "D"),
+        ],
+        verbose_name="پاسخ انتخاب‌شده",
+    )
+
+    is_correct = models.BooleanField(
+        default=False,
+        verbose_name="درست است؟",
+    )
+
+    answered_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="زمان پاسخ",
+    )
+
+    class Meta:
+
+        unique_together = (
+            "session",
+            "match_question",
+        )
+
+    def save(self, *args, **kwargs):
+
+        self.is_correct = (
+            self.selected_answer ==
+            self.match_question.question.correct_answer
+        )
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+
+        return (
+            f"{self.session.user.username} - "
+            f"{self.match_question.order}"
+        )
