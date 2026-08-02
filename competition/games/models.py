@@ -246,3 +246,6 @@ class GameSession(models.Model):
             f"{self.user.username}"
             f" - Match {self.match_id}"
         )
+    
+
+from .quiz_models import *

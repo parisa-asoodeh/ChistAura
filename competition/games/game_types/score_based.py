@@ -38,3 +38,15 @@ class ScoreBasedGameType:
             return match.team2
 
         return None
+
+    @classmethod
+    def process_submission(
+        cls,
+        data,
+    ):
+        """
+        Convert game-specific submission data
+        into raw_score and completion_time.
+        """
+
+        raise NotImplementedError
