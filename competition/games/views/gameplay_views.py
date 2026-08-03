@@ -19,6 +19,10 @@ from django.core.exceptions import ValidationError
 
 from ..quiz_play_service import QuizPlayService
 
+from ..quiz_submission_service import QuizSubmissionService
+
+from django.utils import timezone
+
 
 @login_required
 def game_play(request, session_id):
@@ -27,6 +31,19 @@ def game_play(request, session_id):
         GameSession,
         id=session_id
     )
+
+    if session.started_at is None:
+
+        session.started_at = timezone.now()
+        session.status = "started"
+
+        session.save(
+            update_fields=[
+                "started_at",
+                "status",
+            ]
+        )
+
 
     if session.user != request.user:
         return render(
@@ -57,24 +74,25 @@ def game_play(request, session_id):
         )
 
         if form.is_valid():
+            print("FORM VALID")
 
             try:
-                GameSessionService.complete_session(
+                QuizSubmissionService.submit(
                     session=session,
-                    raw_score=form.cleaned_data["raw_score"],
-                    completion_time=form.cleaned_data["completion_time"],
+                    form=form,
                 )
+                print("SUBMISSION SUCCESS")
 
                 return redirect(
                     "match_detail",
                     match_id=session.match.id
                 )
 
-            except ValidationError as e:
-                form.add_error(
-                    None,
-                    e.message
-                )
+            except Exception as e:
+
+                print("SUBMISSION ERROR:", e)
+
+                raise
 
     else:
 
