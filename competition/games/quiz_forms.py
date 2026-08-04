@@ -17,13 +17,7 @@ class QuizPlayForm(forms.Form):
             **kwargs
         )
 
-        answers = {}
-
-        if resume_state:
-            answers = resume_state.get(
-                "answers",
-                {}
-            )
+        answers = resume_state or {}
 
         for item in questions:
 
