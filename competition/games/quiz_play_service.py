@@ -1,4 +1,5 @@
 from .quiz_models import QuizMatchQuestion
+from .game_resume_service import GameResumeService
 
 
 class QuizPlayService:
@@ -19,7 +20,12 @@ class QuizPlayService:
             )
         )
 
+        resume_state = GameResumeService.load(
+            session
+        )
+
         return {
             "session": session,
             "questions": questions,
+            "resume_state": resume_state,
         }

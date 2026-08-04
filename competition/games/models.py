@@ -248,4 +248,29 @@ class GameSession(models.Model):
         )
     
 
+class GameSessionState(models.Model):
+
+    session = models.OneToOneField(
+        GameSession,
+        on_delete=models.CASCADE,
+        related_name="resume_state",
+        verbose_name="جلسه بازی",
+    )
+
+    state = models.JSONField(
+        default=dict,
+        verbose_name="وضعیت بازی",
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="آخرین بروزرسانی",
+    )
+
+    def __str__(self):
+
+        return (
+            f"Resume State - Session {self.session.id}"
+        )
+    
 from .quiz_models import *

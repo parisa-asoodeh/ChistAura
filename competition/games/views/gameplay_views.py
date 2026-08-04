@@ -96,10 +96,15 @@ def game_play(request, session_id):
 
     else:
 
-        questions = QuizPlayService.build(session)["questions"]
+        data = QuizPlayService.build(session)
+
+        questions = data["questions"]
+
+        resume_state = data["resume_state"]
 
         form = QuizPlayForm(
-            questions
+            questions,
+            resume_state=resume_state,
         )
 
     context = {

@@ -7,6 +7,7 @@ class QuizPlayForm(forms.Form):
     def __init__(
         self,
         questions,
+        resume_state=None,
         *args,
         **kwargs
     ):
@@ -15,6 +16,14 @@ class QuizPlayForm(forms.Form):
             *args,
             **kwargs
         )
+
+        answers = {}
+
+        if resume_state:
+            answers = resume_state.get(
+                "answers",
+                {}
+            )
 
         for item in questions:
 
@@ -30,4 +39,7 @@ class QuizPlayForm(forms.Form):
                 ],
                 widget=forms.RadioSelect,
                 required=True,
+                initial=answers.get(
+                    str(item.id)
+                ),
             )
