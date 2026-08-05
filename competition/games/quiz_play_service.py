@@ -1,6 +1,7 @@
 from .quiz_models import QuizMatchQuestion
 from .game_resume_service import GameResumeService
 from .state_serializers.quiz import QuizStateSerializer
+import time
 
 
 class QuizPlayService:
@@ -32,5 +33,5 @@ class QuizPlayService:
         return {
             "session": session,
             "questions": questions,
-            "resume_state": answers,
+            "resume_state": resume_state,
         }

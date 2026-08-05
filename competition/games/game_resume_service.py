@@ -21,16 +21,19 @@ class GameResumeService:
 
     @staticmethod
     def load(
-        session: GameSession,
+        session,
     ):
 
         try:
 
-            return session.resume_state.state
+            return GameSessionState.objects.get(
+                session=session
+            ).state
 
         except GameSessionState.DoesNotExist:
 
             return {}
+
 
     @staticmethod
     def clear(

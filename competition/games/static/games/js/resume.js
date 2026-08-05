@@ -58,8 +58,10 @@ class ResumeEngine {
                     method: "POST",
 
                     headers: {
-                        "Content-Type":
-                            "application/json",
+                        "Content-Type": "application/json",
+
+                        "X-CSRFToken":
+                            RESUME_CONFIG.csrfToken,
                     },
 
                     body: JSON.stringify(

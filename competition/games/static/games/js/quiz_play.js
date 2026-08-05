@@ -46,3 +46,22 @@ console.log(
     "RESUME ENGINE:",
     resumeEngine
 );
+
+document
+    .querySelectorAll(
+        "input[type='radio']"
+    )
+    .forEach(
+        (input) => {
+
+            input.addEventListener(
+                "change",
+                () => {
+
+                    resumeEngine.scheduleSave();
+
+                }
+            );
+
+        }
+    );

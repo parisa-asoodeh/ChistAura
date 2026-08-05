@@ -93,6 +93,7 @@
     const RESUME_CONFIG = {
         sessionId: "{{ session.id }}",
         saveUrl: "{% url 'game_state_update' session.id %}",
+        csrfToken: "{{ csrf_token }}",
     };
 </script>
 

@@ -23,6 +23,8 @@ from ..quiz_submission_service import QuizSubmissionService
 
 from django.utils import timezone
 
+from ..models import GameSessionState
+
 
 @login_required
 def game_play(request, session_id):
