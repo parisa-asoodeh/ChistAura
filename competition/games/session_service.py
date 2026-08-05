@@ -11,6 +11,7 @@ from .game_types.registry import (
 from .scoring import (
     MatchScoringService,
 )
+from .game_resume_service import GameResumeService
 
 
 class GameSessionService:
@@ -92,6 +93,10 @@ class GameSessionService:
                 'finished_at',
             ]
         )
+        GameResumeService.clear(
+            session
+        )
+
         if MatchScoringService.can_finalize(
             session.match
         ):

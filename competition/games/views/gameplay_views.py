@@ -72,29 +72,20 @@ def game_play(request, session_id):
 
         form = QuizPlayForm(
             questions,
-            request.POST
+            data=request.POST
         )
 
         if form.is_valid():
-            print("FORM VALID")
 
-            try:
-                QuizSubmissionService.submit(
-                    session=session,
-                    form=form,
-                )
-                print("SUBMISSION SUCCESS")
+            QuizSubmissionService.submit(
+                session=session,
+                form=form,
+            )
 
-                return redirect(
-                    "match_detail",
-                    match_id=session.match.id
-                )
-
-            except Exception as e:
-
-                print("SUBMISSION ERROR:", e)
-
-                raise
+            return redirect(
+                "match_detail",
+                match_id=session.match.id
+            )
 
     else:
 

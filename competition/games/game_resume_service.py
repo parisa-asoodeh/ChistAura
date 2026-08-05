@@ -40,6 +40,6 @@ class GameResumeService:
         session: GameSession,
     ):
 
-        GameSessionState.objects.filter(
+        deleted = GameSessionState.objects.filter(
             session=session
         ).delete()
