@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}
 بازی
 {% endblock %}
@@ -83,5 +85,18 @@
 <hr>
 
 
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    const RESUME_CONFIG = {
+        sessionId: "{{ session.id }}",
+        saveUrl: "{% url 'game_state_update' session.id %}",
+    };
+</script>
+
+<script src="{% static 'games/js/resume.js' %}"></script>
+<script src="{% static 'games/js/quiz_play.js' %}"></script>
 
 {% endblock %}
