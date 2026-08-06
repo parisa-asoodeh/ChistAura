@@ -23,6 +23,37 @@ class GameType(models.Model):
         return self.name
     
 
+class Subject(models.Model):
+
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+    )
+
+    slug = models.SlugField(
+        max_length=100,
+        unique=True,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    
 
 class Tournament(models.Model):
 
@@ -75,6 +106,14 @@ class Tournament(models.Model):
     on_delete=models.PROTECT,
     related_name='tournaments',
     verbose_name='نوع بازی'
+    )
+
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.PROTECT,
+        related_name="tournaments",
+        null=True,
+        blank=True,
     )
 
     def __str__(self):

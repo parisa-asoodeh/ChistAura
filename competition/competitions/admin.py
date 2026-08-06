@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib import messages
 
-from .models import Tournament, TournamentTeam, GameType
+from .models import Tournament, TournamentTeam, GameType, Subject
 from .services import TournamentService
 
 
@@ -93,4 +93,22 @@ class GameTypeAdmin(admin.ModelAdmin):
 
     list_display = (
         'name',
+    )
+
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "name",
+        "is_active",
+        "created_at",
+    )
+
+    search_fields = (
+        "name",
+    )
+
+    list_filter = (
+        "is_active",
     )
