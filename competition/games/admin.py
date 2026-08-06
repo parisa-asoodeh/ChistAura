@@ -63,20 +63,85 @@ class MatchPlayerScoreAdmin(admin.ModelAdmin):
     )
 
 
+class SubjectFilter(admin.SimpleListFilter):
 
+    title = "موضوع"
+
+    parameter_name = "subject"
+
+    def lookups(self, request, model_admin):
+        from competitions.models import Subject
+
+        return [
+            (subject.id, subject.name)
+            for subject in Subject.objects.all()
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                category__subject_id=self.value()
+            )
+
+        return queryset
+
+
+class CategoryFilter(admin.SimpleListFilter):
+
+    title = "دسته‌بندی"
+
+    parameter_name = "category"
+
+    def lookups(self, request, model_admin):
+        from competitions.models import Category
+
+        return [
+            (category.id, str(category))
+            for category in Category.objects.all()
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                category_id=self.value()
+            )
+
+        return queryset
+
+    
 @admin.register(QuizQuestion)
 class QuizQuestionAdmin(admin.ModelAdmin):
 
     list_display = (
-        'question',
+        'get_subject',
         'category',
+        'short_question',
+        'difficulty',
         'is_active',
     )
 
     list_filter = (
-        'category',
+        SubjectFilter,
+        CategoryFilter,
+        'difficulty',
         'is_active',
     )
+
+    search_fields = (
+        'question',
+        'category__name',
+        'category__subject__name',
+    )
+
+    def short_question(self, obj):
+        return obj.question[:50]
+
+    short_question.short_description = "سؤال"
+
+    def get_subject(self, obj):
+        return obj.category.subject.name
+
+    get_subject.short_description = "موضوع"
 
 
 @admin.register(QuizMatchQuestion)
