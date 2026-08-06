@@ -83,8 +83,8 @@ def game_play(request, session_id):
             )
 
             return redirect(
-                "match_detail",
-                match_id=session.match.id
+                "game_result",
+                session_id=session.id,
             )
 
     else:

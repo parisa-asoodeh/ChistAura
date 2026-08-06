@@ -3,3 +3,4 @@ from .match_views import *
 from .leaderboard_views import *
 from .gameplay_views import *
 from .state_views import *
+from .game_result import *

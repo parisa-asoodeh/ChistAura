@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}
+نتیجه بازی
+{% endblock %}
+
+{% block content %}
+
+<h2>نتیجه بازی</h2>
+
+<hr>
+
+<p>
+<strong>بازیکن:</strong>
+{{ session.user.username }}
+</p>
+
+<p>
+<strong>نوع بازی:</strong>
+{{ session.match.tournament.game_type.name }}
+</p>
+
+<p>
+<strong>امتیاز خام:</strong>
+{{ session.raw_score }}
+</p>
+
+<p>
+<strong>امتیاز نهایی:</strong>
+{{ player_score.score }}
+</p>
+
+<p>
+<strong>پاسخ صحیح:</strong>
+{{ session.raw_score }}
+از
+{{ question_count }}
+</p>
+
+<p>
+<strong>زمان:</strong>
+{{ session.completion_time }}
+</p>
+
+<p>
+<strong>وضعیت:</strong>
+{{ session.get_status_display }}
+</p>
+
+<hr>
+
+<a href="{% url 'match_detail' session.match.id %}">
+بازگشت به مسابقه
+</a>
+
+{% endblock %}

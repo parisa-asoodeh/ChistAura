@@ -13,4 +13,5 @@ urlpatterns = [
     path('players/',player_leaderboard,name='player_leaderboard'),
     path('sessions/<int:session_id>/play/',game_play,name='game_play'),
     path('sessions/<int:session_id>/state/',GameStateUpdateView.as_view(),name='game_state_update'),
+    path("sessions/<int:session_id>/result/",game_result,name="game_result"),
 ]
