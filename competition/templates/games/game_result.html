@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load game_filters %}
+
 {% block title %}
 نتیجه بازی
 {% endblock %}
@@ -39,7 +41,7 @@
 
 <p>
 <strong>زمان:</strong>
-{{ session.completion_time }}
+{{ session.completion_time|duration }}
 </p>
 
 <p>

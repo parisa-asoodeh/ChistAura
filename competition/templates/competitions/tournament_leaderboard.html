@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load game_filters %}
+
 {% block content %}
 
 <h2>
@@ -16,7 +18,7 @@
     <th>مساوی</th>
     <th>باخت</th>
     <th>اختلاف امتیاز</th>
-    <th>زمان کل (ثانیه)</th>
+    <th>زمان کل</th>
 </tr>
 
 {% for row in table %}
@@ -52,7 +54,7 @@
 </td>
 
 <td>
-{{ row.total_time }}
+{{ row.total_time|duration }}
 </td>
 
 </tr>
