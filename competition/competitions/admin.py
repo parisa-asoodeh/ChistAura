@@ -1,7 +1,14 @@
 from django.contrib import admin
 from django.contrib import messages
 
-from .models import Tournament, TournamentTeam, GameType, Subject
+from .models import (
+    Tournament,
+    TournamentTeam,
+    GameType,
+    Subject,
+    Category,
+)
+
 from .services import TournamentService
 
 
@@ -110,5 +117,26 @@ class SubjectAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
+        "is_active",
+    )
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "name",
+        "subject",
+        "is_active",
+        "created_at",
+    )
+
+    search_fields = (
+        "name",
+        "subject__name",
+    )
+
+    list_filter = (
+        "subject",
         "is_active",
     )
