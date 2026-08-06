@@ -1,16 +1,6 @@
 from django.db import models
 from .models import Match
-
-class QuizCategory(models.Model):
-
-    name = models.CharField(
-        max_length=100,
-        unique=True,
-        verbose_name="دسته‌بندی"
-    )
-
-    def __str__(self):
-        return self.name
+from competitions.models import Category
 
 
 class QuizQuestion(models.Model):
@@ -22,9 +12,9 @@ class QuizQuestion(models.Model):
     ]
 
     category = models.ForeignKey(
-        QuizCategory,
-        on_delete=models.CASCADE,
-        related_name="questions",
+        Category,
+        on_delete=models.PROTECT,
+        related_name="quiz_questions",
         verbose_name="دسته‌بندی",
     )
 

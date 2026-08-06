@@ -5,10 +5,14 @@ from .services import MatchService
 from .models import Match, MatchPlayerScore
 
 from .quiz_models import (
-    QuizCategory,
     QuizQuestion,
     QuizMatchQuestion,
 )
+
+from competitions.models import (
+    Category,
+)
+
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
@@ -58,13 +62,6 @@ class MatchPlayerScoreAdmin(admin.ModelAdmin):
         'team__name',
     )
 
-
-@admin.register(QuizCategory)
-class QuizCategoryAdmin(admin.ModelAdmin):
-
-    list_display = (
-        'name',
-    )
 
 
 @admin.register(QuizQuestion)
