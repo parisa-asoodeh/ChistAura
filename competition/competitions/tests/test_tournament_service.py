@@ -25,6 +25,9 @@ from games.models import (
     GameSession,
 )
 
+from competitions.models import Subject, Category
+from games.quiz_models import QuizQuestion, QuizMatchQuestion
+
 
 class TournamentServiceTest(TestCase):
 
@@ -350,4 +353,54 @@ class TournamentServiceTest(TestCase):
                 match__tournament=self.tournament,
             ).count(),
             6,
+        )
+
+
+    def test_start_tournament_creates_quiz_questions_for_matches(self):
+
+        subject = Subject.objects.create(
+            name="Chemistry",
+            slug="chemistry",
+        )
+
+        Category.objects.create(
+            subject=subject,
+            name="Periodic Table",
+            slug="periodic-table",
+            is_active=True,
+        )
+
+        self.tournament.subject = subject
+        self.tournament.save()
+
+        for index in range(10):
+            QuizQuestion.objects.create(
+                category=subject.categories.first(),
+                question=f"Question {index}",
+                option_a="A",
+                option_b="B",
+                option_c="C",
+                option_d="D",
+                correct_answer="A",
+                difficulty="easy",
+                is_active=True,
+            )
+
+        TournamentService.start_tournament(
+            self.tournament,
+        )
+
+        matches = Match.objects.filter(
+            tournament=self.tournament
+        )
+
+        self.assertTrue(
+            matches.exists()
+        )
+
+        self.assertEqual(
+            QuizMatchQuestion.objects.filter(
+                match__tournament=self.tournament
+            ).count(),
+            matches.count() * 10,
         )

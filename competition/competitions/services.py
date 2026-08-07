@@ -109,15 +109,31 @@ class TournamentService:
             GameSessionCreationService,
         )
 
+        from competitions.models import Category
         for match in matches:
 
             match.save()
 
             if match.tournament.game_type.key == "quiz":
 
-                QuizMatchQuestionService.create_questions_for_match(
-                    match
-                )
+                category = None
+
+                if match.tournament.subject:
+
+                    category = (
+                        match.tournament.subject.categories
+                        .filter(is_active=True)
+                        .first()
+                    )
+
+                if category:
+
+                    QuizMatchQuestionService.create_questions_for_match(
+                        match=match,
+                        category=category,
+                        difficulty="easy",
+                        count=10,
+                    )
 
             GameSessionCreationService.create_sessions(
                 match
