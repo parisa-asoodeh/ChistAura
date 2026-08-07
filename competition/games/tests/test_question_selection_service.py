@@ -1,8 +1,20 @@
 from django.test import TestCase
 
-from competitions.models import Subject, Category
+from competitions.models import (
+    Subject,
+    Category,
+    Tournament,
+    GameType,
+)
+from games.models import Match
 from games.question_selection_service import QuestionSelectionService
-from games.quiz_models import QuizQuestion
+from games.quiz_models import (
+    QuizQuestion,
+    QuizMatchQuestion,
+)
+from teams.models import Team
+from accounts.models import CustomUser
+
 
 
 class QuestionSelectionServiceTest(TestCase):
@@ -18,6 +30,17 @@ class QuestionSelectionServiceTest(TestCase):
             subject=subject,
             name="Periodic Table",
             slug="periodic-table",
+        )
+
+        game_type = GameType.objects.create(
+            name="Quiz",
+            key="quiz",
+        )
+
+        tournament = Tournament.objects.create(
+            name="Chemistry Tournament",
+            subject=subject,
+            game_type=game_type,
         )
 
         matching_question = QuizQuestion.objects.create(
@@ -45,6 +68,7 @@ class QuestionSelectionServiceTest(TestCase):
         )
 
         questions = QuestionSelectionService.select_questions(
+            tournament=tournament,
             category=category,
             difficulty="easy",
             count=10,
@@ -79,6 +103,17 @@ class QuestionSelectionServiceTest(TestCase):
             slug="algebra",
         )
 
+        game_type = GameType.objects.create(
+            name="Quiz",
+            key="quiz",
+        )
+
+        tournament = Tournament.objects.create(
+            name="Math Tournament",
+            subject=subject,
+            game_type=game_type,
+        )
+
         for index in range(5):
             QuizQuestion.objects.create(
                 category=category,
@@ -93,6 +128,7 @@ class QuestionSelectionServiceTest(TestCase):
             )
 
         questions = QuestionSelectionService.select_questions(
+            tournament=tournament,
             category=category,
             difficulty="easy",
             count=3,
@@ -113,3 +149,96 @@ class QuestionSelectionServiceTest(TestCase):
                 question.difficulty,
                 "easy",
             )
+
+
+    def test_used_questions_are_excluded_for_same_tournament(self):
+
+        subject = Subject.objects.create(
+            name="Physics",
+            slug="physics",
+        )
+
+        category = Category.objects.create(
+            subject=subject,
+            name="Mechanics",
+            slug="mechanics",
+        )
+
+        game_type = GameType.objects.create(
+            name="Quiz",
+            key="quiz",
+        )
+
+        tournament = Tournament.objects.create(
+            name="Physics Tournament",
+            subject=subject,
+            game_type=game_type,
+        )
+
+
+        captain1 = CustomUser.objects.create_user(
+            username="captain1",
+            password="testpass123",
+        )
+
+        captain2 = CustomUser.objects.create_user(
+            username="captain2",
+            password="testpass123",
+        )
+
+
+        team1 = Team.objects.create(
+            name="Team 1",
+            captain=captain1,
+        )
+
+        team2 = Team.objects.create(
+            name="Team 2",
+            captain=captain2,
+        )
+
+
+        match = Match.objects.create(
+            tournament=tournament,
+            team1=team1,
+            team2=team2,
+        )
+
+
+        questions = []
+
+        for index in range(5):
+            questions.append(
+                QuizQuestion.objects.create(
+                    category=category,
+                    question=f"Physics Question {index}",
+                    option_a="A",
+                    option_b="B",
+                    option_c="C",
+                    option_d="D",
+                    correct_answer="A",
+                    difficulty="easy",
+                    is_active=True,
+                )
+            )
+
+
+        QuizMatchQuestion.objects.create(
+            match=match,
+            question=questions[0],
+            order=1,
+        )
+
+
+        selected_questions = QuestionSelectionService.select_questions(
+            tournament=tournament,
+            category=category,
+            difficulty="easy",
+            count=4,
+        )
+
+
+        self.assertNotIn(
+            questions[0],
+            selected_questions,
+        )

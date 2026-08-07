@@ -1,6 +1,9 @@
 import random
 
-from games.quiz_models import QuizQuestion
+from games.quiz_models import (
+    QuizQuestion,
+    QuizMatchQuestion,
+)
 
 
 class QuestionSelectionService:
@@ -9,11 +12,13 @@ class QuestionSelectionService:
     def select_questions(
         cls,
         *,
+        tournament,
         category,
         difficulty,
         count,
     ):
         questions = cls._filter_questions(
+            tournament=tournament,
             category=category,
             difficulty=difficulty,
         )
@@ -26,13 +31,24 @@ class QuestionSelectionService:
     @staticmethod
     def _filter_questions(
         *,
+        tournament,
         category,
         difficulty,
     ):
+        used_question_ids = QuizMatchQuestion.objects.filter(
+            match__tournament=tournament,
+        ).values_list(
+            "question_id",
+            flat=True,
+        )
+
+
         return QuizQuestion.objects.filter(
             category=category,
             difficulty=difficulty,
             is_active=True,
+        ).exclude(
+            id__in=used_question_ids,
         )
 
     @staticmethod
