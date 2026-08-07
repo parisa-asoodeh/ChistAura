@@ -242,3 +242,92 @@ class QuestionSelectionServiceTest(TestCase):
             questions[0],
             selected_questions,
         )
+
+
+    def test_select_questions_by_difficulty_distribution(self):
+
+        subject = Subject.objects.create(
+            name="Biology",
+            slug="biology",
+        )
+
+        category = Category.objects.create(
+            subject=subject,
+            name="Cells",
+            slug="cells",
+        )
+
+
+        for index in range(3):
+
+            QuizQuestion.objects.create(
+                category=category,
+                question=f"Easy {index}",
+                option_a="A",
+                option_b="B",
+                option_c="C",
+                option_d="D",
+                correct_answer="A",
+                difficulty="easy",
+                is_active=True,
+            )
+
+
+        for index in range(3):
+
+            QuizQuestion.objects.create(
+                category=category,
+                question=f"Hard {index}",
+                option_a="A",
+                option_b="B",
+                option_c="C",
+                option_d="D",
+                correct_answer="A",
+                difficulty="hard",
+                is_active=True,
+            )
+
+
+        game_type = GameType.objects.create(
+            name="Quiz",
+            key="quiz",
+        )
+
+        tournament = Tournament.objects.create(
+            name="Biology Tournament",
+            game_type=game_type,
+            subject=subject,
+        )
+        
+        questions = QuestionSelectionService.select_questions_by_difficulty(
+            tournament=tournament,
+            category=category,
+            difficulty_distribution={
+                "easy": 2,
+                "hard": 1,
+            },
+        )
+
+
+        self.assertEqual(
+            len(questions),
+            3,
+        )
+
+
+        difficulties = [
+            question.difficulty
+            for question in questions
+        ]
+
+
+        self.assertEqual(
+            difficulties.count("easy"),
+            2,
+        )
+
+
+        self.assertEqual(
+            difficulties.count("hard"),
+            1,
+        )

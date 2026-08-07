@@ -72,3 +72,34 @@ class QuestionSelectionService:
         return QuizQuestion.objects.filter(
             id__in=selected_ids,
         )
+
+
+    @classmethod
+    def select_questions_by_difficulty(
+        cls,
+        *,
+        tournament,
+        category,
+        difficulty_distribution,
+    ):
+
+        selected_questions = []
+
+        for difficulty, count in difficulty_distribution.items():
+
+            questions = cls.select_questions(
+                tournament=tournament,
+                category=category,
+                difficulty=difficulty,
+                count=count,
+            )
+
+            selected_questions.extend(
+                questions
+            )
+
+        random.shuffle(
+            selected_questions
+        )
+
+        return selected_questions
