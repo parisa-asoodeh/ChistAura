@@ -76,7 +76,7 @@ class QuizMatchQuestionServiceTest(TestCase):
 
         QuizMatchQuestionService.create_questions_for_match(
             match=match,
-            category=category,
+            categories=[category],
             difficulty="easy",
             count=3,
         )
@@ -191,7 +191,7 @@ class QuizMatchQuestionServiceTest(TestCase):
 
         QuizMatchQuestionService.create_questions_for_match(
             match=match1,
-            category=category,
+            categories=[category],
             difficulty="easy",
             count=3,
         )
@@ -199,7 +199,7 @@ class QuizMatchQuestionServiceTest(TestCase):
 
         QuizMatchQuestionService.create_questions_for_match(
             match=match2,
-            category=category,
+            categories=[category],
             difficulty="easy",
             count=3,
         )

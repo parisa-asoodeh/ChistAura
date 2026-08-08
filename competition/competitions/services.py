@@ -123,14 +123,17 @@ class TournamentService:
                     category = (
                         match.tournament.subject.categories
                         .filter(is_active=True)
-                        .first()
                     )
 
                 if category:
 
                     QuizMatchQuestionService.create_questions_for_match(
                         match=match,
-                        category=category,
+                        categories=list(
+                            match.tournament.subject.categories.filter(
+                                is_active=True,
+                            )
+                        ),
                         difficulty="easy",
                         count=10,
                     )

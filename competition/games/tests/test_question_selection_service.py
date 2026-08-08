@@ -15,6 +15,7 @@ from games.quiz_models import (
 from teams.models import Team
 from accounts.models import CustomUser
 
+from competitions.models import GameType, Tournament
 
 
 class QuestionSelectionServiceTest(TestCase):
@@ -69,7 +70,7 @@ class QuestionSelectionServiceTest(TestCase):
 
         questions = QuestionSelectionService.select_questions(
             tournament=tournament,
-            category=category,
+            categories=[category],
             difficulty="easy",
             count=10,
         )
@@ -129,7 +130,7 @@ class QuestionSelectionServiceTest(TestCase):
 
         questions = QuestionSelectionService.select_questions(
             tournament=tournament,
-            category=category,
+            categories=[category],
             difficulty="easy",
             count=3,
         )
@@ -232,7 +233,7 @@ class QuestionSelectionServiceTest(TestCase):
 
         selected_questions = QuestionSelectionService.select_questions(
             tournament=tournament,
-            category=category,
+            categories=[category],
             difficulty="easy",
             count=4,
         )
@@ -301,7 +302,7 @@ class QuestionSelectionServiceTest(TestCase):
         
         questions = QuestionSelectionService.select_questions_by_difficulty(
             tournament=tournament,
-            category=category,
+            categories=[category],
             difficulty_distribution={
                 "easy": 2,
                 "hard": 1,
@@ -331,3 +332,80 @@ class QuestionSelectionServiceTest(TestCase):
             difficulties.count("hard"),
             1,
         )
+
+
+
+    def test_select_questions_returns_questions_from_multiple_categories(
+        self,
+    ):
+        subject = Subject.objects.create(
+            name="Chemistry",
+            slug="chemistry",
+        )
+
+        category1 = Category.objects.create(
+            subject=subject,
+            name="Periodic Table",
+            slug="periodic-table",
+        )
+
+        category2 = Category.objects.create(
+            subject=subject,
+            name="Organic Chemistry",
+            slug="organic-chemistry",
+        )
+
+        for index in range(3):
+            QuizQuestion.objects.create(
+                category=category1,
+                question=f"Periodic Question {index}",
+                option_a="A",
+                option_b="B",
+                option_c="C",
+                option_d="D",
+                correct_answer="A",
+                difficulty="easy",
+                is_active=True,
+            )
+
+        for index in range(3):
+            QuizQuestion.objects.create(
+                category=category2,
+                question=f"Organic Question {index}",
+                option_a="A",
+                option_b="B",
+                option_c="C",
+                option_d="D",
+                correct_answer="A",
+                difficulty="easy",
+                is_active=True,
+            )
+
+        game_type = GameType.objects.create(
+            name="Quiz",
+            key="quiz",
+        )
+
+        tournament = Tournament.objects.create(
+            name="Chemistry Tournament",
+            game_type=game_type,
+            subject=subject,
+        )
+
+        questions = QuestionSelectionService.select_questions(
+            tournament=tournament,
+            categories=[category1, category2],
+            difficulty="easy",
+            count=6,
+        )
+
+        self.assertEqual(
+            questions.count(),
+            6,
+        )
+
+        for question in questions:
+            self.assertIn(
+                question.category,
+                [category1, category2],
+            )

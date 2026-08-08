@@ -9,14 +9,14 @@ class QuizMatchQuestionService:
         cls,
         *,
         match,
-        category,
+        categories,
         difficulty,
         count,
     ):
 
         questions = QuestionSelectionService.select_questions(
             tournament=match.tournament,
-            category=category,
+            categories=categories,
             difficulty=difficulty,
             count=count,
         )
