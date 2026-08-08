@@ -154,6 +154,24 @@ class Tournament(models.Model):
         blank=True,
     )
 
+    QUESTION_DIFFICULTY_CHOICES = [
+        ('easy', 'آسان'),
+        ('medium', 'متوسط'),
+        ('hard', 'سخت'),
+    ]
+
+    question_difficulty = models.CharField(
+        max_length=10,
+        choices=QUESTION_DIFFICULTY_CHOICES,
+        default='easy',
+        verbose_name='درجه سختی سوالات',
+    )
+
+    question_count = models.PositiveIntegerField(
+        default=10,
+        verbose_name='تعداد سوالات هر مسابقه',
+    )
+
     def __str__(self):
         return self.name
 

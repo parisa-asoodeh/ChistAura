@@ -134,8 +134,8 @@ class TournamentService:
                                 is_active=True,
                             )
                         ),
-                        difficulty="easy",
-                        count=10,
+                        difficulty=match.tournament.question_difficulty,
+                        count=match.tournament.question_count,
                     )
 
             GameSessionCreationService.create_sessions(

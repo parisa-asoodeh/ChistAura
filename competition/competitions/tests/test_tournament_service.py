@@ -404,3 +404,74 @@ class TournamentServiceTest(TestCase):
             ).count(),
             matches.count() * 10,
         )
+
+
+    def test_start_tournament_uses_tournament_question_settings(
+        self,
+    ):
+        subject = Subject.objects.create(
+            name="Chemistry",
+            slug="chemistry",
+        )
+
+        category = Category.objects.create(
+            subject=subject,
+            name="Periodic Table",
+            slug="periodic-table",
+        )
+
+        for index in range(3):
+            QuizQuestion.objects.create(
+                category=category,
+                question=f"Medium Question {index}",
+                option_a="A",
+                option_b="B",
+                option_c="C",
+                option_d="D",
+                correct_answer="A",
+                difficulty="medium",
+                is_active=True,
+            )
+
+        tournament = Tournament.objects.create(
+            name="Medium Quiz Tournament",
+            game_type=self.game_type,
+            subject=subject,
+            question_difficulty="medium",
+            question_count=3,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=tournament,
+            team=self.team1,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=tournament,
+            team=self.team2,
+        )
+
+        # Act
+        TournamentService.start_tournament(
+            tournament,
+        )
+
+        match = Match.objects.get(
+            tournament=tournament,
+        )
+
+        quiz_questions = QuizMatchQuestion.objects.filter(
+            match=match,
+        )
+
+        # Assert
+        self.assertEqual(
+            quiz_questions.count(),
+            3,
+        )
+
+        for quiz_match_question in quiz_questions:
+            self.assertEqual(
+                quiz_match_question.question.difficulty,
+                "medium",
+            )
