@@ -67,25 +67,19 @@ class Team(models.Model):
     #برای جدا کردن امتیازهای تورنمنت ها در جدول های جدا
     def matches_in_tournament(self, tournament):
         return self.matches().filter(
-            tournament=tournament
+            round__tournament=tournament
         )
     
-    def get_wins_in_tournament(
-        self,
-        tournament
-    ):
+    def get_wins_in_tournament(self, tournament):
         return sum(
             1
             for match in self.won_matches.filter(
-                tournament=tournament
+                round__tournament=tournament
             )
             if match.is_complete
         )
     
-    def get_draws_in_tournament(
-        self,
-        tournament
-    ):
+    def get_draws_in_tournament(self, tournament):
         return sum(
             1
             for match in self.matches_in_tournament(
@@ -93,15 +87,11 @@ class Team(models.Model):
             )
             if (
                 match.is_complete
-                and
-                match.winner is None
+                and match.winner is None
             )
         )
     
-    def get_played_in_tournament(
-        self,
-        tournament
-    ):
+    def get_played_in_tournament(self, tournament):
         return sum(
             1
             for match in self.matches_in_tournament(
@@ -109,6 +99,7 @@ class Team(models.Model):
             )
             if match.is_complete
         )
+    
     
     def get_losses_in_tournament(self, tournament):
         return (
@@ -141,12 +132,16 @@ class Team(models.Model):
         tournament
     ):
         difference = 0
+
         matches = self.matches_in_tournament(
             tournament
         )
+
         for match in matches:
+
             if not match.is_complete:
                 continue
+
             if match.team1 == self:
                 difference += (
                     match.score_team1
@@ -159,6 +154,7 @@ class Team(models.Model):
                     -
                     match.score_team1
                 )
+
         return difference
     
 
@@ -166,22 +162,22 @@ class Team(models.Model):
         self,
         tournament
     ):
-
         from django.db.models import Sum
         from games.models import MatchPlayerScore
 
         total_time = (
             MatchPlayerScore.objects.filter(
-                match__tournament=tournament,
+                match__round__tournament=tournament,
                 team=self,
                 completion_time__isnull=False,
             )
             .aggregate(
                 total=Sum(
-                    'completion_time'
+                    "completion_time"
                 )
-            )['total']
+            )["total"]
         )
+
         return total_time or 0
 
 

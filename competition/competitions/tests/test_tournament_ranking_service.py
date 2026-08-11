@@ -13,6 +13,8 @@ from competitions.models import (
     Tournament,
     TournamentTeam,
     GameType,
+    Subject,
+    Round,
 )
 
 from competitions.ranking_service import (
@@ -75,8 +77,23 @@ class TournamentRankingServiceTest(TestCase):
             team=self.team2,
         )
 
-        self.match = Match.objects.create(
+        self.subject = Subject.objects.create(
+            name="Chemistry",
+            slug="chemistry",
+            is_active=True,
+        )
+
+        self.tournament.status = "active"
+        self.tournament.save()
+
+        self.round = Round.objects.create(
             tournament=self.tournament,
+            number=1,
+            subject=self.subject,
+        )
+
+        self.match = Match.objects.create(
+            round=self.round,
             team1=self.team1,
             team2=self.team2,
         )
