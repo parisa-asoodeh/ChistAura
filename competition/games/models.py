@@ -9,11 +9,22 @@ from django.conf import settings
 
 class Match(models.Model):
 
-    tournament = models.ForeignKey(
-        'competitions.Tournament',
+    round = models.ForeignKey(
+        'competitions.Round',
         on_delete=models.CASCADE,
         related_name='matches',
-        verbose_name='لیگ',
+        verbose_name='دور',
+        null=True,
+        blank=True,
+    )
+
+    pairing = models.OneToOneField(
+        'competitions.Pairing',
+        on_delete=models.PROTECT,
+        related_name='match',
+        null=True,
+        blank=True,
+        verbose_name='Pairing',
     )
 
     team1 = models.ForeignKey(
@@ -67,6 +78,22 @@ class Match(models.Model):
             raise ValidationError(
                 "یک تیم نمی‌تواند با خودش مسابقه بدهد."
             )
+
+        if self.pairing_id:
+            if (
+                self.team1_id != self.pairing.team1_id
+                or
+                self.team2_id != self.pairing.team2_id
+            ):
+                raise ValidationError(
+                    "تیم‌های Match باید با Pairing یکسان باشند."
+                )
+
+            if self.round_id != self.pairing.round_id:
+                raise ValidationError(
+                    "Round مربوط به Match باید با Pairing یکسان باشد."
+                )
+            
         
     def save(self, *args, **kwargs):
 

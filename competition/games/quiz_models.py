@@ -1,6 +1,7 @@
 from django.db import models
 from .models import Match
 from competitions.models import Category
+from django.core.exceptions import ValidationError
 
 
 class QuizQuestion(models.Model):
@@ -72,35 +73,54 @@ class QuizMatchQuestion(models.Model):
         verbose_name="مسابقه"
     )
 
-    question = models.ForeignKey(
-        QuizQuestion,
-        on_delete=models.CASCADE,
-        related_name="matches",
-        verbose_name="سؤال"
+    round_question = models.ForeignKey(
+        "competitions.RoundQuestion",
+        on_delete=models.PROTECT,
+        related_name="match_questions",
+        verbose_name="سؤال دور",
+        null=True,
+        blank=True,
     )
 
     order = models.PositiveIntegerField(
         verbose_name="ترتیب سؤال"
     )
 
-
     class Meta:
+        ordering = ["order"]
 
-        ordering = [
-            "order"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["match", "round_question"],
+                name="unique_round_question_per_match"
+            ),
+
+            models.UniqueConstraint(
+                fields=["match", "order"],
+                name="unique_question_order_per_match"
+            ),
         ]
 
-        unique_together = (
-            "match",
-            "question",
-        )
+    def clean(self):
 
+        if self.match.round_id != self.round_question.round_id:
+            raise ValidationError(
+                "سؤال باید متعلق به Round مربوط به Match باشد."
+            )
+
+        if self.order != self.round_question.order:
+            raise ValidationError(
+                "ترتیب سؤال Match باید با ترتیب سؤال Round یکسان باشد."
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
-
         return (
             f"{self.match.id} - "
-            f"{self.question.question[:30]}"
+            f"{self.round_question.question.question[:30]}"
         )
 
 
@@ -152,7 +172,7 @@ class QuizAnswer(models.Model):
 
         self.is_correct = (
             self.selected_answer ==
-            self.match_question.question.correct_answer
+            self.match_question.round_question.question.correct_answer
         )
 
         super().save(*args, **kwargs)

@@ -18,7 +18,7 @@ from competitions.models import (
 class MatchAdmin(admin.ModelAdmin):
 
     list_display = (
-        'tournament',
+        'round',
         'team1',
         'score_team1',       
         'team2',
@@ -28,7 +28,7 @@ class MatchAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        'tournament',
+        'round',
         'played_at',
     )
 
@@ -149,7 +149,7 @@ class QuizMatchQuestionAdmin(admin.ModelAdmin):
 
     list_display = (
         'match',
-        'question',
+        'round_question',
         'order',
     )
 

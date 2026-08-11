@@ -146,32 +146,6 @@ class Tournament(models.Model):
     verbose_name='نوع بازی'
     )
 
-    subject = models.ForeignKey(
-        Subject,
-        on_delete=models.PROTECT,
-        related_name="tournaments",
-        null=True,
-        blank=True,
-    )
-
-    QUESTION_DIFFICULTY_CHOICES = [
-        ('easy', 'آسان'),
-        ('medium', 'متوسط'),
-        ('hard', 'سخت'),
-    ]
-
-    question_difficulty = models.CharField(
-        max_length=10,
-        choices=QUESTION_DIFFICULTY_CHOICES,
-        default='easy',
-        verbose_name='درجه سختی سوالات',
-    )
-
-    question_count = models.PositiveIntegerField(
-        default=10,
-        verbose_name='تعداد سوالات هر مسابقه',
-    )
-
     def __str__(self):
         return self.name
 
@@ -217,4 +191,256 @@ class TournamentTeam(models.Model):
 
     def __str__(self):
         return f"{self.team.name} - {self.tournament.name}"
-    
+
+
+class Round(models.Model):
+
+    STATUS_CHOICES = [
+        ('scheduled', 'زمان‌بندی شده'),
+        ('active', 'در حال برگزاری'),
+        ('finished', 'تمام شده'),
+    ]
+
+    QUESTION_DIFFICULTY_CHOICES = [
+        ('easy', 'آسان'),
+        ('medium', 'متوسط'),
+        ('hard', 'سخت'),
+    ]
+
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        related_name='rounds',
+        verbose_name='مسابقات'
+    )
+
+    number = models.PositiveIntegerField(
+        verbose_name='شماره دور'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='scheduled',
+        verbose_name='وضعیت'
+    )
+
+    starts_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='زمان شروع'
+    )
+
+    ends_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='زمان پایان'
+    )
+
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.PROTECT,
+        related_name='rounds',
+        verbose_name='موضوع'
+    )
+
+    question_difficulty = models.CharField(
+        max_length=10,
+        choices=QUESTION_DIFFICULTY_CHOICES,
+        default='easy',
+        verbose_name='درجه سختی سوالات'
+    )
+
+    question_count = models.PositiveIntegerField(
+        default=10,
+        verbose_name='تعداد سوالات'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='تاریخ ایجاد'
+    )
+
+    class Meta:
+        ordering = ['tournament', 'number']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['tournament', 'number'],
+                name='unique_round_number_per_tournament'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.tournament.name} - Round {self.number}"
+
+
+
+class RoundQuestion(models.Model):
+
+    round = models.ForeignKey(
+        Round,
+        on_delete=models.CASCADE,
+        related_name='questions',
+        verbose_name='دور'
+    )
+
+    question = models.ForeignKey(
+        'games.QuizQuestion',
+        on_delete=models.PROTECT,
+        related_name='round_questions',
+        verbose_name='سؤال'
+    )
+
+    order = models.PositiveIntegerField(
+        verbose_name='ترتیب سؤال'
+    )
+
+    class Meta:
+        ordering = ['order']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['round', 'question'],
+                name='unique_question_per_round'
+            ),
+            models.UniqueConstraint(
+                fields=['round', 'order'],
+                name='unique_question_order_per_round'
+            ),
+        ]
+
+    def __str__(self):
+        return f"Round {self.round.number} - Question {self.order}"
+
+
+class Pairing(models.Model):
+
+    round = models.ForeignKey(
+        Round,
+        on_delete=models.CASCADE,
+        related_name='pairings',
+        verbose_name='دور'
+    )
+
+    team1 = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='pairings_as_team1',
+        verbose_name='تیم اول'
+    )
+
+    team2 = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='pairings_as_team2',
+        verbose_name='تیم دوم'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='تاریخ ایجاد'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['round', 'team1'],
+                name='unique_team1_pairing_per_round'
+            ),
+            models.UniqueConstraint(
+                fields=['round', 'team2'],
+                name='unique_team2_pairing_per_round'
+            ),
+        ]
+
+    def clean(self):
+        if self.team1 == self.team2:
+            raise ValidationError(
+                "یک تیم نمی‌تواند با خودش Pair شود."
+            )
+
+        tournament = self.round.tournament
+
+        if not TournamentTeam.objects.filter(
+            tournament=tournament,
+            team=self.team1
+        ).exists():
+            raise ValidationError(
+                "تیم اول عضو این Tournament نیست."
+            )
+
+        if not TournamentTeam.objects.filter(
+            tournament=tournament,
+            team=self.team2
+        ).exists():
+            raise ValidationError(
+                "تیم دوم عضو این Tournament نیست."
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return (
+            f"Round {self.round.number}: "
+            f"{self.team1.name} vs {self.team2.name}"
+        )
+
+
+class RoundBye(models.Model):
+
+    round = models.OneToOneField(
+        Round,
+        on_delete=models.CASCADE,
+        related_name='bye',
+        verbose_name='دور'
+    )
+
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='round_byes',
+        verbose_name='تیم'
+    )
+
+    points = models.PositiveIntegerField(
+        default=3,
+        verbose_name='امتیاز'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='تاریخ ایجاد'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['round', 'team'],
+                name='unique_bye_team_per_round'
+            )
+        ]
+
+    def clean(self):
+        if not TournamentTeam.objects.filter(
+            tournament=self.round.tournament,
+            team=self.team
+        ).exists():
+            raise ValidationError(
+                "تیم دریافت‌کننده Bye عضو این Tournament نیست."
+            )
+
+        if self.points != 3:
+            raise ValidationError(
+                "امتیاز Bye باید ۳ باشد."
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return (
+            f"Round {self.round.number} - "
+            f"Bye: {self.team.name}"
+        )
