@@ -13,6 +13,8 @@ from competitions.models import (
     Tournament,
     TournamentTeam,
     GameType,
+    Round,
+    Subject,
 )
 
 from games.models import (
@@ -22,15 +24,11 @@ from games.models import (
 
 from games.scoring import MatchScoringService
 
-from unittest.mock import patch
-
 from django.db.models.signals import post_save
 
 from games.signals import (
     recalculate_after_save,
 )
-
-from games.models import MatchPlayerScore
 
 
 class MatchScoringServiceTest(TestCase):
@@ -76,6 +74,16 @@ class MatchScoringServiceTest(TestCase):
             game_type=self.game_type,
         )
 
+        self.subject = Subject.objects.create(
+            name="General",
+        )
+
+        self.round = Round.objects.create(
+            tournament=self.tournament,
+            number=1,
+            subject=self.subject,
+        )
+
         TournamentTeam.objects.create(
             tournament=self.tournament,
             team=self.team1,
@@ -87,7 +95,7 @@ class MatchScoringServiceTest(TestCase):
         )
 
         self.match = Match.objects.create(
-            tournament=self.tournament,
+            round=self.round,
             team1=self.team1,
             team2=self.team2,
         )

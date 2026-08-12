@@ -12,13 +12,13 @@ class QuestionSelectionService:
     def select_questions(
         cls,
         *,
-        tournament,
+        round,
         categories,
         difficulty,
         count,
     ):
         questions = cls._filter_questions(
-            tournament=tournament,
+            round=round,
             categories=categories,
             difficulty=difficulty,
         )
@@ -31,15 +31,16 @@ class QuestionSelectionService:
     @staticmethod
     def _filter_questions(
         *,
-        tournament,
+        round,
         categories,
         difficulty,
     ):
         used_question_ids = (
             QuizMatchQuestion.objects.filter(
-                match__tournament=tournament,
-            ).values_list(
-                "question_id",
+                match__round__tournament=round.tournament,
+            )
+            .values_list(
+                "round_question__question_id",
                 flat=True,
             )
         )
@@ -78,7 +79,7 @@ class QuestionSelectionService:
     def select_questions_by_difficulty(
         cls,
         *,
-        tournament,
+        round,
         categories,
         difficulty_distribution,
     ):
@@ -88,7 +89,7 @@ class QuestionSelectionService:
             difficulty_distribution.items()
         ):
             questions = cls.select_questions(
-                tournament=tournament,
+                round=round,
                 categories=categories,
                 difficulty=difficulty,
                 count=count,

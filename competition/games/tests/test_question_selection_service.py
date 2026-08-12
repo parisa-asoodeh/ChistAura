@@ -1,21 +1,28 @@
 from django.test import TestCase
 
+from accounts.models import CustomUser
+
+from teams.models import Team
+
 from competitions.models import (
     Subject,
     Category,
     Tournament,
     GameType,
+    Round,
+    RoundQuestion,
 )
+
 from games.models import Match
-from games.question_selection_service import QuestionSelectionService
+
+from games.question_selection_service import (
+    QuestionSelectionService,
+)
+
 from games.quiz_models import (
     QuizQuestion,
     QuizMatchQuestion,
 )
-from teams.models import Team
-from accounts.models import CustomUser
-
-from competitions.models import GameType, Tournament
 
 
 class QuestionSelectionServiceTest(TestCase):
@@ -40,8 +47,13 @@ class QuestionSelectionServiceTest(TestCase):
 
         tournament = Tournament.objects.create(
             name="Chemistry Tournament",
-            subject=subject,
             game_type=game_type,
+        )
+
+        round = Round.objects.create(
+            tournament=tournament,
+            number=1,
+            subject=subject,
         )
 
         matching_question = QuizQuestion.objects.create(
@@ -69,7 +81,7 @@ class QuestionSelectionServiceTest(TestCase):
         )
 
         questions = QuestionSelectionService.select_questions(
-            tournament=tournament,
+            round=round,
             categories=[category],
             difficulty="easy",
             count=10,
@@ -111,8 +123,13 @@ class QuestionSelectionServiceTest(TestCase):
 
         tournament = Tournament.objects.create(
             name="Math Tournament",
-            subject=subject,
             game_type=game_type,
+        )
+
+        round = Round.objects.create(
+            tournament=tournament,
+            number=1,
+            subject=subject,
         )
 
         for index in range(5):
@@ -129,7 +146,7 @@ class QuestionSelectionServiceTest(TestCase):
             )
 
         questions = QuestionSelectionService.select_questions(
-            tournament=tournament,
+            round=round,
             categories=[category],
             difficulty="easy",
             count=3,
@@ -172,8 +189,13 @@ class QuestionSelectionServiceTest(TestCase):
 
         tournament = Tournament.objects.create(
             name="Physics Tournament",
-            subject=subject,
             game_type=game_type,
+        )
+
+        round = Round.objects.create(
+            tournament=tournament,
+            number=1,
+            subject=subject,
         )
 
 
@@ -198,9 +220,8 @@ class QuestionSelectionServiceTest(TestCase):
             captain=captain2,
         )
 
-
         match = Match.objects.create(
-            tournament=tournament,
+            round=round,
             team1=team1,
             team2=team2,
         )
@@ -224,15 +245,20 @@ class QuestionSelectionServiceTest(TestCase):
             )
 
 
-        QuizMatchQuestion.objects.create(
-            match=match,
+        round_question = RoundQuestion.objects.create(
+            round=round,
             question=questions[0],
             order=1,
         )
 
+        QuizMatchQuestion.objects.create(
+            match=match,
+            round_question=round_question,
+            order=1,
+        )
 
         selected_questions = QuestionSelectionService.select_questions(
-            tournament=tournament,
+            round=round,
             categories=[category],
             difficulty="easy",
             count=4,
@@ -297,11 +323,16 @@ class QuestionSelectionServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Biology Tournament",
             game_type=game_type,
+        )
+
+        round = Round.objects.create(
+            tournament=tournament,
+            number=1,
             subject=subject,
         )
         
         questions = QuestionSelectionService.select_questions_by_difficulty(
-            tournament=tournament,
+            round=round,
             categories=[category],
             difficulty_distribution={
                 "easy": 2,
@@ -389,11 +420,16 @@ class QuestionSelectionServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Chemistry Tournament",
             game_type=game_type,
+        )
+
+        round = Round.objects.create(
+            tournament=tournament,
+            number=1,
             subject=subject,
         )
 
         questions = QuestionSelectionService.select_questions(
-            tournament=tournament,
+            round=round,
             categories=[category1, category2],
             difficulty="easy",
             count=6,
