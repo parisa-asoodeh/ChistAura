@@ -1,41 +1,49 @@
+from django.core.exceptions import ValidationError
+from django.db import transaction
+
+from competitions.models import RoundQuestion
+
 from .quiz_models import QuizMatchQuestion
-from .question_selection_service import QuestionSelectionService
 
 
 class QuizMatchQuestionService:
 
-    @classmethod
-    def create_questions_for_match(
-        cls,
-        *,
-        match,
-        categories,
-        difficulty,
-        count,
-    ):
+    @staticmethod
+    @transaction.atomic
+    def create_questions_for_match(*, match):
 
-        questions = QuestionSelectionService.select_questions(
-            tournament=match.tournament,
-            categories=categories,
-            difficulty=difficulty,
-            count=count,
-        )
-
-        quiz_match_questions = []
-
-        for index, question in enumerate(
-            questions,
-            start=1,
-        ):
-
-            quiz_match_questions.append(
-                QuizMatchQuestion(
-                    match=match,
-                    question=question,
-                    order=index,
-                )
+        if match.round_id is None:
+            raise ValidationError(
+                "Match باید به یک Round مربوط باشد."
             )
 
+        if QuizMatchQuestion.objects.filter(
+            match=match
+        ).exists():
+            raise ValidationError(
+                "برای این Match قبلاً سؤال ایجاد شده است."
+            )
+
+        round_questions = RoundQuestion.objects.filter(
+            round=match.round
+        ).order_by(
+            "order"
+        )
+
+        if not round_questions.exists():
+            raise ValidationError(
+                "برای این Round هیچ سؤالی انتخاب نشده است."
+            )
+
+        match_questions = [
+            QuizMatchQuestion(
+                match=match,
+                round_question=round_question,
+                order=round_question.order,
+            )
+            for round_question in round_questions
+        ]
+
         return QuizMatchQuestion.objects.bulk_create(
-            quiz_match_questions
+            match_questions
         )
