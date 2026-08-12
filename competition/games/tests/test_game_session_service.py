@@ -10,6 +10,9 @@ from competitions.models import (
     Tournament,
     TournamentTeam,
     GameType,
+    Round,
+    Pairing,
+    Subject,
 )
 
 from games.models import (
@@ -87,8 +90,30 @@ class GameSessionServiceTest(TestCase):
             team=self.team2,
         )
 
-        self.match = Match.objects.create(
+        self.subject = Subject.objects.create(
+            name="Chemistry",
+            slug="chemistry",
+            is_active=True,
+        )
+
+        self.round = Round.objects.create(
             tournament=self.tournament,
+            number=1,
+            status="scheduled",
+            subject=self.subject,
+            question_difficulty="easy",
+            question_count=3,
+        )
+
+        self.pairing = Pairing.objects.create(
+            round=self.round,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
+        self.match = Match.objects.create(
+            round=self.round,
+            pairing=self.pairing,
             team1=self.team1,
             team2=self.team2,
         )
