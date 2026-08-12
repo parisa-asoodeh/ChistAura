@@ -28,7 +28,7 @@ def recalculate_after_save(
     )
 
     TournamentStatusService.refresh_tournament(
-        instance.match.tournament
+        instance.match.round.tournament
     )
 
 
@@ -47,5 +47,5 @@ def recalculate_after_delete(
     )
 
     TournamentStatusService.refresh_tournament(
-        instance.match.tournament
+        instance.match.round.tournament
     )

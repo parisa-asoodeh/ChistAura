@@ -11,24 +11,22 @@ class GameSessionCreationService:
     @transaction.atomic
     def create_sessions(match):
 
-        team1_members = TeamMembership.objects.filter(
-            team=match.team1
+        team_memberships = TeamMembership.objects.filter(
+            team__in=[
+                match.team1,
+                match.team2,
+            ]
         )
 
-        team2_members = TeamMembership.objects.filter(
-            team=match.team2
-        )
+        sessions = []
 
-        for membership in team1_members:
+        for membership in team_memberships:
 
-            GameSession.objects.create(
+            session, created = GameSession.objects.get_or_create(
                 match=match,
                 user=membership.user,
             )
 
-        for membership in team2_members:
+            sessions.append(session)
 
-            GameSession.objects.create(
-                match=match,
-                user=membership.user,
-            )
+        return sessions

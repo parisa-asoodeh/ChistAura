@@ -40,12 +40,15 @@ class GameSessionService:
                 "امتیاز این بازیکن قبلاً ثبت شده است."
             )
         
-        if not session.match.tournament.game_type:
+        tournament = session.match.round.tournament
+
+        if not tournament.game_type:
             raise ValidationError(
                 "نوع بازی برای این لیگ تعریف نشده است."
             )
+
         game_type = get_game_type(
-            session.match.tournament.game_type
+            tournament.game_type
         )
 
         official_score = (
@@ -103,4 +106,33 @@ class GameSessionService:
             MatchScoringService.finalize_match(
                 session.match
             )
+        return session
+
+
+    @staticmethod
+    @transaction.atomic
+    def abandon_session(session):
+
+        if session.status == 'completed':
+            raise ValidationError(
+                "این Session قبلاً تکمیل شده است."
+            )
+
+        if session.status == 'abandoned':
+            raise ValidationError(
+                "این Session قبلاً رها شده است."
+            )
+
+        session.status = 'abandoned'
+        session.finished_at = timezone.now()
+
+        session.save(
+            update_fields=[
+                'status',
+                'finished_at',
+            ]
+        )
+
+        GameResumeService.clear(session)
+
         return session

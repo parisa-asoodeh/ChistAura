@@ -94,7 +94,7 @@ class MatchScoringService:
 
 
         game_type = get_game_type(
-            match.tournament.game_type
+            match.round.tournament.game_type
         )
 
         match.winner = (

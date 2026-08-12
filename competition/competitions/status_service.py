@@ -12,8 +12,8 @@ class TournamentStatusService:
     @staticmethod
     def refresh_tournament(tournament):
 
-        unfinished_matches = tournament.matches.filter(
-            score_team1__isnull=True
+        unfinished_matches = tournament.rounds.filter(
+            matches__score_team1__isnull=True
         ).exists()
 
         # هنوز مسابقه ناتمام داریم
