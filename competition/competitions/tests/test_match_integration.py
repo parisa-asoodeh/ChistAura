@@ -11,6 +11,8 @@ from competitions.models import (
     Subject,
     Round,
     Pairing,
+    RoundQuestion,
+    Category,
 )
 
 from games.models import Match
@@ -20,6 +22,10 @@ from games.session_creation_service import (
     GameSessionCreationService,
 )
 from games.models import GameSession
+from games.quiz_models import QuizQuestion, QuizMatchQuestion
+from unittest.mock import patch
+
+
 
 
 class MatchCreationServiceTest(TestCase):
@@ -74,6 +80,11 @@ class MatchCreationServiceTest(TestCase):
             is_active=True,
         )
 
+        self.category = Category.objects.create(
+            name="Chemistry",
+            subject=self.subject,
+        )
+
         self.round = Round.objects.create(
             tournament=self.tournament,
             number=1,
@@ -81,6 +92,60 @@ class MatchCreationServiceTest(TestCase):
             subject=self.subject,
             question_difficulty="easy",
             question_count=3,
+        )
+
+        question1 = QuizQuestion.objects.create(
+            category=self.category,
+            question="Question 1",
+            option_a="A",
+            option_b="B",
+            option_c="C",
+            option_d="D",
+            correct_answer="A",
+            difficulty="easy",
+            is_active=True,
+        )
+
+        question2 = QuizQuestion.objects.create(
+            category=self.category,
+            question="Question 2",
+            option_a="A",
+            option_b="B",
+            option_c="C",
+            option_d="D",
+            correct_answer="B",
+            difficulty="easy",
+            is_active=True,
+        )
+
+        question3 = QuizQuestion.objects.create(
+            category=self.category,
+            question="Question 3",
+            option_a="A",
+            option_b="B",
+            option_c="C",
+            option_d="D",
+            correct_answer="C",
+            difficulty="easy",
+            is_active=True,
+        )
+
+        RoundQuestion.objects.create(
+            round=self.round,
+            question=question1,
+            order=1,
+        )
+
+        RoundQuestion.objects.create(
+            round=self.round,
+            question=question2,
+            order=2,
+        )
+
+        RoundQuestion.objects.create(
+            round=self.round,
+            question=question3,
+            order=3,
         )
 
         self.pairing = Pairing.objects.create(
@@ -329,4 +394,92 @@ class MatchCreationServiceTest(TestCase):
                 user=self.user2,
             ).count(),
             1,
+        )
+
+
+    def test_create_match_from_pairing_creates_quiz_match_questions(self):
+        match = MatchCreationService.create_match_from_pairing(
+            self.pairing,
+        )
+
+        self.assertEqual(
+            QuizMatchQuestion.objects.filter(
+                match=match,
+            ).count(),
+            self.round.question_count,
+        )
+
+        round_question_ids = set(
+            RoundQuestion.objects.filter(
+                round=self.round,
+            ).values_list(
+                "id",
+                flat=True,
+            )
+        )
+
+        match_question_round_question_ids = set(
+            QuizMatchQuestion.objects.filter(
+                match=match,
+            ).values_list(
+                "round_question_id",
+                flat=True,
+            )
+        )
+
+        self.assertEqual(
+            match_question_round_question_ids,
+            round_question_ids,
+        )
+
+
+    def test_match_creation_creates_quiz_match_questions(self):
+
+        match = MatchCreationService.create_match_from_pairing(
+            self.pairing,
+        )
+
+        match_questions = QuizMatchQuestion.objects.filter(
+            match=match,
+        )
+
+        self.assertEqual(
+            match_questions.count(),
+            self.round.question_count,
+        )
+
+        self.assertEqual(
+            list(
+                match_questions.values_list(
+                    "round_question_id",
+                    flat=True,
+                )
+            ),
+            list(
+                RoundQuestion.objects.filter(
+                    round=self.round,
+                ).values_list(
+                    "id",
+                    flat=True,
+                )
+            ),
+        )
+
+    def test_match_creation_rolls_back_if_session_creation_fails(self):
+        with patch.object(
+            GameSessionCreationService,
+            "create_sessions",
+            side_effect=ValidationError(
+                "Session creation failed."
+            ),
+        ):
+            with self.assertRaises(ValidationError):
+                MatchCreationService.create_match_from_pairing(
+                    self.pairing,
+                )
+
+        self.assertFalse(
+            Match.objects.filter(
+                pairing=self.pairing,
+            ).exists()
         )

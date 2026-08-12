@@ -34,6 +34,15 @@ def game_play(request, session_id):
         id=session_id
     )
 
+    if session.user != request.user:
+        return render(
+            request,
+            "games/error.html",
+            {
+                "message": "شما به این بازی دسترسی ندارید."
+            }
+        )
+
     if session.started_at is None:
 
         session.started_at = timezone.now()
@@ -46,15 +55,6 @@ def game_play(request, session_id):
             ]
         )
 
-
-    if session.user != request.user:
-        return render(
-            request,
-            "games/error.html",
-            {
-                "message": "شما به این بازی دسترسی ندارید."
-            }
-        )
 
     if session.status == "completed":
 
