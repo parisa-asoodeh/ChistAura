@@ -11,6 +11,8 @@ from competitions.models import (
     Tournament,
     TournamentTeam,
     GameType,
+    Subject,
+    Round,
 )
 
 from games.models import (
@@ -75,8 +77,19 @@ class GameSessionCreationServiceTest(TestCase):
             team=self.team2,
         )
 
-        self.match = Match.objects.create(
+        self.subject = Subject.objects.create(
+            name="General",
+            slug="general",
+        )
+
+        self.round = Round.objects.create(
             tournament=self.tournament,
+            number=1,
+            subject=self.subject,
+        )
+
+        self.match = Match.objects.create(
+            round=self.round,
             team1=self.team1,
             team2=self.team2,
         )
