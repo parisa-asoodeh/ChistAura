@@ -11,6 +11,8 @@ from competitions.models import (
     Tournament,
     TournamentTeam,
     GameType,
+    Round,
+    Subject,
 )
 
 from games.models import (
@@ -24,9 +26,13 @@ from teams.ai.providers.performance_data_provider import (
 
 
 class PerformanceDataProviderTest(TestCase):
+
     def setUp(self):
 
+        # -------------------------
         # Users
+        # -------------------------
+
         self.user1 = CustomUser.objects.create_user(
             username="user1",
             password="1234",
@@ -47,7 +53,10 @@ class PerformanceDataProviderTest(TestCase):
             password="1234",
         )
 
+        # -------------------------
         # Teams
+        # -------------------------
+
         self.team1 = Team.objects.create(
             name="Team 1",
             captain=self.user1,
@@ -58,7 +67,10 @@ class PerformanceDataProviderTest(TestCase):
             captain=self.user3,
         )
 
+        # -------------------------
         # Memberships
+        # -------------------------
+
         TeamMembership.objects.create(
             team=self.team1,
             user=self.user1,
@@ -79,13 +91,28 @@ class PerformanceDataProviderTest(TestCase):
             user=self.user4,
         )
 
-        # Game type
+        # -------------------------
+        # Game Type
+        # -------------------------
+
         self.game_type = GameType.objects.create(
             name="Quiz",
             key="quiz",
         )
 
-        # Current tournament
+        # -------------------------
+        # Subject
+        # -------------------------
+
+        self.subject = Subject.objects.create(
+            name="Math",
+            slug="math",
+        )
+
+        # =====================================================
+        # Current Tournament
+        # =====================================================
+
         self.tournament = Tournament.objects.create(
             name="League 1",
             game_type=self.game_type,
@@ -101,14 +128,26 @@ class PerformanceDataProviderTest(TestCase):
             team=self.team2,
         )
 
-        # Current match
-        self.match = Match.objects.create(
+        # Current Round
+
+        self.round = Round.objects.create(
             tournament=self.tournament,
+            number=1,
+            subject=self.subject,
+        )
+
+        # Current Match
+
+        self.match = Match.objects.create(
+            round=self.round,
             team1=self.team1,
             team2=self.team2,
         )
 
-        # Previous tournament
+        # =====================================================
+        # Previous Tournament
+        # =====================================================
+
         self.tournament2 = Tournament.objects.create(
             name="League 2",
             game_type=self.game_type,
@@ -124,17 +163,28 @@ class PerformanceDataProviderTest(TestCase):
             team=self.team2,
         )
 
-        # Previous match
-        self.match2 = Match.objects.create(
+        # Previous Round
+
+        self.round2 = Round.objects.create(
             tournament=self.tournament2,
+            number=1,
+            subject=self.subject,
+        )
+
+        # Previous Match
+
+        self.match2 = Match.objects.create(
+            round=self.round2,
             team1=self.team1,
             team2=self.team2,
         )
 
+    # =====================================================
+    # get_history
+    # =====================================================
 
     def test_get_history(self):
 
-        # Arrange
         MatchPlayerScore.objects.create(
             match=self.match2,
             user=self.user1,
@@ -142,24 +192,24 @@ class PerformanceDataProviderTest(TestCase):
             score=40,
         )
 
-        # Act
         history = PerformanceDataProvider.get_history(
             self.team1,
             self.tournament,
         )
 
-        # Assert
         self.assertEqual(
             history,
             [40],
         )
 
+    # =====================================================
+    # Current Mode
+    # =====================================================
 
     def test_get_team_context_in_current_mode(
         self,
     ):
 
-        # Arrange
         MatchPlayerScore.objects.create(
             match=self.match,
             user=self.user1,
@@ -167,13 +217,11 @@ class PerformanceDataProviderTest(TestCase):
             score=10,
         )
 
-        # Act
         context = PerformanceDataProvider.get_team_context(
             self.tournament,
             self.team1,
         )
 
-        # Assert
         self.assertEqual(
             context["mode"],
             "current",
@@ -199,12 +247,14 @@ class PerformanceDataProviderTest(TestCase):
             self.team1,
         )
 
+    # =====================================================
+    # History Mode
+    # =====================================================
 
     def test_get_team_context_in_history_mode(
         self,
     ):
 
-        # Arrange
         history_team = Team.objects.create(
             name="History Team",
             captain=self.user1,
@@ -221,7 +271,7 @@ class PerformanceDataProviderTest(TestCase):
         )
 
         history_match = Match.objects.create(
-            tournament=self.tournament2,
+            round=self.round2,
             team1=history_team,
             team2=self.team2,
         )
@@ -233,13 +283,11 @@ class PerformanceDataProviderTest(TestCase):
             score=40,
         )
 
-        # Act
         context = PerformanceDataProvider.get_team_context(
             self.tournament,
             history_team,
         )
 
-        # Assert
         self.assertEqual(
             context["mode"],
             "history",
@@ -265,12 +313,14 @@ class PerformanceDataProviderTest(TestCase):
             history_team,
         )
 
+    # =====================================================
+    # No Matches / No History
+    # =====================================================
 
     def test_get_team_context_without_matches_or_history(
         self,
     ):
 
-        # Arrange
         new_team = Team.objects.create(
             name="New Team",
             captain=self.user1,
@@ -281,13 +331,11 @@ class PerformanceDataProviderTest(TestCase):
             user=self.user1,
         )
 
-        # Act
         context = PerformanceDataProvider.get_team_context(
             self.tournament,
             new_team,
         )
 
-        # Assert
         self.assertEqual(
             context["mode"],
             "history",

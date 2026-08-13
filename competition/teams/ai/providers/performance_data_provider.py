@@ -15,7 +15,7 @@ class PerformanceDataProvider:
         matches = list(
 
             Match.objects.filter(
-                tournament=tournament,
+                round__tournament=tournament,
             ).filter(
                 team1=team,
             )
@@ -23,7 +23,7 @@ class PerformanceDataProvider:
             |
 
             Match.objects.filter(
-                tournament=tournament,
+                round__tournament=tournament,
                 team2=team,
             )
 
@@ -78,14 +78,12 @@ class PerformanceDataProvider:
         tournament,
     ):
 
-        from games.models import MatchPlayerScore
-
         return list(
 
             MatchPlayerScore.objects.filter(
                 team=team,
             ).exclude(
-                match__tournament=tournament,
+                match__round__tournament=tournament,
             ).values_list(
                 "score",
                 flat=True,
