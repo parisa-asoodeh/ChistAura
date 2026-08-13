@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.test import TestCase
 
 from accounts.models import CustomUser
@@ -11,7 +9,11 @@ from teams.models import (
 
 from competitions.models import (
     Tournament,
+    TournamentTeam,
     GameType,
+    Round,
+    Subject,
+    Pairing,
 )
 
 from games.models import (
@@ -23,20 +25,16 @@ from teams.statistics.team_statistics_service import (
     TeamStatisticsService,
 )
 
+
 class TeamStatisticsServiceTest(TestCase):
+
     def setUp(self):
 
-        # -------------------------
-        # Game Type
-        # -------------------------
         self.game_type = GameType.objects.create(
             name="Quiz",
             key="quiz",
         )
 
-        # -------------------------
-        # Tournaments
-        # -------------------------
         self.tournament1 = Tournament.objects.create(
             name="League 1",
             game_type=self.game_type,
@@ -47,9 +45,6 @@ class TeamStatisticsServiceTest(TestCase):
             game_type=self.game_type,
         )
 
-        # -------------------------
-        # Users
-        # -------------------------
         self.captain1 = CustomUser.objects.create_user(
             username="captain1",
             password="1234",
@@ -70,9 +65,6 @@ class TeamStatisticsServiceTest(TestCase):
             password="1234",
         )
 
-        # -------------------------
-        # Teams
-        # -------------------------
         self.team1 = Team.objects.create(
             name="Alpha",
             captain=self.captain1,
@@ -83,9 +75,6 @@ class TeamStatisticsServiceTest(TestCase):
             captain=self.captain2,
         )
 
-        # -------------------------
-        # Memberships
-        # -------------------------
         TeamMembership.objects.create(
             team=self.team1,
             user=self.captain1,
@@ -106,63 +95,103 @@ class TeamStatisticsServiceTest(TestCase):
             user=self.member2,
         )
 
-        # =====================================================
-        # Tournament 1
-        # =====================================================
-
-        # Alpha wins
-        self.match1 = Match.objects.create(
+        TournamentTeam.objects.create(
             tournament=self.tournament1,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team1,
+            team=self.team1,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament1,
+            team=self.team2,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament2,
+            team=self.team1,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament2,
+            team=self.team2,
+        )
+
+        self.subject = Subject.objects.create(
+            name="Math",
+            slug="math",
+        )
+
+        self.match1 = self.create_match(
+            tournament=self.tournament1,
             score_team1=100,
             score_team2=80,
+            winner=self.team1,
         )
 
-        # Draw
-        self.match2 = Match.objects.create(
+        self.match2 = self.create_match(
             tournament=self.tournament1,
-            team1=self.team1,
-            team2=self.team2,
-            winner=None,
             score_team1=90,
             score_team2=90,
+            winner=None,
         )
 
-        # Beta wins
-        self.match3 = Match.objects.create(
+        self.match3 = self.create_match(
             tournament=self.tournament1,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team2,
             score_team1=70,
             score_team2=95,
+            winner=self.team2,
         )
 
-        # Incomplete
-        self.match4 = Match.objects.create(
+        self.match4 = self.create_match(
             tournament=self.tournament1,
-            team1=self.team1,
-            team2=self.team2,
         )
 
-        # =====================================================
-        # Tournament 2
-        # =====================================================
-
-        self.match5 = Match.objects.create(
+        self.match5 = self.create_match(
             tournament=self.tournament2,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team1,
             score_team1=110,
             score_team2=60,
+            winner=self.team1,
         )
 
-        # =====================================================
-        # Player Scores
-        # =====================================================
+        self.create_player_scores()
+
+    def create_match(
+        self,
+        tournament,
+        score_team1=None,
+        score_team2=None,
+        winner=None,
+    ):
+
+        round_number = (
+            Round.objects.filter(
+                tournament=tournament,
+            ).count()
+            + 1
+        )
+
+        round = Round.objects.create(
+            tournament=tournament,
+            number=round_number,
+            subject=self.subject,
+        )
+
+        pairing = Pairing.objects.create(
+            round=round,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
+        return Match.objects.create(
+            round=round,
+            pairing=pairing,
+            team1=self.team1,
+            team2=self.team2,
+            winner=winner,
+            score_team1=score_team1,
+            score_team2=score_team2,
+        )
+
+    def create_player_scores(self):
 
         MatchPlayerScore.objects.create(
             match=self.match1,
@@ -381,7 +410,6 @@ class TeamStatisticsServiceTest(TestCase):
             ),
             3,
         )
-
 
     def test_empty_tournament_statistics(self):
 

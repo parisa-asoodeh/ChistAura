@@ -55,9 +55,9 @@ class TeamStatisticsService:
     @staticmethod
     def get_matches_in_tournament(team, tournament):
         return (
-            team.home_matches.filter(tournament=tournament)
+            team.home_matches.filter(round__tournament=tournament)
             |
-            team.away_matches.filter(tournament=tournament)
+            team.away_matches.filter(round__tournament=tournament)
         )
 
     @staticmethod
@@ -65,7 +65,7 @@ class TeamStatisticsService:
         return sum(
             1
             for match in team.won_matches.filter(
-                tournament=tournament
+                round__tournament=tournament
             )
             if match.is_complete
         )
@@ -139,10 +139,11 @@ class TeamStatisticsService:
 
         total = (
             MatchPlayerScore.objects.filter(
-                match__tournament=tournament,
+                match__round__tournament=tournament,
                 team=team,
                 completion_time__isnull=False,
-            ).aggregate(
+            )
+            .aggregate(
                 total=Sum("completion_time")
             )["total"]
         )
