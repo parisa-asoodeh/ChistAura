@@ -194,11 +194,6 @@ class RoundQuestionServiceTest(TestCase):
             3,
         )
 
-        self.assertNotIn(
-            self.create_question.__name__,
-            [],
-        )
-
         inactive_question = QuizQuestion.objects.get(
             question="Question 2",
         )

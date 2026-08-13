@@ -12,6 +12,9 @@ from competitions.models import (
     Tournament,
     TournamentTeam,
     GameType,
+    Round,
+    Pairing,
+    Subject,
 )
 
 from competitions.status_service import (
@@ -61,6 +64,12 @@ class TournamentStatusServiceTest(TestCase):
             key="quiz",
         )
 
+        self.subject = Subject.objects.create(
+            name="Chemistry",
+            slug="chemistry",
+            is_active=True,
+        )
+
         self.tournament = Tournament.objects.create(
             name="League",
             game_type=self.game_type,
@@ -76,31 +85,46 @@ class TournamentStatusServiceTest(TestCase):
             team=self.team2,
         )
 
-        self.match = Match.objects.create(
+        self.tournament.status = "active"
+        self.tournament.save()
+
+        self.round = Round.objects.create(
             tournament=self.tournament,
+            number=1,
+            status="scheduled",
+            subject=self.subject,
+        )
+
+        self.pairing = Pairing.objects.create(
+            round=self.round,
             team1=self.team1,
             team2=self.team2,
         )
+
+        self.match = Match.objects.create(
+            round=self.round,
+            pairing=self.pairing,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
 
     def test_refresh_tournament_when_unfinished_match_exists(
         self,
     ):
 
-        # Arrange
         self.tournament.status = "finished"
         self.tournament.champion = self.team1
         self.tournament.finished_at = timezone.now()
 
         self.tournament.save()
 
-        # Act
         TournamentStatusService.refresh_tournament(
             self.tournament,
         )
 
         self.tournament.refresh_from_db()
 
-        # Assert
         self.assertEqual(
             self.tournament.status,
             "active",
@@ -119,20 +143,17 @@ class TournamentStatusServiceTest(TestCase):
         self,
     ):
 
-        # Arrange
         self.match.score_team1 = 20
         self.match.score_team2 = 10
         self.match.winner = self.team1
         self.match.save()
 
-        # Act
         TournamentStatusService.refresh_tournament(
             self.tournament,
         )
 
         self.tournament.refresh_from_db()
 
-        # Assert
         self.assertEqual(
             self.tournament.status,
             "finished",
@@ -152,18 +173,15 @@ class TournamentStatusServiceTest(TestCase):
         self,
     ):
 
-        # Arrange
         self.tournament.status = "active"
         self.tournament.save()
 
-        # Act
         TournamentStatusService.refresh_tournament(
             self.tournament,
         )
 
         self.tournament.refresh_from_db()
 
-        # Assert
         self.assertEqual(
             self.tournament.status,
             "active",
@@ -186,21 +204,18 @@ class TournamentStatusServiceTest(TestCase):
         mock_rank_teams,
     ):
 
-        # Arrange
         self.match.score_team1 = 10
         self.match.score_team2 = 5
         self.match.save()
 
         mock_rank_teams.return_value = []
 
-        # Act
         TournamentStatusService.refresh_tournament(
             self.tournament,
         )
 
         self.tournament.refresh_from_db()
 
-        # Assert
         self.assertEqual(
             self.tournament.status,
             "finished",

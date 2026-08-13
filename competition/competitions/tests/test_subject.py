@@ -4,6 +4,7 @@ from competitions.models import (
     Subject,
     Tournament,
     GameType,
+    Round,
 )
 
 
@@ -19,34 +20,41 @@ class SubjectModelTest(TestCase):
 
         self.assertEqual(
             subject.name,
-            "Chemistry"
+            "Chemistry",
         )
 
         self.assertTrue(
-            subject.is_active
+            subject.is_active,
         )
 
 
-    def test_tournament_can_have_subject(self):
-
+    def test_round_can_have_subject(self):
 
         game_type = GameType.objects.create(
             name="Quiz",
             key="quiz",
         )
 
+        tournament = Tournament.objects.create(
+            name="Math League",
+            game_type=game_type,
+        )
+
+        tournament.status = "active"
+        tournament.save()
+
         subject = Subject.objects.create(
             name="Mathematics",
             slug="mathematics",
         )
 
-        tournament = Tournament.objects.create(
-            name="Math League",
+        round_obj = Round.objects.create(
+            tournament=tournament,
+            number=1,
             subject=subject,
-            game_type=game_type,
         )
 
         self.assertEqual(
-            tournament.subject,
-            subject
+            round_obj.subject,
+            subject,
         )
