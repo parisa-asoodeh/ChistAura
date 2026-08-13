@@ -1,4 +1,5 @@
 from django.db.models import Sum
+
 from .models import MatchPlayerScore
 from teams.models import TeamMembership
 from .game_types.registry import get_game_type
@@ -9,133 +10,91 @@ class MatchScoringService:
 
     @staticmethod
     def recalculate_match(match):
+        """
+        محاسبه مجدد نتیجه Match بر اساس امتیاز بازیکنان.
 
-        scores = MatchPlayerScore.objects.filter(
-            match=match
-        )
+        این سرویس فقط مسئول Match است و:
+        - امتیاز دو تیم را محاسبه می‌کند.
+        - کامل بودن Match را بررسی می‌کند.
+        - برنده را تعیین می‌کند.
+        - وضعیت Round یا Tournament را تغییر نمی‌دهد.
+        """
 
+        if not MatchScoringService.is_match_complete(match):
+            MatchScoringService._clear_match_result(match)
 
-        team1_scores_exist = scores.filter(
-            team=match.team1
-        ).exists()
-
-
-        team2_scores_exist = scores.filter(
-            team=match.team2
-        ).exists()
-
-
-        # اگر هر دو تیم هنوز امتیاز نگرفته‌اند
-        # یا فقط یکی از تیم‌ها امتیاز دارد،
-        # مسابقه کامل نشده است
-        if not team1_scores_exist or not team2_scores_exist:
-
-            match.score_team1 = None
-            match.score_team2 = None
-            match.winner = None
-
-            match.save(
-                update_fields=[
-                    'score_team1',
-                    'score_team2',
-                    'winner',
-                ]
-            )
-
-            return match
-
-
-
-        team1_score = (
-            scores.filter(
-                team=match.team1
-            )
-            .aggregate(
-                total=Sum('score')
-            )['total']
-            or 0
-        )
-
-
-        team2_score = (
-            scores.filter(
-                team=match.team2
-            )
-            .aggregate(
-                total=Sum('score')
-            )['total']
-            or 0
-        )
-
-
-        if not MatchScoringService.is_match_complete(
-            match
-        ):
-
-            match.score_team1 = None
-            match.score_team2 = None
-            match.winner = None
-
-            match.save(
-                update_fields=[
-                    'score_team1',
-                    'score_team2',
-                    'winner',
-                ]
-            )
-            
             PlayerScoreService.update_player_scores(match)
 
             return match
 
+        scores = MatchPlayerScore.objects.filter(
+            match=match,
+        )
+
+        team1_score = (
+            scores
+            .filter(team=match.team1)
+            .aggregate(total=Sum("score"))
+            .get("total")
+            or 0
+        )
+
+        team2_score = (
+            scores
+            .filter(team=match.team2)
+            .aggregate(total=Sum("score"))
+            .get("total")
+            or 0
+        )
+
+        game_type = get_game_type(
+            match.round.tournament.game_type,
+        )
+
+        winner = game_type.determine_winner(
+            match,
+            team1_score,
+            team2_score,
+        )
 
         match.score_team1 = team1_score
         match.score_team2 = team2_score
-
-
-        game_type = get_game_type(
-            match.round.tournament.game_type
-        )
-
-        match.winner = (
-            game_type.determine_winner(
-                match,
-                team1_score,
-                team2_score
-            )
-        )
+        match.winner = winner
 
         match.save(
             update_fields=[
-                'score_team1',
-                'score_team2',
-                'winner',
+                "score_team1",
+                "score_team2",
+                "winner",
             ]
         )
 
         return match
 
 
-
     @staticmethod
     def is_match_complete(match):
+        """
+        مشخص می‌کند آیا تمام اعضای دو تیم
+        برای این Match نتیجه ثبت کرده‌اند یا نه.
+        """
 
         team1_members = TeamMembership.objects.filter(
-            team=match.team1
+            team=match.team1,
         ).count()
 
         team2_members = TeamMembership.objects.filter(
-            team=match.team2
+            team=match.team2,
         ).count()
 
         team1_scores = MatchPlayerScore.objects.filter(
             match=match,
-            team=match.team1
+            team=match.team1,
         ).count()
 
         team2_scores = MatchPlayerScore.objects.filter(
             match=match,
-            team=match.team2
+            team=match.team2,
         ).count()
 
         return (
@@ -143,13 +102,52 @@ class MatchScoringService:
             and
             team2_scores == team2_members
         )
-    
+
 
     @staticmethod
     def can_finalize(match):
-        return MatchScoringService.is_match_complete(match)
+        """
+        آیا Match آماده نهایی‌شدن است؟
+        """
+
+        return MatchScoringService.is_match_complete(
+            match,
+        )
 
 
     @staticmethod
     def finalize_match(match):
-        return MatchScoringService.recalculate_match(match)
+        """
+        نهایی‌کردن نتیجه Match.
+
+        این متد فقط نتیجه Match را محاسبه می‌کند.
+        پایان Round یا Tournament مسئولیت این سرویس نیست.
+        """
+
+        if not MatchScoringService.can_finalize(match):
+            return MatchScoringService.recalculate_match(
+                match,
+            )
+
+        return MatchScoringService.recalculate_match(
+            match,
+        )
+
+
+    @staticmethod
+    def _clear_match_result(match):
+        """
+        پاک کردن نتیجه Match زمانی که هنوز کامل نشده است.
+        """
+
+        match.score_team1 = None
+        match.score_team2 = None
+        match.winner = None
+
+        match.save(
+            update_fields=[
+                "score_team1",
+                "score_team2",
+                "winner",
+            ]
+        )
