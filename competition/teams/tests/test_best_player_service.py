@@ -9,7 +9,11 @@ from teams.models import (
 
 from competitions.models import (
     Tournament,
+    TournamentTeam,
     GameType,
+    Round,
+    Subject,
+    Pairing,
 )
 
 from games.models import (
@@ -26,16 +30,42 @@ class BestPlayerServiceTest(TestCase):
 
     def setUp(self):
 
+        # -------------------------
+        # Game Type
+        # -------------------------
         self.game_type = GameType.objects.create(
             name="Quiz",
             key="quiz",
         )
 
+        # -------------------------
+        # Tournament
+        # -------------------------
         self.tournament = Tournament.objects.create(
             name="League",
             game_type=self.game_type,
         )
 
+        # -------------------------
+        # Subject
+        # -------------------------
+        self.subject = Subject.objects.create(
+            name="Math",
+            slug="math",
+        )
+
+        # -------------------------
+        # Round
+        # -------------------------
+        self.round = Round.objects.create(
+            tournament=self.tournament,
+            number=1,
+            subject=self.subject,
+        )
+
+        # -------------------------
+        # Users
+        # -------------------------
         self.user1 = CustomUser.objects.create_user(
             username="user1",
             password="1234",
@@ -51,6 +81,9 @@ class BestPlayerServiceTest(TestCase):
             password="1234",
         )
 
+        # -------------------------
+        # Teams
+        # -------------------------
         self.team1 = Team.objects.create(
             name="Alpha",
             captain=self.user1,
@@ -61,6 +94,9 @@ class BestPlayerServiceTest(TestCase):
             captain=self.user2,
         )
 
+        # -------------------------
+        # Memberships
+        # -------------------------
         TeamMembership.objects.create(
             team=self.team1,
             user=self.user1,
@@ -76,14 +112,39 @@ class BestPlayerServiceTest(TestCase):
             user=self.user3,
         )
 
-        self.match = Match.objects.create(
+        # -------------------------
+        # Tournament Teams
+        # -------------------------
+        TournamentTeam.objects.create(
             tournament=self.tournament,
+            team=self.team1,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament,
+            team=self.team2,
+        )
+
+        # -------------------------
+        # Pairing
+        # -------------------------
+        self.pairing = Pairing.objects.create(
+            round=self.round,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
+        # -------------------------
+        # Match
+        # -------------------------
+        self.match = Match.objects.create(
+            round=self.round,
+            pairing=self.pairing,
             team1=self.team1,
             team2=self.team2,
             score_team1=100,
             score_team2=90,
         )
-
 
     def test_returns_highest_score(self):
 
@@ -110,7 +171,6 @@ class BestPlayerServiceTest(TestCase):
             best,
         )
 
-
     def test_breaks_tie_by_completion_time(self):
 
         best = MatchPlayerScore.objects.create(
@@ -135,7 +195,6 @@ class BestPlayerServiceTest(TestCase):
             ),
             best,
         )
-
 
     def test_returns_none_when_no_scores_exist(self):
 
