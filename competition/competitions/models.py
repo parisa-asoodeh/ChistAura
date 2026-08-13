@@ -106,6 +106,10 @@ class Tournament(models.Model):
         verbose_name="نام لیگ"
     )
 
+    total_rounds = models.PositiveIntegerField(
+        verbose_name="تعداد کل دورها"
+    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
