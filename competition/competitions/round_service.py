@@ -128,6 +128,30 @@ class RoundService:
                 "فقط Round فعال را می‌توان به پایان رساند."
             )
 
+        # ---------------------------------------------------------
+        # همه Matchهای این Round باید کامل شده باشند.
+        # ---------------------------------------------------------
+
+        unfinished_matches = (
+            round_obj.matches.filter(
+                score_team1__isnull=True,
+            ).exists()
+            or
+            round_obj.matches.filter(
+                score_team2__isnull=True,
+            ).exists()
+        )
+
+        if unfinished_matches:
+            raise ValidationError(
+                "تا پایان تمام Matchهای این Round، "
+                "امکان پایان دادن به Round وجود ندارد."
+            )
+
+        # ---------------------------------------------------------
+        # پایان Round
+        # ---------------------------------------------------------
+
         round_obj.status = "finished"
         round_obj.ends_at = timezone.now()
 

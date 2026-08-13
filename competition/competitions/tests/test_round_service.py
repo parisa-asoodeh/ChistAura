@@ -12,6 +12,8 @@ from competitions.models import (
     Round,
 )
 
+from games.models import Match
+
 from competitions.round_service import RoundService
 
 
@@ -338,6 +340,14 @@ class RoundServiceTest(TestCase):
             round_obj,
         )
 
+        Match.objects.create(
+            round=round_obj,
+            team1=self.team1,
+            team2=self.team2,
+            score_team1=50,
+            score_team2=40,
+        )
+
         RoundService.finish_round(
             round_obj,
         )
@@ -352,6 +362,43 @@ class RoundServiceTest(TestCase):
         self.assertIsNotNone(
             round_obj.ends_at,
         )
+
+
+    def test_finish_round_fails_when_match_is_not_complete(self):
+
+        round_obj = RoundService.create_round(
+            tournament=self.tournament,
+            subject=self.subject,
+        )
+
+        RoundService.start_round(
+            round_obj,
+        )
+
+        Match.objects.create(
+            round=round_obj,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
+        with self.assertRaises(
+            ValidationError,
+        ):
+            RoundService.finish_round(
+                round_obj,
+            )
+
+        round_obj.refresh_from_db()
+
+        self.assertEqual(
+            round_obj.status,
+            "active",
+        )
+
+        self.assertIsNone(
+            round_obj.ends_at,
+        )
+        
 
     def test_finish_round_only_from_active_status(self):
 
