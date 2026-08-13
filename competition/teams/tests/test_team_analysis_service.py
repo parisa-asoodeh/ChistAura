@@ -9,20 +9,24 @@ from teams.models import (
     TeamMembership,
 )
 
-from competitions.models import Tournament
-
 from games.models import Match
 
 from competitions.models import (
     Tournament,
+    TournamentTeam,
     GameType,
+    Round,
+    Subject,
+    Pairing,
 )
 
 from teams.analysis.team_analysis_service import (
     TeamAnalysisService,
 )
 
+
 class TeamAnalysisServiceTest(TestCase):
+
     def setUp(self):
 
         self.game_type = GameType.objects.create(
@@ -65,6 +69,65 @@ class TeamAnalysisServiceTest(TestCase):
             user=self.user2,
         )
 
+        TournamentTeam.objects.create(
+            tournament=self.tournament,
+            team=self.team1,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament,
+            team=self.team2,
+        )
+
+        self.subject = Subject.objects.create(
+            name="Math",
+            slug="math",
+        )
+
+        self.round = Round.objects.create(
+            tournament=self.tournament,
+            number=1,
+            subject=self.subject,
+        )
+
+    def create_match(
+        self,
+        team1,
+        team2,
+        score_team1=None,
+        score_team2=None,
+        winner=None,
+    ):
+
+        round_number = (
+            Round.objects.filter(
+                tournament=self.tournament,
+            ).count()
+            + 1
+        )
+
+        round = Round.objects.create(
+            tournament=self.tournament,
+            number=round_number,
+            subject=self.subject,
+        )
+
+        pairing = Pairing.objects.create(
+            round=round,
+            team1=team1,
+            team2=team2,
+        )
+
+        return Match.objects.create(
+            round=round,
+            pairing=pairing,
+            team1=team1,
+            team2=team2,
+            winner=winner,
+            score_team1=score_team1,
+            score_team2=score_team2,
+        )
+
     @patch(
         "teams.analysis.team_analysis_service.PlayerRankingService.get_total_score"
     )
@@ -101,15 +164,13 @@ class TeamAnalysisServiceTest(TestCase):
             summary,
         )
 
-    
     def test_get_team_form_without_completed_matches(
         self,
     ):
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
+        self.create_match(
+            self.team1,
+            self.team2,
         )
 
         form = TeamAnalysisService.get_team_form(
@@ -125,31 +186,28 @@ class TeamAnalysisServiceTest(TestCase):
         self,
     ):
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team1,
+        self.create_match(
+            self.team1,
+            self.team2,
             score_team1=100,
             score_team2=80,
+            winner=self.team1,
         )
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
-            winner=None,
+        self.create_match(
+            self.team1,
+            self.team2,
             score_team1=90,
             score_team2=90,
+            winner=None,
         )
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team2,
+        self.create_match(
+            self.team1,
+            self.team2,
             score_team1=70,
             score_team2=95,
+            winner=self.team2,
         )
 
         form = TeamAnalysisService.get_team_form(
@@ -171,13 +229,12 @@ class TeamAnalysisServiceTest(TestCase):
 
         for _ in range(6):
 
-            Match.objects.create(
-                tournament=self.tournament,
-                team1=self.team1,
-                team2=self.team2,
-                winner=self.team1,
+            self.create_match(
+                self.team1,
+                self.team2,
                 score_team1=100,
                 score_team2=50,
+                winner=self.team1,
             )
 
         form = TeamAnalysisService.get_team_form(
@@ -199,36 +256,32 @@ class TeamAnalysisServiceTest(TestCase):
             ],
         )
 
-
     def test_get_recent_scores(
         self,
     ):
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team1,
+        self.create_match(
+            self.team1,
+            self.team2,
             score_team1=100,
             score_team2=80,
+            winner=self.team1,
         )
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team2,
-            team2=self.team1,
-            winner=self.team2,
+        self.create_match(
+            self.team2,
+            self.team1,
             score_team1=70,
             score_team2=90,
+            winner=self.team2,
         )
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team2,
+        self.create_match(
+            self.team1,
+            self.team2,
             score_team1=60,
             score_team2=95,
+            winner=self.team2,
         )
 
         scores = TeamAnalysisService.get_recent_scores(
@@ -257,13 +310,12 @@ class TeamAnalysisServiceTest(TestCase):
             60,
         ]:
 
-            Match.objects.create(
-                tournament=self.tournament,
-                team1=self.team1,
-                team2=self.team2,
-                winner=self.team1,
+            self.create_match(
+                self.team1,
+                self.team2,
                 score_team1=score,
                 score_team2=0,
+                winner=self.team1,
             )
 
         scores = TeamAnalysisService.get_recent_scores(
@@ -280,36 +332,32 @@ class TeamAnalysisServiceTest(TestCase):
             ],
         )
 
-
     def test_get_recent_score_differences(
         self,
     ):
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team1,
+        self.create_match(
+            self.team1,
+            self.team2,
             score_team1=100,
             score_team2=80,
+            winner=self.team1,
         )
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team2,
-            team2=self.team1,
-            winner=self.team2,
+        self.create_match(
+            self.team2,
+            self.team1,
             score_team1=70,
             score_team2=90,
+            winner=self.team2,
         )
 
-        Match.objects.create(
-            tournament=self.tournament,
-            team1=self.team1,
-            team2=self.team2,
-            winner=self.team2,
+        self.create_match(
+            self.team1,
+            self.team2,
             score_team1=60,
             score_team2=95,
+            winner=self.team2,
         )
 
         differences = (
@@ -340,13 +388,12 @@ class TeamAnalysisServiceTest(TestCase):
             60,
         ]:
 
-            Match.objects.create(
-                tournament=self.tournament,
-                team1=self.team1,
-                team2=self.team2,
-                winner=self.team1,
+            self.create_match(
+                self.team1,
+                self.team2,
                 score_team1=100,
                 score_team2=100 - diff,
+                winner=self.team1,
             )
 
         differences = (
