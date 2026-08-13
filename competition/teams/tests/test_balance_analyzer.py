@@ -11,6 +11,9 @@ from competitions.models import (
     Tournament,
     TournamentTeam,
     GameType,
+    Subject,
+    Round,
+    Pairing,
 )
 
 from games.models import (
@@ -22,7 +25,9 @@ from teams.ai.analyzers.balance_analyzer import (
     BalanceAnalyzer,
 )
 
+
 class BalanceAnalyzerTest(TestCase):
+
     def setUp(self):
 
         self.user1 = CustomUser.objects.create_user(
@@ -55,10 +60,25 @@ class BalanceAnalyzerTest(TestCase):
             captain=self.user3,
         )
 
-        TeamMembership.objects.create(team=self.team1, user=self.user1)
-        TeamMembership.objects.create(team=self.team1, user=self.user2)
-        TeamMembership.objects.create(team=self.team2, user=self.user3)
-        TeamMembership.objects.create(team=self.team2, user=self.user4)
+        TeamMembership.objects.create(
+            team=self.team1,
+            user=self.user1,
+        )
+
+        TeamMembership.objects.create(
+            team=self.team1,
+            user=self.user2,
+        )
+
+        TeamMembership.objects.create(
+            team=self.team2,
+            user=self.user3,
+        )
+
+        TeamMembership.objects.create(
+            team=self.team2,
+            user=self.user4,
+        )
 
         game_type = GameType.objects.create(
             name="Quiz",
@@ -80,13 +100,31 @@ class BalanceAnalyzerTest(TestCase):
             team=self.team2,
         )
 
-        self.match = Match.objects.create(
+        self.subject = Subject.objects.create(
+            name="General",
+            slug="general",
+        )
+
+        self.round = Round.objects.create(
             tournament=tournament,
+            number=1,
+            subject=self.subject,
+        )
+
+        self.pairing = Pairing.objects.create(
+            round=self.round,
             team1=self.team1,
             team2=self.team2,
         )
 
-
+        self.match = Match.objects.create(
+            round=self.round,
+            pairing=self.pairing,
+            team1=self.team1,
+            team2=self.team2,
+        )
+        
+    # بقیه تست‌ها بدون تغییر
     def test_is_balanced_when_difference_is_small(
         self,
     ):
