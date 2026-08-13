@@ -1,159 +1,159 @@
-from django.db import transaction
 from django.core.exceptions import ValidationError
-
-from .models import TournamentTeam
-from games.models import Match
+from django.db import transaction
 from django.utils import timezone
 
-from games.quiz_match_question_service import (
-    QuizMatchQuestionService,
-)
+from .models import TournamentTeam
 
 
 class TournamentService:
 
+    # =========================================================
+    # 1. اضافه کردن تیم به Tournament
+    # =========================================================
+    #
+    # این متد فقط زمانی اجازه اضافه کردن تیم را می‌دهد
+    # که Tournament هنوز در وضعیت draft باشد.
+    #
+    # مسئولیت این متد:
+    #   Tournament → اضافه کردن Team
+    #
+    # این متد مسئول ساخت Round، Pairing یا Match نیست.
+    #
     @staticmethod
     def add_team(tournament, team):
 
-        if tournament.status != 'draft':
+        # بعد از شروع Tournament دیگر اجازه تغییر تیم‌ها وجود ندارد.
+        if tournament.status != "draft":
             raise ValidationError(
                 "بعد از شروع لیگ امکان اضافه کردن تیم وجود ندارد."
             )
 
-
+        # ثبت رابطه Tournament و Team
         return TournamentTeam.objects.create(
             tournament=tournament,
-            team=team
+            team=team,
         )
 
 
+    # =========================================================
+    # 2. حذف کردن تیم از Tournament
+    # =========================================================
+    #
+    # این متد فقط زمانی اجازه حذف تیم را می‌دهد
+    # که Tournament هنوز در وضعیت draft باشد.
+    #
+    # مسئولیت این متد:
+    #   Tournament → حذف Team
+    #
     @staticmethod
     def remove_team(tournament, team):
 
-        if tournament.status != 'draft':
+        # بعد از شروع Tournament دیگر اجازه حذف تیم وجود ندارد.
+        if tournament.status != "draft":
             raise ValidationError(
                 "بعد از شروع لیگ امکان حذف تیم وجود ندارد."
             )
 
-
+        # حذف رابطه Tournament و Team
         TournamentTeam.objects.filter(
             tournament=tournament,
-            team=team
+            team=team,
         ).delete()
 
+
+    # =========================================================
+    # 3. شروع Tournament
+    # =========================================================
+    #
+    # این متد فقط Tournament را از حالت draft
+    # به حالت active منتقل می‌کند.
+    #
+    # نکته بسیار مهم:
+    #
+    # این متد دیگر:
+    #   ❌ Round نمی‌سازد
+    #   ❌ سؤال انتخاب نمی‌کند
+    #   ❌ Pairing نمی‌سازد
+    #   ❌ Bye ایجاد نمی‌کند
+    #   ❌ Match نمی‌سازد
+    #   ❌ GameSession نمی‌سازد
+    #
+    # هرکدام از این مسئولیت‌ها Service مخصوص خودشان را دارند.
+    #
+    # جریان بعد از این متد توسط Serviceهای دیگر ادامه پیدا می‌کند:
+    #
+    #   TournamentService.start_tournament()
+    #          ↓
+    #   RoundService.create_round()
+    #          ↓
+    #   RoundQuestionService.assign_questions()
+    #          ↓
+    #   SwissPairingService.create_pairings()
+    #          ↓
+    #   MatchCreationService.create_match_from_pairing()
+    #
     @staticmethod
     @transaction.atomic
     def start_tournament(tournament):
 
-        # -----------------------------
-        # 1. بررسی وضعیت لیگ
-        # -----------------------------
-        if tournament.status != 'draft':
+        # -----------------------------------------------------
+        # بررسی وضعیت Tournament
+        # -----------------------------------------------------
+        #
+        # فقط Tournament در حالت draft می‌تواند شروع شود.
+        #
+        if tournament.status != "draft":
             raise ValidationError(
-                "این لیگ قبلاً شروع شده یا به پایان رسیده است."
+                "این Tournament قبلاً شروع شده یا به پایان رسیده است."
             )
 
 
-        # -----------------------------
-        # 2. گرفتن تیم‌های لیگ
-        # -----------------------------
-        teams = list(
-            TournamentTeam.objects.filter(
-                tournament=tournament
-            ).select_related('team')
-        )
+        # -----------------------------------------------------
+        # بررسی حداقل تعداد تیم
+        # -----------------------------------------------------
+        #
+        # برای شروع مسابقات حداقل دو تیم لازم است.
+        #
+        team_count = TournamentTeam.objects.filter(
+            tournament=tournament,
+        ).count()
 
-
-        # -----------------------------
-        # 3. حداقل تعداد تیم
-        # -----------------------------
-        if len(teams) < 2:
+        if team_count < 2:
             raise ValidationError(
-                "برای شروع لیگ حداقل ۲ تیم نیاز است."
+                "برای شروع Tournament حداقل ۲ تیم نیاز است."
             )
 
 
-        # -----------------------------
-        # 4. جلوگیری از تولید دوباره مسابقات
-        # -----------------------------
-        if Match.objects.filter(
-            tournament=tournament
-        ).exists():
-            raise ValidationError(
-                "برای این لیگ قبلاً مسابقه ساخته شده است."
-            )
+        # -----------------------------------------------------
+        # تغییر وضعیت Tournament
+        # -----------------------------------------------------
+        #
+        # Tournament از draft به active منتقل می‌شود.
+        #
+        tournament.status = "active"
 
-
-        # -----------------------------
-        # 5. تولید مسابقات Round Robin
-        # -----------------------------
-        matches = []
-
-        for i in range(len(teams)):
-
-            for j in range(i + 1, len(teams)):
-
-                matches.append(
-                    Match(
-                        tournament=tournament,
-                        team1=teams[i].team,
-                        team2=teams[j].team
-                    )
-                )
-
-
-        # -----------------------------
-        # 6. ذخیره یکجای مسابقات
-        # -----------------------------
-        from games.session_creation_service import (
-            GameSessionCreationService,
-        )
-
-        from competitions.models import Category
-        for match in matches:
-
-            match.save()
-
-            if match.tournament.game_type.key == "quiz":
-
-                category = None
-
-                if match.tournament.subject:
-
-                    category = (
-                        match.tournament.subject.categories
-                        .filter(is_active=True)
-                    )
-
-                if category:
-
-                    QuizMatchQuestionService.create_questions_for_match(
-                        match=match,
-                        categories=list(
-                            match.tournament.subject.categories.filter(
-                                is_active=True,
-                            )
-                        ),
-                        difficulty=match.tournament.question_difficulty,
-                        count=match.tournament.question_count,
-                    )
-
-            GameSessionCreationService.create_sessions(
-                match
-            )
-
-        # -----------------------------
-        # 7. فعال کردن لیگ
-        # -----------------------------
-        tournament.status = 'active'
+        # زمان شروع Tournament ثبت می‌شود.
         tournament.started_at = timezone.now()
 
+
+        # -----------------------------------------------------
+        # ذخیره تغییرات
+        # -----------------------------------------------------
+        #
+        # فقط فیلدهایی که تغییر کرده‌اند ذخیره می‌شوند.
+        #
         tournament.save(
             update_fields=[
-                'status',
-                'started_at'
+                "status",
+                "started_at",
             ]
         )
 
 
+        # -----------------------------------------------------
+        # پایان عملیات
+        # -----------------------------------------------------
+        #
+        # خود Tournament فعال‌شده را برمی‌گردانیم.
+        #
         return tournament
