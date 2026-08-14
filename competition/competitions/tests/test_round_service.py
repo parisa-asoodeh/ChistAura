@@ -331,6 +331,14 @@ class RoundServiceTest(TestCase):
             first_round,
         )
 
+        Match.objects.create(
+            round=first_round,
+            team1=self.team1,
+            team2=self.team2,
+            score_team1=50,
+            score_team2=40,
+        )
+
         RoundService.finish_round(
             first_round,
         )
