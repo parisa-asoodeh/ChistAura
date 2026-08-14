@@ -27,6 +27,29 @@ class Match(models.Model):
         verbose_name='Pairing',
     )
 
+    STATUS_CHOICES = [
+        ("pending", "در انتظار"),
+        ("active", "در حال بازی"),
+        ("completed", "تکمیل شده"),
+        ("forfeit", "فورفیت شده"),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending",
+        verbose_name="وضعیت",
+    )
+
+    forfeit_team = models.ForeignKey(
+        Team,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="forfeited_matches",
+        verbose_name="تیم حاضر در فورفیت",
+    )
+
     team1 = models.ForeignKey(
         Team,
         on_delete=models.CASCADE,
@@ -99,7 +122,10 @@ class Match(models.Model):
 
         self.full_clean()
 
-        if self.score_team1 is None or self.score_team2 is None:
+        if self.status == "forfeit":
+            self.winner = self.forfeit_team
+
+        elif self.score_team1 is None or self.score_team2 is None:
             self.winner = None
 
         elif self.score_team1 > self.score_team2:
@@ -118,9 +144,13 @@ class Match(models.Model):
     def is_complete(self):
 
         return (
-            self.score_team1 is not None
-            and
-            self.score_team2 is not None
+            (
+                self.score_team1 is not None
+                and
+                self.score_team2 is not None
+            )
+            or
+            self.status == "forfeit"
         )  
 
 
