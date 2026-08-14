@@ -236,6 +236,7 @@ class TournamentExecutionServiceTest(TestCase):
         for match in matches:
             match.score_team1 = 20
             match.score_team2 = 10
+            match.status = "completed"
             match.save()
 
         TournamentExecutionService.finish_round(
@@ -347,6 +348,7 @@ class TournamentExecutionServiceTest(TestCase):
         for match in matches:
             match.score_team1 = 20
             match.score_team2 = 10
+            match.status = "completed"
             match.save()
 
         TournamentExecutionService.finish_round(
@@ -403,6 +405,7 @@ class TournamentExecutionServiceTest(TestCase):
         for match in matches:
             match.score_team1 = 30
             match.score_team2 = 10
+            match.status = "completed"
             match.save()
 
         TournamentExecutionService.finish_round(
@@ -468,7 +471,15 @@ class TournamentExecutionServiceTest(TestCase):
         for match in matches_round1:
             match.score_team1 = 20
             match.score_team2 = 10
+            match.status = "completed"
             match.save()
+
+        self.assertFalse(
+            Match.objects.filter(
+                round=round1,
+                status__in=["pending", "active"],
+            ).exists()
+        )
 
         TournamentExecutionService.finish_round(
             round1,
@@ -500,15 +511,28 @@ class TournamentExecutionServiceTest(TestCase):
         for match in matches_round2:
             match.score_team1 = 30
             match.score_team2 = 10
+            match.status = "completed"
             match.save()
+
+        self.assertFalse(
+            Match.objects.filter(
+                round=round2,
+                status__in=["pending", "active"],
+            ).exists()
+        )
 
         TournamentExecutionService.finish_round(
             round2,
         )
 
+        TournamentExecutionService.finalize_tournament(
+            tournament=self.tournament,
+        )
+
         # -------------------------
         # Finalize Tournament
         # -------------------------
+        self.tournament.refresh_from_db()
 
         TournamentExecutionService.finalize_tournament(
             tournament=self.tournament,
@@ -527,4 +551,88 @@ class TournamentExecutionServiceTest(TestCase):
 
         self.assertIsNotNone(
             self.tournament.champion,
+        )
+
+
+    def test_expire_round_handles_timeout_and_finishes_round(
+        self,
+    ):
+
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from competitions.tournament_execution_service import (
+            TournamentExecutionService,
+        )
+
+        round_obj = (
+            TournamentExecutionService.start_tournament(
+                tournament=self.tournament,
+                subject=self.subject,
+            )
+        )
+
+        TournamentExecutionService.prepare_round(
+            round_obj=round_obj,
+        )
+
+        RoundService.start_round(
+            round_obj,
+        )
+
+        match = Match.objects.filter(
+            round=round_obj,
+        ).first()
+
+        sessions = list(
+            match.sessions.order_by("id")
+        )
+
+        sessions[0].status = "started"
+        sessions[0].started_at = timezone.now()
+        sessions[0].save(
+            update_fields=[
+                "status",
+                "started_at",
+            ],
+        )
+
+        sessions[1].status = "pending"
+        sessions[1].started_at = None
+        sessions[1].save(
+            update_fields=[
+                "status",
+                "started_at",
+            ],
+        )
+
+        round_obj.ends_at = timezone.now() - timedelta(
+            minutes=5,
+        )
+
+        round_obj.save(
+            update_fields=["ends_at"],
+        )
+
+        TournamentExecutionService.expire_round(
+            round_obj,
+        )
+
+        match.refresh_from_db()
+        round_obj.refresh_from_db()
+
+        self.assertEqual(
+            match.status,
+            "forfeit",
+        )
+
+        self.assertEqual(
+            match.forfeit_team,
+            match.team1,
+        )
+
+        self.assertEqual(
+            round_obj.status,
+            "finished",
         )

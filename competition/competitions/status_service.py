@@ -14,25 +14,19 @@ class TournamentStatusService:
 
         rounds = tournament.rounds.all()
 
-        # هنوز به تعداد کل Roundها نرسیده‌ایم.
         if rounds.count() < tournament.total_rounds:
             return tournament
 
-        # حداقل یک Round هنوز تمام نشده است.
         if rounds.exclude(
             status="finished"
         ).exists():
             return tournament
 
-        # حداقل یک Match ناتمام وجود دارد.
         if rounds.filter(
-            matches__score_team1__isnull=True,
-        ).exists() or rounds.filter(
-            matches__score_team2__isnull=True,
+            matches__status__in=["pending", "active"],
         ).exists():
             return tournament
 
-        # همه Roundها و Matchها تمام شده‌اند.
         teams = TournamentRankingService.rank_teams(
             tournament,
         )

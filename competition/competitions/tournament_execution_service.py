@@ -87,9 +87,15 @@ class TournamentExecutionService:
     @transaction.atomic
     def finish_round(round_obj):
 
-        return RoundService.finish_round(
+        finished_round = RoundService.finish_round(
             round_obj,
         )
+
+        TournamentStatusService.refresh_tournament(
+            finished_round.tournament,
+        )
+
+        return finished_round
 
     # =========================================================
     # 4. ایجاد Round بعدی
