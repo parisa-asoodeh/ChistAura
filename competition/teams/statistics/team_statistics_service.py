@@ -118,6 +118,9 @@ class TeamStatisticsService:
 
         for match in matches:
 
+            if match.status == "forfeit":
+                continue
+
             if not match.is_complete:
                 continue
 
