@@ -151,3 +151,54 @@ class MatchScoringService:
                 "winner",
             ]
         )
+
+
+    @staticmethod
+    def finalize_timeout_match(match):
+        scores = MatchPlayerScore.objects.filter(
+            match=match,
+        )
+
+        team1_score = (
+            scores
+            .filter(team=match.team1)
+            .aggregate(total=Sum("score"))
+            .get("total")
+            or 0
+        )
+
+        team2_score = (
+            scores
+            .filter(team=match.team2)
+            .aggregate(total=Sum("score"))
+            .get("total")
+            or 0
+        )
+
+        game_type = get_game_type(
+            match.round.tournament.game_type,
+        )
+
+        winner = game_type.determine_winner(
+            match,
+            team1_score,
+            team2_score,
+        )
+
+        match.score_team1 = team1_score
+        match.score_team2 = team2_score
+        match.winner = winner
+        match.status = "completed"
+        match.forfeit_team = None
+
+        match.save(
+            update_fields=[
+                "score_team1",
+                "score_team2",
+                "winner",
+                "status",
+                "forfeit_team",
+            ]
+        )
+
+        return match
