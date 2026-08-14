@@ -32,6 +32,7 @@ class Match(models.Model):
         ("active", "در حال بازی"),
         ("completed", "تکمیل شده"),
         ("forfeit", "فورفیت شده"),
+        ("double_forfeit", "عدم حضور دو طرف"),
     ]
 
     status = models.CharField(
@@ -122,8 +123,8 @@ class Match(models.Model):
 
         self.full_clean()
 
-        if self.status == "forfeit":
-            self.winner = self.forfeit_team
+        if self.status in ["forfeit", "double_forfeit"]:
+            self.winner = self.forfeit_team if self.status == "forfeit" else None
 
         elif self.score_team1 is None or self.score_team2 is None:
             self.winner = None
@@ -150,7 +151,7 @@ class Match(models.Model):
                 self.score_team2 is not None
             )
             or
-            self.status == "forfeit"
+            self.status in ["forfeit", "double_forfeit"]
         )  
 
 
