@@ -39,6 +39,15 @@ class RoundService:
                 "درجه سختی سوالات نامعتبر است."
             )
 
+        current_round_count = Round.objects.filter(
+            tournament=tournament,
+        ).count()
+
+        if current_round_count >= tournament.total_rounds:
+            raise ValidationError(
+                "تعداد Roundهای Tournament به حد تعیین‌شده رسیده است."
+            )
+
         last_round = (
             Round.objects
             .filter(tournament=tournament)

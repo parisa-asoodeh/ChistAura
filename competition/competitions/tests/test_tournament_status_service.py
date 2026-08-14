@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.utils import timezone
 
 from accounts.models import CustomUser
 
@@ -22,7 +21,6 @@ from competitions.status_service import (
 )
 
 from games.models import Match
-from unittest.mock import patch
 
 
 class TournamentStatusServiceTest(TestCase):
@@ -73,6 +71,7 @@ class TournamentStatusServiceTest(TestCase):
         self.tournament = Tournament.objects.create(
             name="League",
             game_type=self.game_type,
+            total_rounds=2,
         )
 
         TournamentTeam.objects.create(
@@ -86,38 +85,59 @@ class TournamentStatusServiceTest(TestCase):
         )
 
         self.tournament.status = "active"
-        self.tournament.save()
+        self.tournament.save(update_fields=["status"])
 
-        self.round = Round.objects.create(
+    def create_round(
+        self,
+        number,
+        status="scheduled",
+    ):
+        return Round.objects.create(
             tournament=self.tournament,
-            number=1,
-            status="scheduled",
+            number=number,
+            status=status,
             subject=self.subject,
         )
 
-        self.pairing = Pairing.objects.create(
-            round=self.round,
-            team1=self.team1,
-            team2=self.team2,
-        )
-
-        self.match = Match.objects.create(
-            round=self.round,
-            pairing=self.pairing,
-            team1=self.team1,
-            team2=self.team2,
-        )
-
-
-    def test_refresh_tournament_when_unfinished_match_exists(
+    def create_match(
         self,
+        round_obj,
+        completed=True,
     ):
+        pairing = Pairing.objects.create(
+            round=round_obj,
+            team1=self.team1,
+            team2=self.team2,
+        )
 
-        self.tournament.status = "finished"
-        self.tournament.champion = self.team1
-        self.tournament.finished_at = timezone.now()
+        if completed:
+            return Match.objects.create(
+                round=round_obj,
+                pairing=pairing,
+                team1=self.team1,
+                team2=self.team2,
+                score_team1=20,
+                score_team2=10,
+            )
 
-        self.tournament.save()
+        return Match.objects.create(
+            round=round_obj,
+            pairing=pairing,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
+    def test_unfinished_match_does_not_finish_tournament(self):
+
+        round_obj = self.create_round(
+            number=1,
+            status="active",
+        )
+
+        self.create_match(
+            round_obj,
+            completed=False,
+        )
 
         TournamentStatusService.refresh_tournament(
             self.tournament,
@@ -138,15 +158,67 @@ class TournamentStatusServiceTest(TestCase):
             self.tournament.finished_at,
         )
 
-
-    def test_refresh_tournament_when_all_matches_are_finished(
+    def test_finished_current_round_does_not_finish_tournament_when_more_rounds_remain(
         self,
     ):
 
-        self.match.score_team1 = 20
-        self.match.score_team2 = 10
-        self.match.winner = self.team1
-        self.match.save()
+        round1 = self.create_round(
+            number=1,
+            status="finished",
+        )
+
+        self.create_match(
+            round1,
+            completed=True,
+        )
+
+        round2 = self.create_round(
+            number=2,
+            status="scheduled",
+        )
+
+        self.create_match(
+            round2,
+            completed=True,
+        )
+
+        TournamentStatusService.refresh_tournament(
+            self.tournament,
+        )
+
+        self.tournament.refresh_from_db()
+
+        self.assertEqual(
+            self.tournament.status,
+            "active",
+        )
+
+        self.assertIsNone(
+            self.tournament.champion,
+        )
+
+        self.assertIsNone(
+            self.tournament.finished_at,
+        )
+
+    def test_last_round_finished_finishes_tournament_and_sets_champion(
+        self,
+    ):
+
+        self.tournament.total_rounds = 1
+        self.tournament.save(
+            update_fields=["total_rounds"],
+        )
+
+        round_obj = self.create_round(
+            number=1,
+            status="finished",
+        )
+
+        self.create_match(
+            round_obj,
+            completed=True,
+        )
 
         TournamentStatusService.refresh_tournament(
             self.tournament,
@@ -166,69 +238,4 @@ class TournamentStatusServiceTest(TestCase):
 
         self.assertIsNotNone(
             self.tournament.finished_at,
-        )
-
-
-    def test_refresh_tournament_keeps_active_status_when_match_is_unfinished(
-        self,
-    ):
-
-        self.tournament.status = "active"
-        self.tournament.save()
-
-        TournamentStatusService.refresh_tournament(
-            self.tournament,
-        )
-
-        self.tournament.refresh_from_db()
-
-        self.assertEqual(
-            self.tournament.status,
-            "active",
-        )
-
-        self.assertIsNone(
-            self.tournament.champion,
-        )
-
-        self.assertIsNone(
-            self.tournament.finished_at,
-        )
-
-
-    @patch(
-        "competitions.status_service.TournamentRankingService.rank_teams"
-    )
-    def test_refresh_tournament_when_no_ranked_teams(
-        self,
-        mock_rank_teams,
-    ):
-
-        self.match.score_team1 = 10
-        self.match.score_team2 = 5
-        self.match.save()
-
-        mock_rank_teams.return_value = []
-
-        TournamentStatusService.refresh_tournament(
-            self.tournament,
-        )
-
-        self.tournament.refresh_from_db()
-
-        self.assertEqual(
-            self.tournament.status,
-            "finished",
-        )
-
-        self.assertIsNone(
-            self.tournament.champion,
-        )
-
-        self.assertIsNotNone(
-            self.tournament.finished_at,
-        )
-
-        mock_rank_teams.assert_called_once_with(
-            self.tournament,
         )

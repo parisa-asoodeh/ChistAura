@@ -65,6 +65,7 @@ class RoundServiceTest(TestCase):
         self.tournament = Tournament.objects.create(
             name="Tournament",
             game_type=self.game_type,
+            total_rounds=3,
         )
 
         TournamentTeam.objects.create(
@@ -191,6 +192,30 @@ class RoundServiceTest(TestCase):
                 tournament=self.tournament,
                 subject=self.subject,
                 question_difficulty="invalid",
+            )
+
+
+    def test_create_round_cannot_exceed_total_rounds(self):
+
+        self.tournament.total_rounds = 2
+        self.tournament.save()
+
+        RoundService.create_round(
+            tournament=self.tournament,
+            subject=self.subject,
+        )
+
+        RoundService.create_round(
+            tournament=self.tournament,
+            subject=self.subject,
+        )
+
+        with self.assertRaises(
+            ValidationError,
+        ):
+            RoundService.create_round(
+                tournament=self.tournament,
+                subject=self.subject,
             )
 
     # --------------------------------------------------
@@ -398,7 +423,7 @@ class RoundServiceTest(TestCase):
         self.assertIsNone(
             round_obj.ends_at,
         )
-        
+
 
     def test_finish_round_only_from_active_status(self):
 
