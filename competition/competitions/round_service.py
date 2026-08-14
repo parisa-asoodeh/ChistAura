@@ -142,13 +142,11 @@ class RoundService:
         # ---------------------------------------------------------
 
         unfinished_matches = (
-            round_obj.matches.filter(
-                score_team1__isnull=True,
-            ).exists()
-            or
-            round_obj.matches.filter(
-                score_team2__isnull=True,
-            ).exists()
+            round_obj.matches
+            .filter(
+                status__in=["pending", "active"],
+            )
+            .exists()
         )
 
         if unfinished_matches:
