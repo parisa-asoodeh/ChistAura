@@ -6,6 +6,8 @@ from competitions.pairing_service import SwissPairingService
 from competitions.match_creation_service import MatchCreationService
 from competitions.round_question_service import RoundQuestionService
 from competitions.status_service import TournamentStatusService
+from games.timeout_service import MatchTimeoutService
+
 
 
 class TournamentExecutionService:
@@ -79,8 +81,25 @@ class TournamentExecutionService:
             "matches": matches,
         }
 
+
     # =========================================================
-    # 3. پایان Round
+    # 3. انقضای Round و تعیین‌تکلیف Matchها
+    # =========================================================
+
+    @staticmethod
+    @transaction.atomic
+    def expire_round(round_obj):
+
+        MatchTimeoutService.handle_expired_round(
+            round_obj,
+        )
+
+        return TournamentExecutionService.finish_round(
+            round_obj,
+        )
+
+    # =========================================================
+    # 4. پایان Round
     # =========================================================
 
     @staticmethod
@@ -98,7 +117,7 @@ class TournamentExecutionService:
         return finished_round
 
     # =========================================================
-    # 4. ایجاد Round بعدی
+    # 5. ایجاد Round بعدی
     # =========================================================
 
     @staticmethod
@@ -114,7 +133,7 @@ class TournamentExecutionService:
         )
 
     # =========================================================
-    # 5. نهایی کردن Tournament
+    # 6. نهایی کردن Tournament
     #
     # Ranking
     #   ↓
