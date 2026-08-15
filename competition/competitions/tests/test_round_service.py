@@ -488,3 +488,20 @@ class RoundServiceTest(TestCase):
             round_obj.status,
             "finished",
         )
+
+
+    def test_create_duplicate_round_number_is_rejected(self):
+
+        first_round = RoundService.create_round(
+            tournament=self.tournament,
+            subject=self.subject,
+        )
+
+        with self.assertRaises(
+            ValidationError,
+        ):
+            Round.objects.create(
+                tournament=self.tournament,
+                number=first_round.number,
+                subject=self.subject,
+            )

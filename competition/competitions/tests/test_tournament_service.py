@@ -321,3 +321,38 @@ class TournamentServiceTest(TestCase):
             ).count(),
             2,
         )
+
+
+    def test_add_team_rejected_when_tournament_is_finished(self):
+
+        self.tournament.status = "finished"
+        self.tournament.save()
+
+        with self.assertRaises(ValidationError):
+            TournamentService.add_team(
+                self.tournament,
+                self.team3,
+            )
+
+
+    def test_remove_team_rejected_when_tournament_is_finished(self):
+
+        self.tournament.status = "finished"
+        self.tournament.save()
+
+        with self.assertRaises(ValidationError):
+            TournamentService.remove_team(
+                self.tournament,
+                self.team1,
+            )
+
+
+    def test_start_tournament_rejected_when_tournament_is_finished(self):
+
+        self.tournament.status = "finished"
+        self.tournament.save()
+
+        with self.assertRaises(ValidationError):
+            TournamentService.start_tournament(
+                self.tournament,
+            )

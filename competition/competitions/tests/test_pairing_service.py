@@ -444,3 +444,35 @@ class SwissPairingServiceTest(TestCase):
                 second_opponents
             )
         )
+
+
+    def test_pairing_cannot_be_modified_after_round_starts(self):
+
+        pairing = Pairing.objects.create(
+            round=self.round,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
+        self.round.status = "active"
+        self.round.save()
+
+        pairing.team1 = self.team3
+        pairing.team2 = self.team4
+
+        with self.assertRaises(
+            ValidationError,
+        ):
+            pairing.save()
+
+        pairing.refresh_from_db()
+
+        self.assertEqual(
+            pairing.team1,
+            self.team1,
+        )
+
+        self.assertEqual(
+            pairing.team2,
+            self.team2,
+        )

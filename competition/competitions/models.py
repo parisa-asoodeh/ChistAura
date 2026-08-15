@@ -274,6 +274,25 @@ class Round(models.Model):
             )
         ]
 
+    def clean(self):
+
+        duplicate_round = Round.objects.filter(
+            tournament=self.tournament,
+            number=self.number,
+        ).exclude(
+            pk=self.pk,
+        ).exists()
+
+        if duplicate_round:
+            raise ValidationError(
+                "این شماره Round قبلاً برای این Tournament ایجاد شده است."
+            )
+
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.tournament.name} - Round {self.number}"
 
@@ -366,7 +385,7 @@ class Pairing(models.Model):
 
         if not TournamentTeam.objects.filter(
             tournament=tournament,
-            team=self.team1
+            team=self.team1,
         ).exists():
             raise ValidationError(
                 "تیم اول عضو این Tournament نیست."
@@ -374,13 +393,46 @@ class Pairing(models.Model):
 
         if not TournamentTeam.objects.filter(
             tournament=tournament,
-            team=self.team2
+            team=self.team2,
         ).exists():
             raise ValidationError(
                 "تیم دوم عضو این Tournament نیست."
             )
 
+        # جلوگیری از Duplicate Pairing با جابه‌جایی تیم‌ها
+        duplicate_pairing = Pairing.objects.filter(
+            round=self.round,
+        ).exclude(
+            pk=self.pk,
+        ).filter(
+            team1=self.team2,
+            team2=self.team1,
+        ).exists()
+
+        if duplicate_pairing:
+            raise ValidationError(
+                "این دو تیم قبلاً در این Round با یکدیگر Pair شده‌اند."
+            )
+
     def save(self, *args, **kwargs):
+
+        # جلوگیری از تغییر Pairing در Round فعال یا تمام‌شده
+        if self.pk:
+            previous = Pairing.objects.select_related(
+                "round",
+            ).get(pk=self.pk)
+
+            if (
+                previous.round.status in ["active", "finished"]
+                and (
+                    previous.team1_id != self.team1_id
+                    or previous.team2_id != self.team2_id
+                )
+            ):
+                raise ValidationError(
+                    "بعد از شروع Round امکان تغییر Pairing وجود ندارد."
+                )
+
         self.full_clean()
         super().save(*args, **kwargs)
 
