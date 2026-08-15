@@ -38,11 +38,13 @@ class TeamStatisticsServiceTest(TestCase):
         self.tournament1 = Tournament.objects.create(
             name="League 1",
             game_type=self.game_type,
+            total_rounds=2,
         )
 
         self.tournament2 = Tournament.objects.create(
             name="League 2",
             game_type=self.game_type,
+            total_rounds=2,
         )
 
         self.captain1 = CustomUser.objects.create_user(
@@ -416,6 +418,7 @@ class TeamStatisticsServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Empty",
             game_type=self.game_type,
+            total_rounds=1,
         )
 
         self.assertEqual(
@@ -473,6 +476,7 @@ class TeamStatisticsServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Empty",
             game_type=self.game_type,
+            total_rounds=1,
         )
 
         self.assertEqual(
@@ -498,6 +502,7 @@ class TeamStatisticsServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Empty",
             game_type=self.game_type,
+            total_rounds=1,
         )
 
         self.assertEqual(
