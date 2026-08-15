@@ -116,6 +116,7 @@ class PerformanceDataProviderTest(TestCase):
         self.tournament = Tournament.objects.create(
             name="League 1",
             game_type=self.game_type,
+            total_rounds=2,
         )
 
         TournamentTeam.objects.create(
@@ -151,6 +152,7 @@ class PerformanceDataProviderTest(TestCase):
         self.tournament2 = Tournament.objects.create(
             name="League 2",
             game_type=self.game_type,
+            total_rounds=2,
         )
 
         TournamentTeam.objects.create(
