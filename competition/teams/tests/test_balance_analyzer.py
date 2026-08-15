@@ -88,6 +88,7 @@ class BalanceAnalyzerTest(TestCase):
         tournament = Tournament.objects.create(
             name="League",
             game_type=game_type,
+            total_rounds=2,
         )
 
         TournamentTeam.objects.create(
