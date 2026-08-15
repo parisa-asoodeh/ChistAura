@@ -36,6 +36,16 @@ class QuizMatchQuestionServiceTest(TestCase):
             password="1234",
         )
 
+        self.user3 = CustomUser.objects.create_user(
+            username="user3",
+            password="1234",
+        )
+
+        self.user4 = CustomUser.objects.create_user(
+            username="user4",
+            password="1234",
+        )
+
         self.team1 = Team.objects.create(
             name="Team 1",
             captain=self.user1,
@@ -44,6 +54,16 @@ class QuizMatchQuestionServiceTest(TestCase):
         self.team2 = Team.objects.create(
             name="Team 2",
             captain=self.user2,
+        )
+
+        self.team3 = Team.objects.create(
+            name="Team 3",
+            captain=self.user3,
+        )
+
+        self.team4 = Team.objects.create(
+            name="Team 4",
+            captain=self.user4,
         )
 
         self.game_type = GameType.objects.create(
@@ -66,6 +86,16 @@ class QuizMatchQuestionServiceTest(TestCase):
         TournamentTeam.objects.create(
             tournament=self.tournament,
             team=self.team2,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament,
+            team=self.team3,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament,
+            team=self.team4,
         )
 
         self.tournament.status = "active"
@@ -262,28 +292,32 @@ class QuizMatchQuestionServiceTest(TestCase):
             question1,
             1,
         )
+
         round_question2 = self.create_round_question(
             question2,
             2,
         )
 
+        # Match اول
         QuizMatchQuestionService.create_questions_for_match(
             match=self.match,
         )
 
+        # Match دوم با Pairing متفاوت در همان Round
         second_pairing = Pairing.objects.create(
             round=self.round,
-            team1=self.team2,
-            team2=self.team1,
+            team1=self.team3,
+            team2=self.team4,
         )
 
         second_match = Match.objects.create(
             round=self.round,
             pairing=second_pairing,
-            team1=self.team2,
-            team2=self.team1,
+            team1=self.team3,
+            team2=self.team4,
         )
 
+        # همان RoundQuestionها باید برای Match دوم هم قابل استفاده باشند.
         QuizMatchQuestionService.create_questions_for_match(
             match=second_match,
         )
