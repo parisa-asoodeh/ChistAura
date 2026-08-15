@@ -118,6 +118,7 @@ class TournamentStatusServiceTest(TestCase):
                 team2=self.team2,
                 score_team1=20,
                 score_team2=10,
+                status="completed",
             )
 
         return Match.objects.create(
