@@ -48,6 +48,7 @@ class QuestionSelectionServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Chemistry Tournament",
             game_type=game_type,
+            total_rounds=2,
         )
 
         round = Round.objects.create(
@@ -124,6 +125,7 @@ class QuestionSelectionServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Math Tournament",
             game_type=game_type,
+            total_rounds=2,
         )
 
         round = Round.objects.create(
@@ -190,6 +192,7 @@ class QuestionSelectionServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Physics Tournament",
             game_type=game_type,
+            total_rounds=2,
         )
 
         round = Round.objects.create(
@@ -323,6 +326,7 @@ class QuestionSelectionServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Biology Tournament",
             game_type=game_type,
+            total_rounds=2,
         )
 
         round = Round.objects.create(
@@ -420,6 +424,7 @@ class QuestionSelectionServiceTest(TestCase):
         tournament = Tournament.objects.create(
             name="Chemistry Tournament",
             game_type=game_type,
+            total_rounds=2,
         )
 
         round = Round.objects.create(

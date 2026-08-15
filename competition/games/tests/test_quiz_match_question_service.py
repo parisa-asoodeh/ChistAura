@@ -55,6 +55,7 @@ class QuizMatchQuestionServiceTest(TestCase):
             name="Tournament",
             game_type=self.game_type,
             status="draft",
+            total_rounds=2,
         )
 
         TournamentTeam.objects.create(
