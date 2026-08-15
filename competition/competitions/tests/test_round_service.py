@@ -337,6 +337,7 @@ class RoundServiceTest(TestCase):
             team2=self.team2,
             score_team1=50,
             score_team2=40,
+            status="completed",
         )
 
         RoundService.finish_round(
@@ -379,6 +380,7 @@ class RoundServiceTest(TestCase):
             team2=self.team2,
             score_team1=50,
             score_team2=40,
+            status="completed",
         )
 
         RoundService.finish_round(
