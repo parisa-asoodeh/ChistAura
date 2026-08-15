@@ -38,6 +38,7 @@ class SubjectModelTest(TestCase):
         tournament = Tournament.objects.create(
             name="Math League",
             game_type=game_type,
+            total_rounds=2,
         )
 
         tournament.status = "active"

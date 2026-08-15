@@ -72,6 +72,7 @@ class TournamentServiceTest(TestCase):
         self.tournament = Tournament.objects.create(
             name="Tournament",
             game_type=self.game_type,
+            total_rounds=2,
         )
 
         # دو تیم اولیه

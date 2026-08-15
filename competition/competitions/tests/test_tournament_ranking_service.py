@@ -65,6 +65,7 @@ class TournamentRankingServiceTest(TestCase):
         self.tournament = Tournament.objects.create(
             name="League",
             game_type=self.game_type,
+            total_rounds=2,
         )
 
         TournamentTeam.objects.create(
