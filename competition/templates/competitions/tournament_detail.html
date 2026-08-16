@@ -160,7 +160,51 @@
 
 <hr>
 
+<h3>
+دورهای لیگ
+</h3>
 
+<ul>
+
+{% for round in rounds %}
+
+<li>
+
+<strong>
+Round {{ round.number }}
+</strong>
+
+-
+
+{{ round.get_status_display }}
+
+-
+
+موضوع:
+{{ round.subject.name }}
+
+-
+
+درجه سختی:
+{{ round.get_question_difficulty_display }}
+
+-
+
+تعداد سوال:
+{{ round.question_count }}
+
+</li>
+
+{% empty %}
+
+<li>
+هنوز هیچ Roundای تنظیم نشده است.
+</li>
+
+{% endfor %}
+
+</ul>
+<hr>
 {# ========================================================= #}
 {# TEAMS                                                     #}
 {# ========================================================= #}

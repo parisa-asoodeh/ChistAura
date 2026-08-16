@@ -91,6 +91,7 @@ def tournament_detail(request, tournament_id):
     teams = tournament.teams.select_related(
         'team'
     )
+    rounds = tournament.rounds.all()
 
     rounds = tournament.rounds.all()
 
