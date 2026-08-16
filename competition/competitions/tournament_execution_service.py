@@ -36,7 +36,11 @@ class TournamentExecutionService:
                 "Round اول برای این Tournament تنظیم نشده است."
             )
 
-        return RoundService.start_round(
+        RoundService.start_round(
+            first_round
+        )
+
+        return TournamentExecutionService.prepare_round(
             first_round
         )
 
