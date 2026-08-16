@@ -15,6 +15,39 @@
     {{ tournament.get_status_display }}
 </p>
 
+{% if tournament.status == 'draft' and captain_team %}
+
+    <hr>
+
+    <h3>
+        ثبت تیم در لیگ
+    </h3>
+
+    {% if is_team_registered %}
+
+        <p>
+            ✅ تیم «{{ captain_team.name }}» در این لیگ ثبت شده است.
+        </p>
+
+    {% else %}
+
+        <form
+            method="post"
+            action="{% url 'register_team_in_tournament' tournament.id %}"
+        >
+
+            {% csrf_token %}
+
+            <button type="submit">
+                ثبت تیم من در لیگ
+            </button>
+
+        </form>
+
+    {% endif %}
+
+{% endif %}
+
 <p>
     <strong>نوع بازی:</strong>
 

@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .services import TournamentService
+from teams.models import Team
+
 
 
 def tournament_leaderboard(request, tournament_id):
@@ -124,6 +126,17 @@ def tournament_detail(request, tournament_id):
             '-number'
         ).first()
 
+    captain_team = Team.objects.filter(
+        captain=request.user
+    ).first() if request.user.is_authenticated else None
+
+    is_team_registered = False
+
+    if captain_team:
+        is_team_registered = tournament.teams.filter(
+            team=captain_team
+        ).exists()
+
     return render(
         request,
         'competitions/tournament_detail.html',
@@ -136,6 +149,8 @@ def tournament_detail(request, tournament_id):
             'total_matches': total_matches,
             'played_matches': played_matches,
             'progress': progress,
+            'captain_team': captain_team,
+            'is_team_registered': is_team_registered,
         }
     )
 
