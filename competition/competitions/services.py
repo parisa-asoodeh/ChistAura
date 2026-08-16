@@ -35,6 +35,59 @@ class TournamentService:
         )
 
 
+    @staticmethod
+    @transaction.atomic
+    def register_team_by_captain(tournament, captain):
+
+        # -----------------------------------------------------
+        # Tournament باید هنوز در حالت draft باشد.
+        # -----------------------------------------------------
+
+        if tournament.status != "draft":
+            raise ValidationError(
+                "ثبت تیم فقط قبل از شروع Tournament امکان‌پذیر است."
+            )
+
+        # -----------------------------------------------------
+        # پیدا کردن تیمی که این کاربر Captain آن است.
+        # -----------------------------------------------------
+
+        from teams.models import Team
+
+        team = (
+            Team.objects
+            .filter(captain=captain)
+            .first()
+        )
+
+        if team is None:
+            raise ValidationError(
+                "شما Captain هیچ تیمی نیستید."
+            )
+
+        # -----------------------------------------------------
+        # جلوگیری از ثبت دوباره همان تیم.
+        # -----------------------------------------------------
+
+        if TournamentTeam.objects.filter(
+            tournament=tournament,
+            team=team,
+        ).exists():
+
+            raise ValidationError(
+                "تیم شما قبلاً در این Tournament ثبت شده است."
+            )
+
+        # -----------------------------------------------------
+        # ثبت تیم در Tournament
+        # -----------------------------------------------------
+
+        return TournamentTeam.objects.create(
+            tournament=tournament,
+            team=team,
+        )
+
+
     # =========================================================
     # 2. حذف کردن تیم از Tournament
     # =========================================================

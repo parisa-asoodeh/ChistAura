@@ -1,8 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Tournament
 from games.models import Match
 from .ranking_service import TournamentRankingService
 from teams.statistics.team_statistics_service import TeamStatisticsService
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from .services import TournamentService
 
 
 def tournament_leaderboard(request, tournament_id):
@@ -133,4 +137,43 @@ def tournament_detail(request, tournament_id):
             'played_matches': played_matches,
             'progress': progress,
         }
+    )
+
+
+@login_required
+def register_team_in_tournament(request, tournament_id):
+
+    tournament = get_object_or_404(
+        Tournament,
+        id=tournament_id
+    )
+
+    if request.method != "POST":
+        return redirect(
+            "tournament_detail",
+            tournament_id=tournament.id
+        )
+
+    try:
+
+        TournamentService.register_team_by_captain(
+            tournament=tournament,
+            captain=request.user,
+        )
+
+        messages.success(
+            request,
+            "تیم شما با موفقیت در Tournament ثبت شد."
+        )
+
+    except ValidationError as e:
+
+        messages.error(
+            request,
+            str(e)
+        )
+
+    return redirect(
+        "tournament_detail",
+        tournament_id=tournament.id
     )
