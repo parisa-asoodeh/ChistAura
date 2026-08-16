@@ -6,36 +6,67 @@
 
 {% block content %}
 
-<h2>
-لیگ‌ها
-</h2>
+<h2>لیگ‌ها</h2>
 
 {% if tournaments %}
 
-<ul>
-
 {% for tournament in tournaments %}
 
-<li>
+<hr>
 
-<a href="{% url 'tournament_detail' tournament.id %}">
-    {{ tournament.name }}
-</a>
+<h3>
+    <a href="{% url 'tournament_detail' tournament.id %}">
+        {{ tournament.name }}
+    </a>
+</h3>
 
--
+<p>
+    <strong>وضعیت:</strong>
+    {{ tournament.get_status_display }}
+</p>
 
-{{ tournament.get_status_display }}
+<p>
+    <strong>نوع بازی:</strong>
+    {{ tournament.game_type.name }}
+</p>
 
-</li>
+<p>
+    <strong>تعداد دورها:</strong>
+    {{ tournament.total_rounds }}
+</p>
+
+{% if tournament.status == 'draft' %}
+
+<p>
+    🟡 ثبت‌نام در این لیگ باز است.
+</p>
+
+{% elif tournament.status == 'active' %}
+
+<p>
+    🟢 این لیگ در حال برگزاری است.
+</p>
+
+{% elif tournament.status == 'finished' %}
+
+<p>
+    🏁 این لیگ به پایان رسیده است.
+</p>
+
+{% endif %}
+
+<p>
+    <a href="{% url 'tournament_detail' tournament.id %}">
+        مشاهده جزئیات
+    </a>
+</p>
 
 {% endfor %}
-
-</ul>
 
 {% else %}
 
 <p>
-هنوز لیگی ساخته نشده است.
+    هنوز لیگی ساخته نشده است.
 </p>
 
 {% endif %}

@@ -1,88 +1,177 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{ tournament.name }}
+    {{ tournament.name }}
 {% endblock %}
 
 {% block content %}
 
 <h2>
-{{ tournament.name }}
+    {{ tournament.name }}
 </h2>
 
 <p>
-<strong>وضعیت:</strong>
-{{ tournament.get_status_display }}
+    <strong>وضعیت:</strong>
+    {{ tournament.get_status_display }}
 </p>
 
 <p>
-<strong>نوع بازی:</strong>
+    <strong>نوع بازی:</strong>
 
-{% if tournament.game_type %}
-    {{ tournament.game_type.name }}
-{% else %}
-    تعریف نشده
-{% endif %}
+    {% if tournament.game_type %}
+        {{ tournament.game_type.name }}
+    {% else %}
+        تعریف نشده
+    {% endif %}
 </p>
+
+<p>
+    <strong>تعداد دورها:</strong>
+    {{ tournament.total_rounds }}
+</p>
+
+<hr>
+
+
+{# ========================================================= #}
+{# DRAFT                                                     #}
+{# ========================================================= #}
+
+{% if tournament.status == 'draft' %}
+
+<h3>
+    🟡 ثبت‌نام
+</h3>
+
+<p>
+    این لیگ هنوز شروع نشده است.
+</p>
+
+<p>
+    در صورت فعال بودن ثبت‌نام، کاپیتان تیم می‌تواند
+    تیم خود را در این لیگ ثبت کند.
+</p>
+
+{% endif %}
+
+
+{# ========================================================= #}
+{# ACTIVE                                                    #}
+{# ========================================================= #}
+
+{% if tournament.status == 'active' %}
+
+<h3>
+    🟢 لیگ در حال برگزاری است
+</h3>
+
+{% if current_round %}
+
+<h4>
+    Round {{ current_round.number }}
+</h4>
+
+<p>
+    <strong>وضعیت Round:</strong>
+    {{ current_round.get_status_display }}
+</p>
+
+{% endif %}
+
+
+<h4>
+    پیشرفت مسابقات
+</h4>
+
+<p>
+    {{ played_matches }}
+    /
+    {{ total_matches }}
+    مسابقه انجام شده
+</p>
+
+<p>
+    پیشرفت:
+    {{ progress }}%
+</p>
+
+{% endif %}
+
+
+{# ========================================================= #}
+{# FINISHED                                                  #}
+{# ========================================================= #}
+
+{% if tournament.status == 'finished' %}
+
+<h3>
+    🏁 لیگ به پایان رسیده است
+</h3>
 
 {% if tournament.champion %}
-<hr>
-<h3>
-🏆 قهرمان لیگ
-</h3>
+
+<h4>
+    🏆 قهرمان لیگ
+</h4>
+
 <p>
-<strong>
-{{ tournament.champion.name }}
-</strong>
+    <strong>
+        {{ tournament.champion.name }}
+    </strong>
 </p>
+
 {% endif %}
 
-<hr>
-<p>
-<strong>تعداد تیم‌ها:</strong>
-{{ teams.count }}
-</p>
+{% endif %}
 
-<p>
-<strong>تعداد مسابقات:</strong>
-{{ total_matches }}
-</p>
-
-<p>
-<strong>مسابقات انجام شده:</strong>
-{{ played_matches }}
-</p>
-
-<p>
-<strong>پیشرفت لیگ:</strong>
-{{ played_matches }}
-/
-{{ total_matches }}
-مسابقه
-({{ progress }}%)
-</p>
 
 <hr>
+
+
+{# ========================================================= #}
+{# TEAMS                                                     #}
+{# ========================================================= #}
 
 <h3>
-تیم‌های لیگ
+    تیم‌های لیگ
 </h3>
+
+{% if teams %}
 
 <ul>
+
 {% for tt in teams %}
+
 <li>
-<strong>
-{{ tt.team.name }}
-</strong>
+    {{ tt.team.name }}
 </li>
+
 {% endfor %}
+
 </ul>
+
+{% else %}
+
+<p>
+    هنوز تیمی در این لیگ ثبت نشده است.
+</p>
+
+{% endif %}
+
+
+{# ========================================================= #}
+{# MATCHES                                                   #}
+{# ========================================================= #}
+
+{% if tournament.status != 'draft' %}
 
 <hr>
 
 <h3>
-مسابقات لیگ
+    مسابقات
 </h3>
+
+{% if matches %}
 
 <ul>
 
@@ -94,34 +183,33 @@
 
 {% if match.is_complete %}
 
-{{ match.team1.name }}
-{{ match.score_team1 }}
+    {{ match.team1.name }}
+    {{ match.score_team1 }}
 
--
+    -
 
-{{ match.score_team2 }}
-{{ match.team2.name }}
+    {{ match.score_team2 }}
+    {{ match.team2.name }}
 
 {% else %}
 
-{{ match.team1.name }}
+    {{ match.team1.name }}
 
-vs
+    vs
 
-{{ match.team2.name }}
+    {{ match.team2.name }}
 
 {% endif %}
 
 </a>
-<br>
 
 {% if match.is_complete %}
 
-🟢 پایان یافته
+    — 🟢 پایان یافته
 
 {% else %}
 
-🟡 در حال برگزاری
+    — 🟡 در حال برگزاری
 
 {% endif %}
 
@@ -131,10 +219,33 @@ vs
 
 </ul>
 
+{% else %}
+
+<p>
+    هنوز مسابقه‌ای ایجاد نشده است.
+</p>
+
+{% endif %}
+
+{% endif %}
+
+
+{# ========================================================= #}
+{# RANKING                                                   #}
+{# ========================================================= #}
+
+{% if tournament.status == 'active' or tournament.status == 'finished' %}
+
 <hr>
 
+<p>
+
 <a href="{% url 'tournament_leaderboard' tournament.id %}">
-مشاهده جدول لیگ
+    مشاهده جدول رده‌بندی
 </a>
+
+</p>
+
+{% endif %}
 
 {% endblock %}

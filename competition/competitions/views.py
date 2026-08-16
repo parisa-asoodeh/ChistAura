@@ -62,13 +62,15 @@ def tournament_leaderboard(request, tournament_id):
 
 def tournament_list(request):
 
-    tournaments = Tournament.objects.all()
+    tournaments = Tournament.objects.select_related(
+        'game_type'
+    ).order_by('-created_at')
 
     return render(
         request,
         'competitions/tournament_list.html',
         {
-            'tournaments': tournaments
+            'tournaments': tournaments,
         }
     )
 
@@ -84,8 +86,14 @@ def tournament_detail(request, tournament_id):
         'team'
     )
 
+    rounds = tournament.rounds.all()
+
     matches = Match.objects.filter(
-        tournament=tournament
+        round__tournament=tournament
+    ).select_related(
+        'team1',
+        'team2',
+        'round',
     )
 
     total_matches = matches.count()
@@ -103,14 +111,24 @@ def tournament_detail(request, tournament_id):
             played_matches * 100 / total_matches
         )
 
+    current_round = rounds.filter(
+        status='active'
+    ).first()
+
+    if current_round is None:
+        current_round = rounds.order_by(
+            '-number'
+        ).first()
+
     return render(
         request,
         'competitions/tournament_detail.html',
         {
             'tournament': tournament,
             'teams': teams,
+            'rounds': rounds,
             'matches': matches,
-
+            'current_round': current_round,
             'total_matches': total_matches,
             'played_matches': played_matches,
             'progress': progress,
