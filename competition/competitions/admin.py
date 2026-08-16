@@ -7,13 +7,29 @@ from .models import (
     GameType,
     Subject,
     Category,
+    Round,
 )
 
 from .services import TournamentService
 
+class RoundInline(admin.TabularInline):
+    model = Round
+    extra = 0
+    fields = (
+        'number',
+        'subject',
+        'question_difficulty',
+        'question_count',
+        'starts_at',
+        'ends_at',
+    )
 
 @admin.register(Tournament)
 class TournamentAdmin(admin.ModelAdmin):
+
+    inlines = [
+        RoundInline,
+    ]
 
     list_display = (
         'name',
@@ -70,6 +86,36 @@ class TournamentAdmin(admin.ModelAdmin):
                 level=messages.SUCCESS
             )
 
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = super().get_inline_instances(request, obj)
+
+        if obj is None:
+            return inline_instances
+        return inline_instances
+
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(
+            request,
+            form,
+            formsets,
+            change,
+        )
+
+        tournament = form.instance
+
+        if tournament.status != "draft":
+            return
+
+        round_count = tournament.rounds.count()
+
+        if round_count != tournament.total_rounds:
+            from django.core.exceptions import ValidationError
+
+            raise ValidationError(
+                f"تعداد Roundهای تنظیم‌شده باید دقیقاً "
+                f"{tournament.total_rounds} عدد باشد."
+            )
 
 
 @admin.register(TournamentTeam)
@@ -140,3 +186,49 @@ class CategoryAdmin(admin.ModelAdmin):
         "subject",
         "is_active",
     )
+
+
+@admin.register(Round)
+class RoundAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'tournament',
+        'number',
+        'status',
+        'subject',
+        'question_difficulty',
+        'question_count',
+        'starts_at',
+        'ends_at',
+    )
+
+    list_filter = (
+        'status',
+        'question_difficulty',
+        'tournament',
+        'subject',
+    )
+
+    search_fields = (
+        'tournament__name',
+        'subject__name',
+    )
+
+    ordering = (
+        'tournament',
+        'number',
+    )
+
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.tournament.status != 'draft':
+            return False
+
+        return super().has_change_permission(request, obj)
+
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.tournament.status != 'draft':
+            return False
+
+        return super().has_delete_permission(request, obj)

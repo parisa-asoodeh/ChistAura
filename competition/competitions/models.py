@@ -276,8 +276,11 @@ class Round(models.Model):
 
     def clean(self):
 
+        if not self.tournament_id:
+            return
+
         duplicate_round = Round.objects.filter(
-            tournament=self.tournament,
+            tournament_id=self.tournament_id,
             number=self.number,
         ).exclude(
             pk=self.pk,
