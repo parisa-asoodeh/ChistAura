@@ -7,6 +7,7 @@ from competitions.match_creation_service import MatchCreationService
 from competitions.round_question_service import RoundQuestionService
 from competitions.status_service import TournamentStatusService
 from games.timeout_service import MatchTimeoutService
+from django.core.exceptions import ValidationError
 
 
 
@@ -18,18 +19,25 @@ class TournamentExecutionService:
 
     @staticmethod
     @transaction.atomic
-    def start_tournament(
-        tournament,
-        subject,
-    ):
+    def start_tournament(tournament):
 
         tournament = TournamentService.start_tournament(
             tournament,
         )
 
-        return RoundService.create_round(
-            tournament=tournament,
-            subject=subject,
+        first_round = (
+            tournament.rounds
+            .filter(number=1)
+            .first()
+        )
+
+        if not first_round:
+            raise ValidationError(
+                "Round اول برای این Tournament تنظیم نشده است."
+            )
+
+        return RoundService.start_round(
+            first_round
         )
 
     # =========================================================

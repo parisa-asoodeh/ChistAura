@@ -10,16 +10,25 @@ from .models import (
     Round,
 )
 
-from .services import TournamentService
+from .tournament_execution_service import TournamentExecutionService
+
 
 class RoundInline(admin.TabularInline):
     model = Round
     extra = 0
+
     fields = (
         'number',
+        'status',
         'subject',
         'question_difficulty',
         'question_count',
+        'starts_at',
+        'ends_at',
+    )
+
+    readonly_fields = (
+        'status',
         'starts_at',
         'ends_at',
     )
@@ -63,7 +72,7 @@ class TournamentAdmin(admin.ModelAdmin):
         for tournament in queryset:
 
             try:
-                TournamentService.start_tournament(
+                TournamentExecutionService.start_tournament(
                     tournament
                 )
 
