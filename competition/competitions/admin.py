@@ -29,8 +29,6 @@ class RoundInline(admin.TabularInline):
 
     readonly_fields = (
         'status',
-        'starts_at',
-        'ends_at',
     )
 
 @admin.register(Tournament)
