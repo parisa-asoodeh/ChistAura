@@ -60,12 +60,14 @@ class MatchScoringService:
         match.score_team1 = team1_score
         match.score_team2 = team2_score
         match.winner = winner
+        match.status = "completed"
 
         match.save(
             update_fields=[
                 "score_team1",
                 "score_team2",
                 "winner",
+                "status",
             ]
         )
 
