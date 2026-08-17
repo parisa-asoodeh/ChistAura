@@ -345,6 +345,9 @@ class GameSessionServiceTest(TestCase):
     ):
 
         # Arrange
+        self.round.status = "active"
+        self.round.save(update_fields=["status"])
+
         session1 = GameSession.objects.create(
             match=self.match,
             user=self.user1,
@@ -376,6 +379,7 @@ class GameSessionServiceTest(TestCase):
         mock_finalize.assert_called_once_with(
             self.match,
         )
+
 
 
     @patch(
