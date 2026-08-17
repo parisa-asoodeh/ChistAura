@@ -15,7 +15,7 @@ class QuizPlayService:
                 match=session.match
             )
             .select_related(
-                "question"
+                "round_question__question"
             )
             .order_by(
                 "order"
