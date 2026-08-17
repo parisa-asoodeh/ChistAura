@@ -124,9 +124,22 @@ class TournamentExecutionService:
             round_obj,
         )
 
+        tournament = finished_round.tournament
+
         TournamentStatusService.refresh_tournament(
-            finished_round.tournament,
+            tournament,
         )
+
+        # اگر آخرین Round نباشد،
+        # Round بعدی باید بلافاصله ایجاد شود.
+        if (
+            finished_round.number
+            < tournament.total_rounds
+        ):
+            TournamentExecutionService.create_next_round(
+                tournament=tournament,
+                subject=finished_round.subject,
+            )
 
         return finished_round
 

@@ -267,11 +267,9 @@ class TournamentExecutionServiceTest(TestCase):
             round1,
         )
 
-        round2 = (
-            TournamentExecutionService.create_next_round(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        round2 = Round.objects.get(
+            tournament=self.tournament,
+            number=2,
         )
 
         self.assertEqual(
