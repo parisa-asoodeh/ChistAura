@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.core.exceptions import ValidationError
 
 from competitions.services import TournamentService
 from competitions.round_service import RoundService
@@ -7,8 +8,6 @@ from competitions.match_creation_service import MatchCreationService
 from competitions.round_question_service import RoundQuestionService
 from competitions.status_service import TournamentStatusService
 from games.timeout_service import MatchTimeoutService
-from django.core.exceptions import ValidationError
-
 
 
 class TournamentExecutionService:
@@ -93,7 +92,6 @@ class TournamentExecutionService:
             "matches": matches,
         }
 
-
     # =========================================================
     # 3. انقضای Round و تعیین‌تکلیف Matchها
     # =========================================================
@@ -129,7 +127,33 @@ class TournamentExecutionService:
         return finished_round
 
     # =========================================================
-    # 5. ایجاد Round بعدی
+    # 5. پایان Round در صورت آماده بودن
+    # =========================================================
+
+    @staticmethod
+    @transaction.atomic
+    def finish_round_if_ready(round_obj):
+
+        unfinished_matches = (
+            round_obj.matches
+            .filter(
+                status__in=[
+                    "pending",
+                    "active",
+                ],
+            )
+            .exists()
+        )
+
+        if unfinished_matches:
+            return round_obj
+
+        return TournamentExecutionService.finish_round(
+            round_obj
+        )
+
+    # =========================================================
+    # 6. ایجاد Round بعدی
     # =========================================================
 
     @staticmethod
@@ -145,7 +169,7 @@ class TournamentExecutionService:
         )
 
     # =========================================================
-    # 6. نهایی کردن Tournament
+    # 7. نهایی کردن Tournament
     #
     # Ranking
     #   ↓

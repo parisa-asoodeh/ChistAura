@@ -1,16 +1,19 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from teams.models import TeamMembership
 from django.utils import timezone
+
+from teams.models import TeamMembership
 
 from .models import MatchPlayerScore
 
 from .game_types.registry import (
     get_game_type,
 )
+
 from .scoring import (
     MatchScoringService,
 )
+
 from .game_resume_service import GameResumeService
 
 
@@ -28,7 +31,6 @@ class GameSessionService:
             raise ValidationError(
                 "این Session قبلاً تکمیل شده است."
             )
-        
 
         existing_score = MatchPlayerScore.objects.filter(
             match=session.match,
@@ -39,7 +41,7 @@ class GameSessionService:
             raise ValidationError(
                 "امتیاز این بازیکن قبلاً ثبت شده است."
             )
-        
+
         tournament = session.match.round.tournament
 
         if not tournament.game_type:
@@ -70,8 +72,8 @@ class GameSessionService:
             raise ValidationError(
                 "بازیکن عضو هیچ‌یک از تیم‌های این مسابقه نیست."
             )
-        team = membership.team
 
+        team = membership.team
 
         MatchPlayerScore.objects.create(
             match=session.match,
@@ -80,7 +82,6 @@ class GameSessionService:
             score=official_score,
             completion_time=completion_time,
         )
-
 
         session.raw_score = raw_score
         session.completion_time = completion_time
@@ -96,6 +97,7 @@ class GameSessionService:
                 'finished_at',
             ]
         )
+
         GameResumeService.clear(
             session
         )
@@ -106,8 +108,16 @@ class GameSessionService:
             MatchScoringService.finalize_match(
                 session.match
             )
-        return session
 
+            from competitions.tournament_execution_service import (
+                TournamentExecutionService,
+            )
+
+            TournamentExecutionService.finish_round_if_ready(
+                session.match.round
+            )
+
+        return session
 
     @staticmethod
     @transaction.atomic
@@ -133,6 +143,8 @@ class GameSessionService:
             ]
         )
 
-        GameResumeService.clear(session)
+        GameResumeService.clear(
+            session
+        )
 
         return session
