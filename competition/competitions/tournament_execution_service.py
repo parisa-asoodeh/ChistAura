@@ -35,12 +35,16 @@ class TournamentExecutionService:
                 "Round اول برای این Tournament تنظیم نشده است."
             )
 
-        RoundService.start_round(
-            first_round
+        # Round اول ابتدا باید آماده شود،
+        # چون سرویس‌های Question / Pairing / Match
+        # فقط Round زمان‌بندی‌شده را می‌پذیرند.
+        TournamentExecutionService.prepare_round(
+            first_round,
         )
 
-        return TournamentExecutionService.prepare_round(
-            first_round
+        # شروع Tournament = شروع Round اول
+        return RoundService.start_round(
+            first_round,
         )
 
     # =========================================================
