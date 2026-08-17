@@ -17,8 +17,6 @@ from competitions.models import (
     Category,
 )
 
-from competitions.round_service import RoundService
-
 from games.models import (
     Match,
     GameSession,
@@ -69,6 +67,11 @@ class TournamentExecutionServiceTest(TestCase):
             captain=self.user3,
         )
 
+        self.team4 = Team.objects.create(
+            name="Team 4",
+            captain=self.user1,
+        )
+
         # -------------------------
         # Memberships
         # -------------------------
@@ -86,6 +89,11 @@ class TournamentExecutionServiceTest(TestCase):
         TeamMembership.objects.create(
             team=self.team3,
             user=self.user3,
+        )
+
+        TeamMembership.objects.create(
+            team=self.team4,
+            user=self.user1,
         )
 
         # -------------------------
@@ -155,8 +163,22 @@ class TournamentExecutionServiceTest(TestCase):
             team=self.team3,
         )
 
+        TournamentTeam.objects.create(
+            tournament=self.tournament,
+            team=self.team4,
+        )
+
+        self.round1 = Round.objects.create(
+            tournament=self.tournament,
+            number=1,
+            status="scheduled",
+            subject=self.subject,
+            question_difficulty="easy",
+            question_count=10,
+        )
+
     # =========================================================
-    # 1. Start Tournament → Create Round 1
+    # 1. Start Tournament → Round 1
     # =========================================================
 
     def test_start_tournament_creates_first_round(self):
@@ -165,14 +187,16 @@ class TournamentExecutionServiceTest(TestCase):
             TournamentExecutionService,
         )
 
-        round_obj = (
-            TournamentExecutionService.start_tournament(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
         )
 
         self.tournament.refresh_from_db()
+
+        round_obj = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
+        )
 
         self.assertEqual(
             self.tournament.status,
@@ -194,7 +218,7 @@ class TournamentExecutionServiceTest(TestCase):
 
         self.assertEqual(
             round_obj.status,
-            "scheduled",
+            "active",
         )
 
         self.assertEqual(
@@ -214,19 +238,13 @@ class TournamentExecutionServiceTest(TestCase):
             TournamentExecutionService,
         )
 
-        round1 = (
-            TournamentExecutionService.start_tournament(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
         )
 
-        TournamentExecutionService.prepare_round(
-            round_obj=round1,
-        )
-
-        RoundService.start_round(
-            round1,
+        round1 = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
         )
 
         matches = Match.objects.filter(
@@ -237,7 +255,13 @@ class TournamentExecutionServiceTest(TestCase):
             match.score_team1 = 20
             match.score_team2 = 10
             match.status = "completed"
-            match.save()
+            match.save(
+                update_fields=[
+                    "score_team1",
+                    "score_team2",
+                    "status",
+                ]
+            )
 
         TournamentExecutionService.finish_round(
             round1,
@@ -279,17 +303,15 @@ class TournamentExecutionServiceTest(TestCase):
             TournamentExecutionService,
         )
 
-        round_obj = (
+        result = (
             TournamentExecutionService.start_tournament(
                 tournament=self.tournament,
-                subject=self.subject,
             )
         )
 
-        result = (
-            TournamentExecutionService.prepare_round(
-                round_obj=round_obj,
-            )
+        round_obj = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
         )
 
         self.assertIsNotNone(
@@ -326,19 +348,13 @@ class TournamentExecutionServiceTest(TestCase):
             TournamentExecutionService,
         )
 
-        round_obj = (
-            TournamentExecutionService.start_tournament(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
         )
 
-        TournamentExecutionService.prepare_round(
-            round_obj=round_obj,
-        )
-
-        RoundService.start_round(
-            round_obj,
+        round_obj = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
         )
 
         matches = Match.objects.filter(
@@ -349,7 +365,13 @@ class TournamentExecutionServiceTest(TestCase):
             match.score_team1 = 20
             match.score_team2 = 10
             match.status = "completed"
-            match.save()
+            match.save(
+                update_fields=[
+                    "score_team1",
+                    "score_team2",
+                    "status",
+                ]
+            )
 
         TournamentExecutionService.finish_round(
             round_obj,
@@ -383,19 +405,13 @@ class TournamentExecutionServiceTest(TestCase):
             update_fields=["total_rounds"],
         )
 
-        round_obj = (
-            TournamentExecutionService.start_tournament(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
         )
 
-        TournamentExecutionService.prepare_round(
-            round_obj=round_obj,
-        )
-
-        RoundService.start_round(
-            round_obj,
+        round_obj = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
         )
 
         matches = Match.objects.filter(
@@ -406,7 +422,13 @@ class TournamentExecutionServiceTest(TestCase):
             match.score_team1 = 30
             match.score_team2 = 10
             match.status = "completed"
-            match.save()
+            match.save(
+                update_fields=[
+                    "score_team1",
+                    "score_team2",
+                    "status",
+                ]
+            )
 
         TournamentExecutionService.finish_round(
             round_obj,
@@ -449,19 +471,13 @@ class TournamentExecutionServiceTest(TestCase):
         # Round 1
         # -------------------------
 
-        round1 = (
-            TournamentExecutionService.start_tournament(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
         )
 
-        TournamentExecutionService.prepare_round(
-            round_obj=round1,
-        )
-
-        RoundService.start_round(
-            round1,
+        round1 = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
         )
 
         matches_round1 = Match.objects.filter(
@@ -472,7 +488,13 @@ class TournamentExecutionServiceTest(TestCase):
             match.score_team1 = 20
             match.score_team2 = 10
             match.status = "completed"
-            match.save()
+            match.save(
+                update_fields=[
+                    "score_team1",
+                    "score_team2",
+                    "status",
+                ]
+            )
 
         self.assertFalse(
             Match.objects.filter(
@@ -500,6 +522,8 @@ class TournamentExecutionServiceTest(TestCase):
             round_obj=round2,
         )
 
+        from competitions.round_service import RoundService
+
         RoundService.start_round(
             round2,
         )
@@ -512,7 +536,13 @@ class TournamentExecutionServiceTest(TestCase):
             match.score_team1 = 30
             match.score_team2 = 10
             match.status = "completed"
-            match.save()
+            match.save(
+                update_fields=[
+                    "score_team1",
+                    "score_team2",
+                    "status",
+                ]
+            )
 
         self.assertFalse(
             Match.objects.filter(
@@ -524,15 +554,6 @@ class TournamentExecutionServiceTest(TestCase):
         TournamentExecutionService.finish_round(
             round2,
         )
-
-        TournamentExecutionService.finalize_tournament(
-            tournament=self.tournament,
-        )
-
-        # -------------------------
-        # Finalize Tournament
-        # -------------------------
-        self.tournament.refresh_from_db()
 
         TournamentExecutionService.finalize_tournament(
             tournament=self.tournament,
@@ -553,6 +574,9 @@ class TournamentExecutionServiceTest(TestCase):
             self.tournament.champion,
         )
 
+    # =========================================================
+    # 7. Expire Round
+    # =========================================================
 
     def test_expire_round_handles_timeout_and_finishes_round(
         self,
@@ -566,19 +590,13 @@ class TournamentExecutionServiceTest(TestCase):
             TournamentExecutionService,
         )
 
-        round_obj = (
-            TournamentExecutionService.start_tournament(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
         )
 
-        TournamentExecutionService.prepare_round(
-            round_obj=round_obj,
-        )
-
-        RoundService.start_round(
-            round_obj,
+        round_obj = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
         )
 
         match = Match.objects.filter(
