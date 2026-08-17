@@ -130,15 +130,17 @@ class TournamentExecutionService:
             tournament,
         )
 
-        # اگر آخرین Round نباشد،
-        # Round بعدی باید بلافاصله ایجاد شود.
-        if (
-            finished_round.number
-            < tournament.total_rounds
-        ):
-            TournamentExecutionService.create_next_round(
-                tournament=tournament,
-                subject=finished_round.subject,
+        if finished_round.number < tournament.total_rounds:
+
+            next_round = (
+                TournamentExecutionService.create_next_round(
+                    tournament=tournament,
+                    subject=finished_round.subject,
+                )
+            )
+
+            TournamentExecutionService.prepare_round(
+                next_round,
             )
 
         return finished_round

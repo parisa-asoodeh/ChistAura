@@ -464,6 +464,7 @@ class TournamentExecutionServiceTest(TestCase):
         from competitions.tournament_execution_service import (
             TournamentExecutionService,
         )
+        from competitions.round_service import RoundService
 
         # -------------------------
         # Round 1
@@ -509,18 +510,10 @@ class TournamentExecutionServiceTest(TestCase):
         # Round 2
         # -------------------------
 
-        round2 = (
-            TournamentExecutionService.create_next_round(
-                tournament=self.tournament,
-                subject=self.subject,
-            )
+        round2 = Round.objects.get(
+            tournament=self.tournament,
+            number=2,
         )
-
-        TournamentExecutionService.prepare_round(
-            round_obj=round2,
-        )
-
-        from competitions.round_service import RoundService
 
         RoundService.start_round(
             round2,
@@ -552,6 +545,10 @@ class TournamentExecutionServiceTest(TestCase):
         TournamentExecutionService.finish_round(
             round2,
         )
+
+        # -------------------------
+        # Finalize Tournament
+        # -------------------------
 
         TournamentExecutionService.finalize_tournament(
             tournament=self.tournament,
