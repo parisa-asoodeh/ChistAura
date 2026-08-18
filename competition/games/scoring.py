@@ -4,6 +4,7 @@ from .models import MatchPlayerScore
 from teams.models import TeamMembership
 from .game_types.registry import get_game_type
 from .player_score_service import PlayerScoreService
+from teams.ai.match_report_service import MatchReportService
 
 
 class MatchScoringService:
@@ -68,6 +69,16 @@ class MatchScoringService:
                 "score_team2",
                 "winner",
                 "status",
+            ]
+        )
+
+        report = MatchReportService.generate(match)
+
+        match.report = report["summary"]
+
+        match.save(
+            update_fields=[
+                "report",
             ]
         )
 

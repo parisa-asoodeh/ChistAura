@@ -69,12 +69,12 @@ class PerformanceAnalysisService:
         ]
 
         team1_context = PerformanceDataProvider.get_team_context(
-            match.tournament,
+            match.round.tournament,
             match.team1,
         )
-        
+
         team2_context = PerformanceDataProvider.get_team_context(
-            match.tournament,
+            match.round.tournament,
             match.team2,
         )
 
