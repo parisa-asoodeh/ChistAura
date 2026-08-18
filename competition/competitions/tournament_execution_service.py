@@ -134,15 +134,21 @@ class TournamentExecutionService:
         if finished_round.number < tournament.total_rounds:
 
             next_round = (
-                TournamentExecutionService.create_next_round(
-                    tournament=tournament,
-                    subject=finished_round.subject,
+                tournament.rounds
+                .filter(
+                    number=finished_round.number + 1,
                 )
+                .first()
             )
 
-            TournamentExecutionService.prepare_round(
-                next_round,
-            )
+            if next_round:
+                TournamentExecutionService.prepare_round(
+                    next_round,
+                )
+
+                RoundService.start_round(
+                    next_round,
+                )
 
         # ---------------------------------------------------------
         # اگر این آخرین Round بود،

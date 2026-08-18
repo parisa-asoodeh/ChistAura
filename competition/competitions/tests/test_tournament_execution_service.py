@@ -263,6 +263,15 @@ class TournamentExecutionServiceTest(TestCase):
                 ]
             )
 
+        Round.objects.create(
+            tournament=self.tournament,
+            number=2,
+            status="scheduled",
+            subject=self.subject,
+            question_difficulty="easy",
+            question_count=10,
+        )
+
         TournamentExecutionService.finish_round(
             round1,
         )
@@ -272,6 +281,13 @@ class TournamentExecutionServiceTest(TestCase):
             number=2,
         )
 
+        round1.refresh_from_db()
+
+        self.assertEqual(
+            round1.status,
+            "finished",
+        )
+
         self.assertEqual(
             round2.number,
             2,
@@ -279,7 +295,7 @@ class TournamentExecutionServiceTest(TestCase):
 
         self.assertEqual(
             round2.status,
-            "scheduled",
+            "active",
         )
 
         self.assertEqual(
@@ -502,6 +518,15 @@ class TournamentExecutionServiceTest(TestCase):
             ).exists()
         )
 
+        Round.objects.create(
+            tournament=self.tournament,
+            number=2,
+            status="scheduled",
+            subject=self.subject,
+            question_difficulty="easy",
+            question_count=10,
+        )
+
         TournamentExecutionService.finish_round(
             round1,
         )
@@ -513,10 +538,6 @@ class TournamentExecutionServiceTest(TestCase):
         round2 = Round.objects.get(
             tournament=self.tournament,
             number=2,
-        )
-
-        RoundService.start_round(
-            round2,
         )
 
         matches_round2 = Match.objects.filter(
