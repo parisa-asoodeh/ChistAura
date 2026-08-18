@@ -109,14 +109,6 @@ class GameSessionService:
                 session.match
             )
 
-            from competitions.tournament_execution_service import (
-                TournamentExecutionService,
-            )
-
-            TournamentExecutionService.finish_round_if_ready(
-                session.match.round
-            )
-
         return session
 
     @staticmethod

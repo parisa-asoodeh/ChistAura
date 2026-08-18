@@ -139,7 +139,7 @@ class Team(models.Model):
 
         for match in matches:
             
-            if match.status == "forfeit":
+            if match.status in ["forfeit", "double_forfeit"]:
                 continue
 
             if not match.is_complete:

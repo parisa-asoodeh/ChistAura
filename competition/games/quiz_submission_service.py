@@ -55,8 +55,22 @@ class QuizSubmissionService:
         )
 
         # 4) Complete Session
-        GameSessionService.complete_session(
-            session=session,
-            raw_score=raw_score,
-            completion_time=completion_time,
+        completed_session = (
+            GameSessionService.complete_session(
+                session=session,
+                raw_score=raw_score,
+                completion_time=completion_time,
+            )
         )
+
+        # 5) بررسی پایان Round
+        from competitions.tournament_execution_service import (
+            TournamentExecutionService,
+        )
+
+        TournamentExecutionService.finish_round_if_ready(
+            completed_session.match.round
+        )
+
+        return completed_session
+    

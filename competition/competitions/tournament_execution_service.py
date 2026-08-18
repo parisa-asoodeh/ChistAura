@@ -126,9 +126,10 @@ class TournamentExecutionService:
 
         tournament = finished_round.tournament
 
-        TournamentStatusService.refresh_tournament(
-            tournament,
-        )
+        # ---------------------------------------------------------
+        # اگر هنوز Round دیگری باقی مانده است،
+        # Round بعدی را ایجاد و آماده می‌کنیم.
+        # ---------------------------------------------------------
 
         if finished_round.number < tournament.total_rounds:
 
@@ -141,6 +142,17 @@ class TournamentExecutionService:
 
             TournamentExecutionService.prepare_round(
                 next_round,
+            )
+
+        # ---------------------------------------------------------
+        # اگر این آخرین Round بود،
+        # Tournament را نهایی می‌کنیم.
+        # ---------------------------------------------------------
+
+        else:
+
+            TournamentStatusService.refresh_tournament(
+                tournament,
             )
 
         return finished_round
