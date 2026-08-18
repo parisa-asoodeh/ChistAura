@@ -22,6 +22,7 @@ class PredictionServiceTest(SimpleTestCase):
 
         team1 = Mock()
         team2 = Mock()
+        tournament = Mock()
 
         mock_predict.return_value = {
             "winner": team1,
@@ -30,6 +31,7 @@ class PredictionServiceTest(SimpleTestCase):
         result = PredictionService.predict_match(
             team1,
             team2,
+            tournament,
         )
 
         self.assertEqual(
@@ -40,6 +42,7 @@ class PredictionServiceTest(SimpleTestCase):
         mock_predict.assert_called_once_with(
             team1,
             team2,
+            tournament,
         )
 
 

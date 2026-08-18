@@ -12,11 +12,13 @@ class PredictionService:
     def predict_match(
         team1,
         team2,
+        tournament,
     ):
 
         return WinnerPredictor.predict(
             team1,
             team2,
+            tournament,
         )
 
     @staticmethod
