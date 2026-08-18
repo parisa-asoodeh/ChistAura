@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from .quiz_answer_service import (
     QuizAnswerService,
 )
@@ -22,6 +24,7 @@ from .session_service import (
 class QuizSubmissionService:
 
     @staticmethod
+    @transaction.atomic
     def submit(
         session,
         form,
@@ -73,4 +76,3 @@ class QuizSubmissionService:
         )
 
         return completed_session
-    
