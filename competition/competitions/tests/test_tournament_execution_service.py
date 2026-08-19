@@ -789,3 +789,97 @@ class TournamentExecutionServiceTest(TestCase):
             round_obj.status,
             "finished",
         )
+
+
+    def test_start_round_starts_when_scheduled_time_has_arrived(self):
+
+        from django.utils import timezone
+
+        from competitions.tournament_execution_service import (
+            TournamentExecutionService,
+        )
+
+        self.tournament.status = "active"
+        self.tournament.save(
+            update_fields=[
+                "status",
+            ]
+        )
+
+        round_obj = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
+        )
+
+        round_obj.starts_at = timezone.now() - timezone.timedelta(
+            minutes=1,
+        )
+
+        round_obj.save(
+            update_fields=[
+                "starts_at",
+            ]
+        )
+
+        result = TournamentExecutionService.start_scheduled_round(
+            round_obj,
+        )
+
+        round_obj.refresh_from_db()
+
+        self.assertEqual(
+            round_obj.status,
+            "active",
+        )
+
+        self.assertEqual(
+            result.status,
+            "active",
+        )
+
+
+    def test_start_scheduled_round_does_not_start_before_scheduled_time(self):
+
+        from django.utils import timezone
+
+        from competitions.tournament_execution_service import (
+            TournamentExecutionService,
+        )
+
+        self.tournament.status = "active"
+        self.tournament.save(
+            update_fields=[
+                "status",
+            ]
+        )
+
+        round_obj = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
+        )
+
+        round_obj.starts_at = timezone.now() + timezone.timedelta(
+            minutes=10,
+        )
+
+        round_obj.save(
+            update_fields=[
+                "starts_at",
+            ]
+        )
+
+        result = TournamentExecutionService.start_scheduled_round(
+            round_obj,
+        )
+
+        round_obj.refresh_from_db()
+
+        self.assertEqual(
+            round_obj.status,
+            "scheduled",
+        )
+
+        self.assertEqual(
+            result.status,
+            "scheduled",
+        )

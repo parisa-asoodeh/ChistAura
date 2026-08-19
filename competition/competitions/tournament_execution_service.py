@@ -97,6 +97,27 @@ class TournamentExecutionService:
             "matches": matches,
         }
 
+    @staticmethod
+    @transaction.atomic
+    def start_scheduled_round(round_obj):
+
+        from django.utils import timezone
+
+        round_obj.refresh_from_db()
+
+        if round_obj.status != "scheduled":
+            return round_obj
+
+        if (
+            round_obj.starts_at is not None
+            and timezone.now() < round_obj.starts_at
+        ):
+            return round_obj
+
+        return RoundService.start_round(
+            round_obj,
+        )
+
     # =========================================================
     # 3. انقضای Round و تعیین‌تکلیف Matchها
     # =========================================================
