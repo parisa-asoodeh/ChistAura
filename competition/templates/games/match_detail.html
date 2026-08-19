@@ -35,14 +35,14 @@
 
 <p>
 <strong>لیگ:</strong>
-{{ match.tournament.name }}
+{{ match.round.tournament.name }}
 </p>
 
 <p>
 <strong>نوع بازی:</strong>
 
-{% if match.tournament.game_type %}
-    {{ match.tournament.game_type.name }}
+{% if match.round.tournament.game_type %}
+    {{ match.round.tournament.game_type.name }}
 {% else %}
     تعریف نشده
 {% endif %}

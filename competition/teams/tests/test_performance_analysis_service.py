@@ -51,7 +51,8 @@ class PerformanceAnalysisServiceTest(TestCase):
         match = Mock()
         match.team1 = Mock()
         match.team2 = Mock()
-        match.tournament = Mock()
+        match.round = Mock()
+        match.round.tournament = Mock()
 
         mock_context.side_effect = [
             {"team": match.team1},
