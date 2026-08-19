@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .services import TournamentService
 from teams.models import Team
+from teams.ai.predictors.champion_predictor import ChampionPredictor
 
 
 
@@ -138,6 +139,20 @@ def tournament_detail(request, tournament_id):
             team=captain_team
         ).exists()
 
+    ai_prediction = None
+
+    if tournament.status == "active":
+
+        tournament_teams = [
+            tournament_team.team
+            for tournament_team in teams
+        ]
+
+        ai_prediction = ChampionPredictor.predict(
+            tournament_teams,
+            tournament,
+        )
+
     return render(
         request,
         'competitions/tournament_detail.html',
@@ -152,6 +167,7 @@ def tournament_detail(request, tournament_id):
             'progress': progress,
             'captain_team': captain_team,
             'is_team_registered': is_team_registered,
+            "ai_prediction": ai_prediction,
         }
     )
 

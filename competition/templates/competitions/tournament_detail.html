@@ -325,4 +325,96 @@ Round {{ round.number }}
 
 {% endif %}
 
+{% if ai_prediction %}
+<hr>
+
+<h3>
+    🤖 پیش‌بینی هوش مصنوعی
+</h3>
+
+    {% if ai_prediction.champion %}
+
+        <h4>
+            🏆 قهرمان احتمالی
+        </h4>
+
+        <p>
+            <strong>
+                {{ ai_prediction.champion.name }}
+            </strong>
+        </p>
+
+        <p>
+            {{ ai_prediction.summary }}
+        </p>
+
+    {% endif %}
+
+
+    {% if ai_prediction.ranking %}
+
+        <h4>
+            📊 Power Ranking
+        </h4>
+
+        <table border="1" cellpadding="6">
+
+            <tr>
+                <th>رتبه</th>
+                <th>تیم</th>
+                <th>امتیاز قدرت</th>
+                <th>Power Rating</th>
+            </tr>
+
+            {% for item in ai_prediction.ranking %}
+
+            <tr>
+
+                <td>
+                    {{ forloop.counter }}
+                </td>
+
+                <td>
+                    {{ item.team.name }}
+                </td>
+
+                <td>
+                    {{ item.score }}
+                </td>
+
+                <td>
+                    {{ item.power_rating }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    {% endif %}
+
+
+    {% if ai_prediction.top_reasons %}
+
+        <h4>
+            💡 دلایل اصلی پیش‌بینی
+        </h4>
+
+        <ul>
+
+            {% for reason in ai_prediction.top_reasons %}
+
+                <li>
+                    {{ reason }}
+                </li>
+
+            {% endfor %}
+
+        </ul>
+
+    {% endif %}
+
+{% endif %}
+
 {% endblock %}
