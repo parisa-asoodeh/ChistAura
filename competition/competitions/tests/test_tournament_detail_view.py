@@ -131,3 +131,33 @@ class TournamentDetailViewTest(TestCase):
         )
 
         mock_predict.assert_not_called()
+
+
+    @patch(
+        "competitions.views.ChampionPredictor.predict"
+    )
+    def test_tournament_detail_does_not_predict_in_finished(
+        self,
+        mock_predict,
+    ):
+
+        self.tournament.status = "finished"
+        self.tournament.save(update_fields=["status"])
+
+        response = self.client.get(
+            reverse(
+                "tournament_detail",
+                args=[self.tournament.id],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        self.assertIsNone(
+            response.context["ai_prediction"],
+        )
+
+        mock_predict.assert_not_called()
