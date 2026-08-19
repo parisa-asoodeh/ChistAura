@@ -8,6 +8,7 @@ from competitions.match_creation_service import MatchCreationService
 from competitions.round_question_service import RoundQuestionService
 from competitions.status_service import TournamentStatusService
 from games.timeout_service import MatchTimeoutService
+from django.utils import timezone
 
 
 class TournamentExecutionService:
@@ -146,9 +147,13 @@ class TournamentExecutionService:
                     next_round,
                 )
 
-                RoundService.start_round(
-                    next_round,
-                )
+                if (
+                    next_round.starts_at is None
+                    or timezone.now() >= next_round.starts_at
+                ):
+                    RoundService.start_round(
+                        next_round,
+                    )
 
         # ---------------------------------------------------------
         # اگر این آخرین Round بود،

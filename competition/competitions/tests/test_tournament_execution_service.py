@@ -23,6 +23,7 @@ from games.models import (
 )
 
 from games.quiz_models import QuizQuestion
+from django.utils import timezone
 
 
 class TournamentExecutionServiceTest(TestCase):
@@ -303,6 +304,124 @@ class TournamentExecutionServiceTest(TestCase):
                 tournament=self.tournament,
             ).count(),
             2,
+        )
+
+
+    def test_finish_round_keeps_next_round_scheduled_before_start_time(self):
+
+        from django.utils import timezone
+        from datetime import timedelta
+
+        from competitions.tournament_execution_service import (
+            TournamentExecutionService,
+        )
+
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
+        )
+
+        round1 = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
+        )
+
+        matches = Match.objects.filter(
+            round=round1,
+        )
+
+        for match in matches:
+            match.score_team1 = 20
+            match.score_team2 = 10
+            match.status = "completed"
+            match.save(
+                update_fields=[
+                    "score_team1",
+                    "score_team2",
+                    "status",
+                ]
+            )
+
+        round2 = Round.objects.create(
+            tournament=self.tournament,
+            number=2,
+            status="scheduled",
+            subject=self.subject,
+            question_difficulty="easy",
+            question_count=10,
+            starts_at=timezone.now() + timedelta(hours=1),
+        )
+
+        TournamentExecutionService.finish_round(
+            round1,
+        )
+
+        round2.refresh_from_db()
+
+        self.assertEqual(
+            round2.status,
+            "scheduled",
+        )
+
+
+    def test_finish_round_does_not_start_next_round_before_scheduled_time(self):
+
+        from competitions.tournament_execution_service import (
+            TournamentExecutionService,
+        )
+
+        TournamentExecutionService.start_tournament(
+            tournament=self.tournament,
+        )
+
+        round1 = Round.objects.get(
+            tournament=self.tournament,
+            number=1,
+        )
+
+        matches = Match.objects.filter(
+            round=round1,
+        )
+
+        for match in matches:
+            match.score_team1 = 20
+            match.score_team2 = 10
+            match.status = "completed"
+            match.save(
+                update_fields=[
+                    "score_team1",
+                    "score_team2",
+                    "status",
+                ]
+            )
+
+        future_time = timezone.now() + timezone.timedelta(
+            hours=1,
+        )
+
+        round2 = Round.objects.create(
+            tournament=self.tournament,
+            number=2,
+            status="scheduled",
+            subject=self.subject,
+            question_difficulty="easy",
+            question_count=10,
+            starts_at=future_time,
+        )
+
+        TournamentExecutionService.finish_round(
+            round1,
+        )
+
+        round2.refresh_from_db()
+
+        self.assertEqual(
+            round2.status,
+            "scheduled",
+        )
+
+        self.assertEqual(
+            round2.starts_at,
+            future_time,
         )
 
     # =========================================================

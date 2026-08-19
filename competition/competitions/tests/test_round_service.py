@@ -16,6 +16,9 @@ from games.models import Match
 
 from competitions.round_service import RoundService
 
+from datetime import timedelta
+from django.utils import timezone
+
 
 class RoundServiceTest(TestCase):
 
@@ -315,6 +318,39 @@ class RoundServiceTest(TestCase):
             "scheduled",
         )
 
+
+    def test_round_cannot_start_before_scheduled_time(self):
+
+        scheduled_time = (
+            timezone.now()
+            + timedelta(hours=1)
+        )
+
+        round_obj = RoundService.create_round(
+            tournament=self.tournament,
+            subject=self.subject,
+            starts_at=scheduled_time,
+        )
+
+        with self.assertRaises(
+            ValidationError,
+        ):
+            RoundService.start_round(
+                round_obj,
+            )
+
+        round_obj.refresh_from_db()
+
+        self.assertEqual(
+            round_obj.status,
+            "scheduled",
+        )
+
+        self.assertEqual(
+            round_obj.starts_at,
+            scheduled_time,
+        )
+
     def test_second_round_can_start_after_first_finishes(self):
 
         first_round = RoundService.create_round(
@@ -505,3 +541,33 @@ class RoundServiceTest(TestCase):
                 number=first_round.number,
                 subject=self.subject,
             )
+
+
+    def test_round_can_start_when_scheduled_time_has_arrived(self):
+
+        scheduled_time = (
+            timezone.now()
+            - timedelta(minutes=1)
+        )
+
+        round_obj = RoundService.create_round(
+            tournament=self.tournament,
+            subject=self.subject,
+            starts_at=scheduled_time,
+        )
+
+        RoundService.start_round(
+            round_obj,
+        )
+
+        round_obj.refresh_from_db()
+
+        self.assertEqual(
+            round_obj.status,
+            "active",
+        )
+
+        self.assertEqual(
+            round_obj.starts_at,
+            scheduled_time,
+        )

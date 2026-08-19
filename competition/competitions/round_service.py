@@ -92,6 +92,13 @@ class RoundService:
             raise ValidationError(
                 "Tournament باید فعال باشد."
             )
+        if (
+            round_obj.starts_at is not None
+            and timezone.now() < round_obj.starts_at
+        ):
+            raise ValidationError(
+                "زمان شروع Round هنوز نرسیده است."
+            )
 
         previous_round = (
             Round.objects
@@ -109,12 +116,10 @@ class RoundService:
             )
 
         round_obj.status = "active"
-        round_obj.starts_at = timezone.now()
 
         round_obj.save(
             update_fields=[
                 "status",
-                "starts_at",
             ]
         )
 
