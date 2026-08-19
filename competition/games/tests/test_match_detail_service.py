@@ -95,6 +95,15 @@ class MatchDetailServiceTest(TestCase):
             team2=self.team2,
         )
 
+        self.match = Match.objects.create(
+            round=self.round,
+            team1=self.team1,
+            team2=self.team2,
+        )
+
+        self.match.report = "گزارش تست مسابقه"
+        self.match.save(update_fields=["report"])
+
 
     def test_build_team_players(
         self,
@@ -227,4 +236,16 @@ class MatchDetailServiceTest(TestCase):
         self.assertEqual(
             len(result["team2_players"]),
             1,
+        )
+
+
+    def test_build_includes_match_report(self):
+
+        result = MatchDetailService.build(
+            self.match,
+        )
+
+        self.assertEqual(
+            result["match"].report,
+            "گزارش تست مسابقه",
         )

@@ -354,3 +354,76 @@ class MatchScoringServiceTest(TestCase):
         mock_recalculate.assert_called_once_with(
             self.match,
         )
+
+
+    @patch(
+        "games.scoring.MatchReportService.generate"
+    )
+    @patch(
+        "games.scoring.get_game_type"
+    )
+    def test_recalculate_match_generates_and_saves_report(
+        self,
+        mock_get_game_type,
+        mock_generate_report,
+    ):
+
+        post_save.disconnect(
+            receiver=recalculate_after_save,
+            sender=MatchPlayerScore,
+        )
+
+        try:
+
+            # Arrange
+            MatchPlayerScore.objects.create(
+                match=self.match,
+                user=self.user1,
+                team=self.team1,
+                score=15,
+            )
+
+            MatchPlayerScore.objects.create(
+                match=self.match,
+                user=self.user2,
+                team=self.team2,
+                score=10,
+            )
+
+            fake_game_type = Mock()
+
+            fake_game_type.determine_winner.return_value = (
+                self.team1
+            )
+
+            mock_get_game_type.return_value = (
+                fake_game_type
+            )
+
+            mock_generate_report.return_value = {
+                "summary": "گزارش تست مسابقه",
+            }
+
+            # Act
+            MatchScoringService.recalculate_match(
+                self.match,
+            )
+
+            self.match.refresh_from_db()
+
+            # Assert
+            mock_generate_report.assert_called_once_with(
+                self.match,
+            )
+
+            self.assertEqual(
+                self.match.report,
+                "گزارش تست مسابقه",
+            )
+
+        finally:
+
+            post_save.connect(
+                receiver=recalculate_after_save,
+                sender=MatchPlayerScore,
+            )

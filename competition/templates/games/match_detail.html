@@ -283,21 +283,19 @@
 </table>
 
 <hr>
-<h3>
-گزارش مسابقه
-</h3>
 
+<h3>🤖 گزارش هوش مصنوعی مسابقه</h3>
 
 {% if match.report %}
 
-<p>
-{{ match.report|linebreaks }}
-</p>
+<div>
+    {{ match.report|linebreaks }}
+</div>
 
 {% else %}
 
 <p>
-برای این مسابقه گزارشی ثبت نشده است.
+گزارش هوش مصنوعی برای این مسابقه هنوز تولید نشده است.
 </p>
 
 {% endif %}
