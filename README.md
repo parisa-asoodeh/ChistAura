@@ -1,162 +1,249 @@
 # ChistAura
 
-![Python](https://img.shields.io/badge/Python-3%2B-blue?logo=python)
-![Django](https://img.shields.io/badge/Django-6%2B-darkgreen?logo=django)
-![Backend](https://img.shields.io/badge/Project-Backend-success)
-![Status](https://img.shields.io/badge/Status-Active_Development-orange)
-![GitHub license](https://img.shields.io/github/license/parisa-asoodeh/ChistAura)
+![Python](https://img.shields.io/badge/Python-3.14.5-blue?logo=python)
+![Django](https://img.shields.io/badge/Django-6.0.5-darkgreen?logo=django)
+![Version](https://img.shields.io/badge/Version-2.0.0-blue)
+![Status](https://img.shields.io/badge/Status-Active-orange)
+
+A modular Django platform for managing multiplayer game competitions, tournaments, teams, matches, rankings, and interactive games.
 
 ---
 
-A modular Django backend for managing game tournaments, teams, matches, and player scoring and rankings.
+## Table of Contents
 
-This project is a backend-focused platform designed to manage multiplayer game competitions through a scalable and maintainable architecture. It supports tournament management, team organization, match tracking, player scoring, and ranking systems while providing a flexible foundation for adding new game types and advanced features in the future.
+- About
+- Features
+- Architecture
+- AI Features
+- Automated Scheduling
+- Security
+- Testing
+- Technology Stack
+- Installation
+- Running Tests
+- Roadmap
+- Author
+
+---
+
+## About
+
+ChistAura is a Django-based competition platform designed to manage multiplayer tournaments and different types of games.
+
+Version 2 is a major evolution of the original project, introducing a Swiss System tournament engine, a fully implemented interactive Quiz game, AI-powered analysis and predictions, improved security, and automated tournament scheduling.
+
+The architecture is designed to keep the tournament system independent from individual game implementations, making it easier to add new games in the future.
+
+---
 
 ## Features
 
-- User authentication and profile management
-- Team creation and membership management
-- Tournament management and lifecycle control
-- Match management and result tracking
-- Automatic player and team score calculation
-- Team and player leaderboards
-- Extensible support for multiple game types
-- Modular service-layer architecture
-- Game session management
-- Extensible project architecture
-- Foundation for AI-powered analysis and predictions
+- Swiss System tournament management
+- Progressive round-based tournament execution
+- Team and player management
+- Interactive Quiz game
+- Match and game session management
+- Tournament, team, and player rankings
+- Time-based scoring and tie-breaking
+- AI-powered match and tournament analysis
+- Match winner prediction
+- Tournament champion prediction
+- Automated match reports
+- Best player analysis
+- Scheduled round execution
+- Security and state validation
+- Extensive automated testing
+- Extensible game architecture
 
-## Architecture Highlights
+---
 
-- Modular Django application structure with separated apps for accounts, teams, games, and competitions.
-- Service Layer pattern to keep business logic independent from views and forms.
-- Extensible game type system for supporting different game mechanics and scoring strategies.
-- Automatic ranking and scoring services with clear separation of responsibilities.
-- Designed for scalability and long-term feature expansion.
+## Architecture
 
-## Tech Stack
+The core competition flow is based on:
 
-- **Backend:** Django 6, Python 3
-- **Database:** SQLite (development)
-- **Architecture:** Service Layer, Modular App Structure
-- **Authentication:** Django Authentication System
-- **Version Control:** Git & GitHub
+    Tournament
+        |
+        +-- Round
+        |     |
+        |     +-- Round Questions
+        |     +-- Pairings / Bye
+        |     +-- Matches
+        |            |
+        |            +-- Game Sessions
+        |
+        +-- Final Ranking
+                |
+                +-- Champion
 
-## Project Structure
+The project follows a modular Django architecture with a dedicated Service Layer.
 
-```
-game-competition-platform/
-├── competition/
-│   ├── accounts/
-│   ├── competitions/
-│   ├── games/
-│   ├── pages/
-│   ├── teams/
-│   ├── templates/
-│   ├── competition/
-│   └── manage.py
-├── .gitignore
-├── README.md
-└── requirements.txt
-```
+Main applications:
+
+    accounts/
+    competitions/
+    games/
+    teams/
+    pages/
+    templates/
+
+Business logic is separated into dedicated services for tournaments, rounds, pairing, matches, games, scoring, ranking, and AI analysis.
+
+---
+
+## AI Features
+
+ChistAura includes an AI analysis layer for teams, matches, and tournaments.
+
+Current capabilities include:
+
+- Performance analysis
+- Team power ranking
+- Match winner prediction
+- Tournament champion prediction
+- Best player analysis
+- Automated match reports
+- Performance explanations
+
+The analysis system considers multiple performance factors, including average performance, consistency, momentum, match difficulty, team balance, and star-player dependency.
+
+---
+
+## Automated Scheduling
+
+The project includes a Django Management Command for automatically starting scheduled rounds.
+
+    python manage.py start_scheduled_rounds
+
+The scheduling mechanism has been tested successfully with Windows Task Scheduler and is designed to be ready for integration with an appropriate scheduler in a production environment.
+
+---
+
+## Security
+
+Version 2 includes additional security and state validation around gameplay and tournament execution.
+
+The system validates:
+
+- Round state
+- Game access
+- Game submission
+- Match and session state
+- Gameplay data transmission
+
+Critical gameplay operations also use atomic database transactions where required.
+
+---
+
+## Testing
+
+The project has an extensive automated test suite covering:
+
+- Tournament lifecycle
+- Swiss pairing
+- Round execution
+- Match management
+- Quiz gameplay
+- Game sessions
+- Scoring
+- Ranking
+- Scheduling
+- AI analysis and predictions
+- Security-related workflows
+
+Run the complete test suite with:
+
+    python manage.py test
+
+---
+
+## Technology Stack
+
+- Python 3.14.5
+- Django 6.0.5
+- SQLite (development)
+- Django Templates
+- JavaScript
+- Django Test Framework
+- Django Management Commands
+- Windows Task Scheduler
+- Git & GitHub
+
+---
 
 ## Installation
 
 ### 1. Clone the repository
 
-```bash
-git clone https://github.com/parisa-asoodeh/ChistAura.git
-cd game-competition-platform
-```
+    git clone https://github.com/parisa-asoodeh/ChistAura.git
+    cd ChistAura
 
-### 2. Create and activate a virtual environment
+### 2. Create a virtual environment
 
-**Windows**
+Windows:
 
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
+    python -m venv venv
+    venv\Scripts\activate
 
-**Linux / macOS**
+Linux / macOS:
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
+    python3 -m venv venv
+    source venv/bin/activate
 
 ### 3. Install dependencies
 
-```bash
-python -m pip install -r requirements.txt
-```
+    python -m pip install -r requirements.txt
 
-### 4. Navigate to the Django project
+### 4. Run migrations
 
-```bash
-cd competition
-```
+    cd competition
+    python manage.py migrate
 
-### 5. Apply migrations
+### 5. Start the development server
 
-```bash
-python manage.py migrate
-```
-
-### 6. Run the development server
-
-```bash
-python manage.py runserver
-```
+    python manage.py runserver
 
 Then open:
 
-```
-http://127.0.0.1:8000/
-```
+    http://127.0.0.1:8000/
+
+---
+
+## Running Tests
+
+Run the complete automated test suite:
+
+    python manage.py test
+
+---
 
 ## Roadmap
 
-Planned improvements include:
+- [ ] Additional fully implemented game types
+- [ ] REST API
+- [ ] PostgreSQL production configuration
+- [ ] Docker support
+- [ ] CI/CD
+- [ ] Advanced tournament statistics
+- [ ] Production deployment
 
-- [ ] REST API with Django REST Framework
-- [ ] PostgreSQL support
-- [ ] Docker configuration
-- [ ] CI/CD with GitHub Actions
-- [ ] Comprehensive unit and integration tests
-- [ ] Tournament statistics dashboard
-- [ ] Advanced AI-powered match analysis
-- [ ] Match scheduling improvements
-- [ ] Performance optimization
-
-## Design Principles
-
-This project is built around the following software design principles:
-
-- **Modularity:** Independent Django apps with clearly defined responsibilities.
-- **Separation of Concerns:** Business logic is separated from views and forms through dedicated service classes.
-- **Extensibility:** New game types, scoring rules, and competition features can be added with minimal changes to the existing codebase.
-- **Maintainability:** Clear project organization and reusable services simplify future development.
-- **Scalability:** The architecture is designed to support future growth without major structural changes.
-
-## Current Status
-
-This project is actively under development. New features, architectural improvements, and additional game types are planned as part of its long-term roadmap.
-
-## Contributing
-
-Contributions are welcome. If you have suggestions for improvements or find a bug, feel free to open an issue or submit a pull request.
+---
 
 ## Author
 
-**Parisa Asoodeh**
+Parisa Asoodeh
 
 Backend Developer | Python & Django
 
+---
+
 ## Project Goals
 
-This project is being developed to:
+ChistAura is being developed as a long-term backend engineering project focused on:
 
-- Explore backend architecture and software design principles.
-- Build a scalable Django application following best practices.
-- Serve as a long-term portfolio and learning project.
+- Scalable competition architecture
+- Reusable tournament infrastructure
+- Extensible game systems
+- AI-assisted analysis
+- Secure and reliable gameplay
+- Clean service-oriented design
+- Strong automated testing
