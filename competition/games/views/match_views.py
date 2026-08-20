@@ -23,7 +23,7 @@ def match_detail(request, match_id):
 
     match = get_object_or_404(
         Match,
-        id=match_id
+        id=match_id,
     )
 
     context = MatchDetailService.build(

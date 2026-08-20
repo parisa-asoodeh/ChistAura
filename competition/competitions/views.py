@@ -97,7 +97,7 @@ def tournament_detail(request, tournament_id):
     rounds = tournament.rounds.all()
 
     matches = Match.objects.filter(
-        round__tournament=tournament
+        round__tournament=tournament,
     ).select_related(
         'team1',
         'team2',

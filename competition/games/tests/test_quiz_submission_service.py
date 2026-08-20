@@ -37,6 +37,8 @@ from games.quiz_submission_service import (
     QuizSubmissionService,
 )
 
+from django.core.exceptions import ValidationError
+
 
 User = get_user_model()
 
@@ -237,6 +239,31 @@ class QuizSubmissionServiceTest(TestCase):
         mock_finish_round.assert_called_once_with(
             self.round,
         )
+
+
+    def test_submit_fails_when_round_is_not_active(self):
+
+        self.round.status = "scheduled"
+        self.round.save(
+            update_fields=["status"]
+        )
+
+        with self.assertRaisesMessage(
+            ValidationError,
+            "این راند هنوز فعال نشده است.",
+        ):
+            QuizSubmissionService.submit(
+                session=self.session,
+                form=self.form,
+            )
+
+        self.assertEqual(
+            QuizAnswer.objects.filter(
+                session=self.session,
+            ).count(),
+            0,
+        )
+
 
     @patch(
         "games.quiz_submission_service.GameSessionService.complete_session"

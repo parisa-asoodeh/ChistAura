@@ -20,6 +20,9 @@ from .session_service import (
     GameSessionService,
 )
 
+from django.db import transaction
+from django.core.exceptions import ValidationError
+
 
 class QuizSubmissionService:
 
@@ -29,6 +32,11 @@ class QuizSubmissionService:
         session,
         form,
     ):
+
+        if session.match.round.status != "active":
+            raise ValidationError(
+                "این راند هنوز فعال نشده است."
+            )
 
         questions = (
             QuizPlayService.build(session)[

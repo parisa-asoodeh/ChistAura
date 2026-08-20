@@ -34,6 +34,15 @@ def game_play(request, session_id):
         id=session_id
     )
 
+    if session.match.round.status != "active":
+        return render(
+            request,
+            "games/error.html",
+            {
+                "message": "این راند هنوز فعال نشده است."
+            }
+        )
+
     if session.user != request.user:
         return render(
             request,
