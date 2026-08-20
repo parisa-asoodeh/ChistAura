@@ -168,14 +168,6 @@ class TournamentExecutionService:
                     next_round,
                 )
 
-                if (
-                    next_round.starts_at is None
-                    or timezone.now() >= next_round.starts_at
-                ):
-                    RoundService.start_round(
-                        next_round,
-                    )
-
         # ---------------------------------------------------------
         # اگر این آخرین Round بود،
         # Tournament را نهایی می‌کنیم.

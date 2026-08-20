@@ -296,7 +296,7 @@ class TournamentExecutionServiceTest(TestCase):
 
         self.assertEqual(
             round2.status,
-            "active",
+            "scheduled",
         )
 
         self.assertEqual(
@@ -657,6 +657,10 @@ class TournamentExecutionServiceTest(TestCase):
         round2 = Round.objects.get(
             tournament=self.tournament,
             number=2,
+        )
+
+        RoundService.start_round(
+            round2,
         )
 
         matches_round2 = Match.objects.filter(
