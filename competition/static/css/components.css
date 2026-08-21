@@ -1,0 +1,345 @@
+/* =========================
+   Layout
+========================= */
+
+.site-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: var(--space-4) var(--space-5);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+}
+
+.main-content {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: var(--space-7) var(--space-5);
+}
+
+
+/* =========================
+   Navbar
+========================= */
+
+.navbar-brand {
+    color: var(--color-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.navbar-toggle {
+    display: none;
+
+    background: transparent;
+    border: none;
+
+    color: var(--color-primary);
+
+    font-size: var(--font-size-xl);
+
+    cursor: pointer;
+}
+
+.navbar-link {
+    padding: var(--space-2) var(--space-3);
+
+    color: var(--color-text-muted);
+
+    border-radius: var(--radius-md);
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.navbar-link:hover {
+    background-color: var(--color-background);
+    color: var(--color-primary);
+}
+
+.navbar-link--primary {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+}
+
+.navbar-link--primary:hover {
+    background-color: var(--color-primary-dark);
+    color: var(--color-surface);
+}
+
+.navbar-logout {
+    border: 0;
+    background: transparent;
+
+    color: var(--color-danger);
+
+    padding: var(--space-2) var(--space-3);
+
+    border-radius: var(--radius-md);
+
+    font: inherit;
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease;
+}
+
+.navbar-logout:hover {
+    background-color: #fef2f2;
+}
+
+
+/* =========================
+   Buttons
+========================= */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: var(--space-2) var(--space-4);
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+
+    font-weight: var(--font-weight-medium);
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.1s ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.btn-secondary {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-background);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: var(--color-surface);
+}
+
+
+/* =========================
+   Cards
+========================= */
+
+.card {
+    background-color: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+
+    padding: var(--space-5);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+    margin-bottom: var(--space-3);
+
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+
+/* =========================
+   Forms
+========================= */
+
+.form-group {
+    margin-bottom: var(--space-4);
+}
+
+.form-label {
+    display: block;
+
+    margin-bottom: var(--space-2);
+
+    font-weight: var(--font-weight-medium);
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+
+    padding: var(--space-2) var(--space-3);
+
+    background-color: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+
+    color: var(--color-text);
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--color-primary);
+
+    box-shadow:
+        0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+
+/* =========================
+   Alerts / Messages
+========================= */
+
+.alert {
+    padding: var(--space-3) var(--space-4);
+
+    margin-bottom: var(--space-4);
+
+    border-radius: var(--radius-md);
+
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background-color: #f0fdf4;
+    border-color: #bbf7d0;
+    color: var(--color-success);
+}
+
+.alert-warning {
+    background-color: #fffbeb;
+    border-color: #fde68a;
+    color: var(--color-warning);
+}
+
+.alert-danger {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+    color: var(--color-danger);
+}
+
+
+/* =========================
+   Tables
+========================= */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background-color: var(--color-surface);
+}
+
+.table th,
+.table td {
+    padding: var(--space-3) var(--space-4);
+
+    border-bottom: 1px solid var(--color-border);
+
+    text-align: right;
+}
+
+.table th {
+    background-color: var(--color-background);
+    font-weight: var(--font-weight-semibold);
+}
+
+.table tr:last-child td {
+    border-bottom: 0;
+}
+
+
+/* =========================
+   Badges
+========================= */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 2px var(--space-2);
+
+    border-radius: var(--radius-pill);
+
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.badge-success {
+    background-color: #dcfce7;
+    color: var(--color-success);
+}
+
+.badge-warning {
+    background-color: #fef3c7;
+    color: var(--color-warning);
+}
+
+.badge-danger {
+    background-color: #fee2e2;
+    color: var(--color-danger);
+}
+
+
+/* =========================
+   Empty State
+========================= */
+
+.empty-state {
+    padding: var(--space-7);
+
+    text-align: center;
+
+    color: var(--color-text-muted);
+
+    background-color: var(--color-surface);
+
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+}
