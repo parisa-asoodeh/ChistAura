@@ -1,13 +1,77 @@
 {% extends 'base.html' %}
 
-{% block title %}خانه{% endblock %}
+{% block title %}
+خانه
+{% endblock %}
 
 {% block content %}
-<h1>صفحه اصلی</h1>
 
-{% if user.is_authenticated %}
-    <p>سلام {{ user.username }}، خوش آمدی.</p>
-{% else %}
-    <p>شما وارد نشده‌اید.</p>
-{% endif %}
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-badge">
+            پلتفرم مسابقات
+        </span>
+
+        <h1 class="hero-title">
+            به پلتفرم مسابقات خوش آمدید
+        </h1>
+
+        {% if user.is_authenticated %}
+
+            <p class="hero-text">
+                سلام {{ user.username }}،
+                خوش آمدی!
+            </p>
+
+            <div class="hero-actions">
+
+                <a
+                    href="{% url 'tournament_list' %}"
+                    class="btn btn-primary"
+                >
+                    مشاهده لیگ‌ها
+                </a>
+
+                <a
+                    href="{% url 'my_team' %}"
+                    class="btn btn-secondary"
+                >
+                    تیم من
+                </a>
+
+            </div>
+
+        {% else %}
+
+            <p class="hero-text">
+                در مسابقات شرکت کن، تیم خودت را بساز
+                و برای قهرمانی رقابت کن.
+            </p>
+
+            <div class="hero-actions">
+
+                <a
+                    href="{% url 'register' %}"
+                    class="btn btn-primary"
+                >
+                    ثبت‌نام
+                </a>
+
+                <a
+                    href="{% url 'login' %}"
+                    class="btn btn-secondary"
+                >
+                    ورود
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
 {% endblock %}
