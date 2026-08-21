@@ -1,13 +1,56 @@
 {% extends 'base.html' %}
 
-{% block title %}ثبت‌نام{% endblock %}
+{% block title %}
+ثبت‌نام
+{% endblock %}
 
 {% block content %}
-<h2>ثبت‌نام</h2>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">ثبت‌نام</button>
-</form>
+<section class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <h1 class="auth-title">
+                ثبت‌نام
+            </h1>
+
+            <p class="auth-subtitle">
+                حساب کاربری خود را ایجاد کنید
+            </p>
+
+        </div>
+
+        <form method="post" class="auth-form">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button
+                type="submit"
+                class="btn btn-primary auth-submit"
+            >
+                ثبت‌نام
+            </button>
+
+        </form>
+
+        <div class="auth-footer">
+
+            <span>
+                قبلاً حساب کاربری ساخته‌اید؟
+            </span>
+
+            <a href="{% url 'login' %}">
+                وارد شوید
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endblock %}
