@@ -6,69 +6,140 @@
 
 {% block content %}
 
-<h2>لیگ‌ها</h2>
+<div class="tournaments-page">
 
-{% if tournaments %}
+    <div class="page-header">
 
-{% for tournament in tournaments %}
+        <h1 class="page-title">
+            لیگ‌ها
+        </h1>
 
-<hr>
+        <p class="page-description">
+            لیگ‌های موجود را مشاهده و وضعیت مسابقات را دنبال کنید.
+        </p>
 
-<h3>
-    <a href="{% url 'tournament_detail' tournament.id %}">
-        {{ tournament.name }}
-    </a>
-</h3>
+    </div>
 
-<p>
-    <strong>وضعیت:</strong>
-    {{ tournament.get_status_display }}
-</p>
 
-<p>
-    <strong>نوع بازی:</strong>
-    {{ tournament.game_type.name }}
-</p>
+    {% if tournaments %}
 
-<p>
-    <strong>تعداد دورها:</strong>
-    {{ tournament.total_rounds }}
-</p>
+        <div class="card-list">
 
-{% if tournament.status == 'draft' %}
+            {% for tournament in tournaments %}
 
-<p>
-    🟡 ثبت‌نام در این لیگ باز است.
-</p>
+                <article class="card tournament-card">
 
-{% elif tournament.status == 'active' %}
+                    <div class="tournament-card__header">
 
-<p>
-    🟢 این لیگ در حال برگزاری است.
-</p>
+                        <div class="tournament-card__title">
 
-{% elif tournament.status == 'finished' %}
+                            <h2 class="card-title">
 
-<p>
-    🏁 این لیگ به پایان رسیده است.
-</p>
+                                <a
+                                    href="{% url 'tournament_detail' tournament.id %}"
+                                >
+                                    {{ tournament.name }}
+                                </a>
 
-{% endif %}
+                            </h2>
 
-<p>
-    <a href="{% url 'tournament_detail' tournament.id %}">
-        مشاهده جزئیات
-    </a>
-</p>
+                            {% if tournament.status == 'draft' %}
 
-{% endfor %}
+                                <span class="badge badge-warning">
+                                    ثبت‌نام
+                                </span>
 
-{% else %}
+                            {% elif tournament.status == 'active' %}
 
-<p>
-    هنوز لیگی ساخته نشده است.
-</p>
+                                <span class="badge badge-success">
+                                    در حال برگزاری
+                                </span>
 
-{% endif %}
+                            {% elif tournament.status == 'finished' %}
+
+                                <span class="badge badge-primary">
+                                    پایان یافته
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="tournament-card__info">
+
+                        <div class="tournament-info-item">
+
+                            <span class="tournament-info-label">
+                                وضعیت
+                            </span>
+
+                            <span class="tournament-info-value">
+                                {{ tournament.get_status_display }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="tournament-info-item">
+
+                            <span class="tournament-info-label">
+                                نوع بازی
+                            </span>
+
+                            <span class="tournament-info-value">
+                                {{ tournament.game_type.name }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="tournament-info-item">
+
+                            <span class="tournament-info-label">
+                                تعداد دورها
+                            </span>
+
+                            <span class="tournament-info-value">
+                                {{ tournament.total_rounds }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="tournament-card__footer">
+
+                        <a
+                            href="{% url 'tournament_detail' tournament.id %}"
+                            class="btn btn-primary"
+                        >
+                            مشاهده جزئیات
+                        </a>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <p>
+                هنوز لیگی ساخته نشده است.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}

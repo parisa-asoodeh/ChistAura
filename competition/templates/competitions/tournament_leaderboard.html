@@ -2,65 +2,179 @@
 
 {% load game_filters %}
 
+{% block title %}
+    رتبه‌بندی {{ tournament.name }}
+{% endblock %}
+
 {% block content %}
 
-<h2>
-رتبه‌بندی {{ tournament.name }}
-</h2>
+<div class="leaderboard-page">
 
-<table border="1">
+    <!-- =========================
+         Header
+    ========================== -->
 
-<tr>
-    <th>رتبه</th>
-    <th>تیم</th>
-    <th>امتیاز</th>
-    <th>برد</th>
-    <th>مساوی</th>
-    <th>باخت</th>
-    <th>اختلاف امتیاز</th>
-    <th>زمان کل</th>
-</tr>
+    <div class="page-header">
 
-{% for row in table %}
+        <h1 class="page-title">
+            رتبه‌بندی {{ tournament.name }}
+        </h1>
 
-<tr>
+        <p class="page-description">
+            جدول رده‌بندی تیم‌ها بر اساس نتایج مسابقات
+        </p>
 
-<td>
-{{ forloop.counter }}
-</td>
+    </div>
 
-<td>
-{{ row.team.name }}
-</td>
 
-<td>
-{{ row.points }}
-</td>
+    <!-- =========================
+         Leaderboard
+    ========================== -->
 
-<td>
-{{ row.wins }}
-</td>
+    {% if table %}
 
-<td>
-{{ row.draws }}
-</td>
+        <div class="card leaderboard-card">
 
-<td>
-{{ row.losses }}
-</td>
+            <div class="table-wrapper">
 
-<td>
-{{ row.score_difference }}
-</td>
+                <table class="table leaderboard-table">
 
-<td>
-{{ row.total_time|duration }}
-</td>
+                    <thead>
 
-</tr>
+                        <tr>
 
-{% endfor %}
+                            <th>
+                                رتبه
+                            </th>
 
-</table>
+                            <th>
+                                تیم
+                            </th>
+
+                            <th>
+                                امتیاز
+                            </th>
+
+                            <th>
+                                برد
+                            </th>
+
+                            <th>
+                                مساوی
+                            </th>
+
+                            <th>
+                                باخت
+                            </th>
+
+                            <th>
+                                اختلاف امتیاز
+                            </th>
+
+                            <th>
+                                زمان کل
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for row in table %}
+
+                            <tr>
+
+                                <td class="leaderboard-rank">
+
+                                    {% if forloop.counter == 1 %}
+
+                                        🥇
+
+                                    {% elif forloop.counter == 2 %}
+
+                                        🥈
+
+                                    {% elif forloop.counter == 3 %}
+
+                                        🥉
+
+                                    {% else %}
+
+                                        {{ forloop.counter }}
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td class="leaderboard-team">
+
+                                    <strong>
+                                        {{ row.team.name }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td class="leaderboard-points">
+
+                                    <strong>
+                                        {{ row.points }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+                                    {{ row.wins }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.draws }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.losses }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.score_difference }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.total_time|duration }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <p>
+                هنوز اطلاعاتی برای رتبه‌بندی وجود ندارد.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}

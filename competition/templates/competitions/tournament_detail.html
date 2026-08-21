@@ -6,415 +6,727 @@
 
 {% block content %}
 
-<h2>
-    {{ tournament.name }}
-</h2>
+<div class="tournament-detail-page">
 
-<p>
-    <strong>وضعیت:</strong>
-    {{ tournament.get_status_display }}
-</p>
+    <!-- =========================
+         Header
+    ========================== -->
 
-{% if tournament.status == 'draft' and captain_team %}
+    <div class="page-header">
 
-    <hr>
+        <div class="tournament-detail-header">
 
-    <h3>
-        ثبت تیم در لیگ
-    </h3>
+            <div>
 
-    {% if is_team_registered %}
+                <h1 class="page-title">
+                    {{ tournament.name }}
+                </h1>
 
-        <p>
-            ✅ تیم «{{ captain_team.name }}» در این لیگ ثبت شده است.
-        </p>
+                <p class="page-description">
+                    {{ tournament.get_status_display }}
+                </p>
 
-    {% else %}
+            </div>
 
-        <form
-            method="post"
-            action="{% url 'register_team_in_tournament' tournament.id %}"
-        >
+            {% if tournament.status == 'draft' %}
 
-            {% csrf_token %}
+                <span class="badge badge-warning">
+                    ثبت‌نام
+                </span>
 
-            <button type="submit">
-                ثبت تیم من در لیگ
-            </button>
+            {% elif tournament.status == 'active' %}
 
-        </form>
+                <span class="badge badge-success">
+                    در حال برگزاری
+                </span>
 
-    {% endif %}
+            {% elif tournament.status == 'finished' %}
 
-{% endif %}
+                <span class="badge badge-primary">
+                    پایان یافته
+                </span>
 
-<p>
-    <strong>نوع بازی:</strong>
+            {% endif %}
 
-    {% if tournament.game_type %}
-        {{ tournament.game_type.name }}
-    {% else %}
-        تعریف نشده
-    {% endif %}
-</p>
+        </div>
 
-<p>
-    <strong>تعداد دورها:</strong>
-    {{ tournament.total_rounds }}
-</p>
+    </div>
 
-<hr>
 
+    <!-- =========================
+         Basic Information
+    ========================== -->
 
-{# ========================================================= #}
-{# DRAFT                                                     #}
-{# ========================================================= #}
+    <div class="card tournament-info-card">
 
-{% if tournament.status == 'draft' %}
+        <h2 class="card-title">
+            اطلاعات لیگ
+        </h2>
 
-<h3>
-    🟡 ثبت‌نام
-</h3>
+        <div class="tournament-detail-info">
 
-<p>
-    این لیگ هنوز شروع نشده است.
-</p>
+            <div class="tournament-info-item">
 
-<p>
-    در صورت فعال بودن ثبت‌نام، کاپیتان تیم می‌تواند
-    تیم خود را در این لیگ ثبت کند.
-</p>
+                <span class="tournament-info-label">
+                    وضعیت
+                </span>
 
-{% endif %}
+                <span class="tournament-info-value">
+                    {{ tournament.get_status_display }}
+                </span>
 
+            </div>
 
-{# ========================================================= #}
-{# ACTIVE                                                    #}
-{# ========================================================= #}
 
-{% if tournament.status == 'active' %}
+            <div class="tournament-info-item">
 
-<h3>
-    🟢 لیگ در حال برگزاری است
-</h3>
+                <span class="tournament-info-label">
+                    نوع بازی
+                </span>
 
-{% if current_round %}
+                <span class="tournament-info-value">
 
-<h4>
-    Round {{ current_round.number }}
-</h4>
+                    {% if tournament.game_type %}
+                        {{ tournament.game_type.name }}
+                    {% else %}
+                        تعریف نشده
+                    {% endif %}
 
-<p>
-    <strong>وضعیت Round:</strong>
-    {{ current_round.get_status_display }}
-</p>
+                </span>
 
-{% endif %}
+            </div>
 
 
-<h4>
-    پیشرفت مسابقات
-</h4>
+            <div class="tournament-info-item">
 
-<p>
-    {{ played_matches }}
-    /
-    {{ total_matches }}
-    مسابقه انجام شده
-</p>
+                <span class="tournament-info-label">
+                    تعداد دورها
+                </span>
 
-<p>
-    پیشرفت:
-    {{ progress }}%
-</p>
+                <span class="tournament-info-value">
+                    {{ tournament.total_rounds }}
+                </span>
 
-{% endif %}
+            </div>
 
+        </div>
 
-{# ========================================================= #}
-{# FINISHED                                                  #}
-{# ========================================================= #}
+    </div>
 
-{% if tournament.status == 'finished' %}
 
-<h3>
-    🏁 لیگ به پایان رسیده است
-</h3>
+    <!-- =========================
+         Team Registration
+    ========================== -->
 
-{% if tournament.champion %}
+    {% if tournament.status == 'draft' and captain_team %}
 
-<h4>
-    🏆 قهرمان لیگ
-</h4>
+        <div class="card tournament-registration-card">
 
-<p>
-    <strong>
-        {{ tournament.champion.name }}
-    </strong>
-</p>
+            <h2 class="card-title">
+                ثبت تیم در لیگ
+            </h2>
 
-{% endif %}
+            {% if is_team_registered %}
 
-{% endif %}
+                <div class="alert alert-success">
+                    تیم «{{ captain_team.name }}» در این لیگ ثبت شده است.
+                </div>
 
+            {% else %}
 
-<hr>
+                <p class="card-description">
+                    تیم خود را برای شرکت در این لیگ ثبت کنید.
+                </p>
 
-<h3>
-دورهای لیگ
-</h3>
+                <form
+                    method="post"
+                    action="{% url 'register_team_in_tournament' tournament.id %}"
+                >
 
-<ul>
+                    {% csrf_token %}
 
-{% for round in rounds %}
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        ثبت تیم من در لیگ
+                    </button>
 
-<li>
+                </form>
 
-<strong>
-Round {{ round.number }}
-</strong>
+            {% endif %}
 
--
-
-{{ round.get_status_display }}
-
--
-
-موضوع:
-{{ round.subject.name }}
-
--
-
-درجه سختی:
-{{ round.get_question_difficulty_display }}
-
--
-
-تعداد سوال:
-{{ round.question_count }}
-
-</li>
-
-{% empty %}
-
-<li>
-هنوز هیچ Roundای تنظیم نشده است.
-</li>
-
-{% endfor %}
-
-</ul>
-<hr>
-{# ========================================================= #}
-{# TEAMS                                                     #}
-{# ========================================================= #}
-
-<h3>
-    تیم‌های لیگ
-</h3>
-
-{% if teams %}
-
-<ul>
-
-{% for tt in teams %}
-
-<li>
-    {{ tt.team.name }}
-</li>
-
-{% endfor %}
-
-</ul>
-
-{% else %}
-
-<p>
-    هنوز تیمی در این لیگ ثبت نشده است.
-</p>
-
-{% endif %}
-
-
-{# ========================================================= #}
-{# MATCHES                                                   #}
-{# ========================================================= #}
-
-{% if tournament.status != 'draft' %}
-
-<hr>
-
-<h3>
-    مسابقات
-</h3>
-
-{% if matches %}
-
-<ul>
-
-{% for match in matches %}
-
-<li>
-
-<a href="{% url 'match_detail' match.id %}">
-
-{% if match.is_complete %}
-
-    {{ match.team1.name }}
-    {{ match.score_team1 }}
-
-    -
-
-    {{ match.score_team2 }}
-    {{ match.team2.name }}
-
-{% else %}
-
-    {{ match.team1.name }}
-
-    vs
-
-    {{ match.team2.name }}
-
-{% endif %}
-
-</a>
-
-{% if match.is_complete %}
-
-    — 🟢 پایان یافته
-
-{% else %}
-
-    — 🟡 در حال برگزاری
-
-{% endif %}
-
-</li>
-
-{% endfor %}
-
-</ul>
-
-{% else %}
-
-<p>
-    هنوز مسابقه‌ای ایجاد نشده است.
-</p>
-
-{% endif %}
-
-{% endif %}
-
-
-{# ========================================================= #}
-{# RANKING                                                   #}
-{# ========================================================= #}
-
-{% if tournament.status == 'active' or tournament.status == 'finished' %}
-
-<hr>
-
-<p>
-
-<a href="{% url 'tournament_leaderboard' tournament.id %}">
-    مشاهده جدول رده‌بندی
-</a>
-
-</p>
-
-{% endif %}
-
-{% if ai_prediction %}
-<hr>
-
-<h3>
-    🤖 پیش‌بینی هوش مصنوعی
-</h3>
-
-    {% if ai_prediction.champion %}
-
-        <h4>
-            🏆 قهرمان احتمالی
-        </h4>
-
-        <p>
-            <strong>
-                {{ ai_prediction.champion.name }}
-            </strong>
-        </p>
-
-        <p>
-            {{ ai_prediction.summary }}
-        </p>
+        </div>
 
     {% endif %}
 
 
-    {% if ai_prediction.ranking %}
+    <!-- =========================
+         Draft
+    ========================== -->
 
-        <h4>
-            📊 Power Ranking
-        </h4>
+    {% if tournament.status == 'draft' %}
 
-        <table border="1" cellpadding="6">
+        <div class="card tournament-status-card">
 
-            <tr>
-                <th>رتبه</th>
-                <th>تیم</th>
-                <th>امتیاز قدرت</th>
-                <th>Power Rating</th>
-            </tr>
+            <div class="status-card-icon">
+                🟡
+            </div>
 
-            {% for item in ai_prediction.ranking %}
+            <div>
 
-            <tr>
+                <h2 class="card-title">
+                    ثبت‌نام
+                </h2>
 
-                <td>
-                    {{ forloop.counter }}
-                </td>
+                <p>
+                    این لیگ هنوز شروع نشده است.
+                </p>
 
-                <td>
-                    {{ item.team.name }}
-                </td>
+                <p class="card-description">
+                    در صورت فعال بودن ثبت‌نام، کاپیتان تیم می‌تواند
+                    تیم خود را در این لیگ ثبت کند.
+                </p>
 
-                <td>
-                    {{ item.score }}
-                </td>
+            </div>
 
-                <td>
-                    {{ item.power_rating }}
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </table>
+        </div>
 
     {% endif %}
 
 
-    {% if ai_prediction.top_reasons %}
+    <!-- =========================
+         Active
+    ========================== -->
 
-        <h4>
-            💡 دلایل اصلی پیش‌بینی
-        </h4>
+    {% if tournament.status == 'active' %}
 
-        <ul>
+        <div class="card tournament-progress-card">
 
-            {% for reason in ai_prediction.top_reasons %}
+            <div class="tournament-section-header">
 
-                <li>
-                    {{ reason }}
-                </li>
+                <div>
 
-            {% endfor %}
+                    <h2 class="card-title">
+                        لیگ در حال برگزاری است
+                    </h2>
 
-        </ul>
+                    {% if current_round %}
+
+                        <p class="card-description">
+                            Round {{ current_round.number }}
+                            —
+                            {{ current_round.get_status_display }}
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+                <span class="badge badge-success">
+                    فعال
+                </span>
+
+            </div>
+
+
+            <div class="progress-info">
+
+                <div>
+
+                    <span class="tournament-info-label">
+                        مسابقات انجام شده
+                    </span>
+
+                    <strong>
+                        {{ played_matches }}
+                        /
+                        {{ total_matches }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span class="tournament-info-label">
+                        پیشرفت
+                    </span>
+
+                    <strong>
+                        {{ progress }}%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-bar__value"
+                    style="width: {{ progress }}%;"
+                ></div>
+
+            </div>
+
+        </div>
 
     {% endif %}
 
-{% endif %}
+
+    <!-- =========================
+         Finished
+    ========================== -->
+
+    {% if tournament.status == 'finished' %}
+
+        <div class="card tournament-champion-card">
+
+            <div class="champion-icon">
+                🏆
+            </div>
+
+            <div>
+
+                <h2 class="card-title">
+                    لیگ به پایان رسیده است
+                </h2>
+
+                {% if tournament.champion %}
+
+                    <p class="card-description">
+                        قهرمان لیگ
+                    </p>
+
+                    <strong class="champion-name">
+                        {{ tournament.champion.name }}
+                    </strong>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         Rounds
+    ========================== -->
+
+    <div class="card">
+
+        <div class="section-header">
+
+            <h2 class="card-title">
+                دورهای لیگ
+            </h2>
+
+        </div>
+
+
+        {% if rounds %}
+
+            <div class="round-list">
+
+                {% for round in rounds %}
+
+                    <div class="round-item">
+
+                        <div class="round-item__header">
+
+                            <strong>
+                                Round {{ round.number }}
+                            </strong>
+
+                            <span class="badge badge-info">
+                                {{ round.get_status_display }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="round-item__details">
+
+                            <div>
+
+                                <span class="round-label">
+                                    موضوع
+                                </span>
+
+                                <span>
+                                    {{ round.subject.name }}
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <span class="round-label">
+                                    درجه سختی
+                                </span>
+
+                                <span>
+                                    {{ round.get_question_difficulty_display }}
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <span class="round-label">
+                                    تعداد سوال
+                                </span>
+
+                                <span>
+                                    {{ round.question_count }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                هنوز هیچ Roundای تنظیم نشده است.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =========================
+         Teams
+    ========================== -->
+
+    <div class="card">
+
+        <h2 class="card-title">
+            تیم‌های لیگ
+        </h2>
+
+        {% if teams %}
+
+            <div class="tournament-team-list">
+
+                {% for tt in teams %}
+
+                    <div class="tournament-team-item">
+
+                        <span>
+                            {{ tt.team.name }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                هنوز تیمی در این لیگ ثبت نشده است.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =========================
+         Matches
+    ========================== -->
+
+    {% if tournament.status != 'draft' %}
+
+        <div class="card">
+
+            <h2 class="card-title">
+                مسابقات
+            </h2>
+
+            {% if matches %}
+
+                <div class="match-list">
+
+                    {% for match in matches %}
+
+                        <a
+                            href="{% url 'match_detail' match.id %}"
+                            class="match-item"
+                        >
+
+                            <div class="match-teams">
+
+                                {% if match.is_complete %}
+
+                                    <span>
+                                        {{ match.team1.name }}
+                                    </span>
+
+                                    <strong>
+                                        {{ match.score_team1 }}
+                                        -
+                                        {{ match.score_team2 }}
+                                    </strong>
+
+                                    <span>
+                                        {{ match.team2.name }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span>
+                                        {{ match.team1.name }}
+                                    </span>
+
+                                    <strong>
+                                        vs
+                                    </strong>
+
+                                    <span>
+                                        {{ match.team2.name }}
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if match.is_complete %}
+
+                                <span class="badge badge-success">
+                                    پایان یافته
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-warning">
+                                    در حال برگزاری
+                                </span>
+
+                            {% endif %}
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+                    هنوز مسابقه‌ای ایجاد نشده است.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         Ranking
+    ========================== -->
+
+    {% if tournament.status == 'active' or tournament.status == 'finished' %}
+
+        <div class="card tournament-ranking-link">
+
+            <div>
+
+                <h2 class="card-title">
+                    جدول رده‌بندی
+                </h2>
+
+                <p class="card-description">
+                    مشاهده وضعیت و رتبه تیم‌ها در لیگ
+                </p>
+
+            </div>
+
+            <a
+                href="{% url 'tournament_leaderboard' tournament.id %}"
+                class="btn btn-primary"
+            >
+                مشاهده جدول رده‌بندی
+            </a>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         AI Prediction
+    ========================== -->
+
+    {% if ai_prediction %}
+
+        <div class="card ai-prediction-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        🤖 پیش‌بینی هوش مصنوعی
+                    </h2>
+
+                    <p class="card-description">
+                        تحلیل و پیش‌بینی عملکرد تیم‌ها
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if ai_prediction.champion %}
+
+                <div class="ai-champion">
+
+                    <span class="ai-champion__icon">
+                        🏆
+                    </span>
+
+                    <div>
+
+                        <span class="tournament-info-label">
+                            قهرمان احتمالی
+                        </span>
+
+                        <strong class="ai-champion__name">
+                            {{ ai_prediction.champion.name }}
+                        </strong>
+
+                        {% if ai_prediction.summary %}
+
+                            <p>
+                                {{ ai_prediction.summary }}
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if ai_prediction.ranking %}
+
+                <div class="ai-ranking">
+
+                    <h3>
+                        📊 Power Ranking
+                    </h3>
+
+                    <div class="table-wrapper">
+
+                        <table class="table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        رتبه
+                                    </th>
+
+                                    <th>
+                                        تیم
+                                    </th>
+
+                                    <th>
+                                        امتیاز قدرت
+                                    </th>
+
+                                    <th>
+                                        Power Rating
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for item in ai_prediction.ranking %}
+
+                                    <tr>
+
+                                        <td>
+                                            {{ forloop.counter }}
+                                        </td>
+
+                                        <td>
+                                            {{ item.team.name }}
+                                        </td>
+
+                                        <td>
+                                            {{ item.score }}
+                                        </td>
+
+                                        <td>
+                                            {{ item.power_rating }}
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if ai_prediction.top_reasons %}
+
+                <div class="ai-reasons">
+
+                    <h3>
+                        💡 دلایل اصلی پیش‌بینی
+                    </h3>
+
+                    <ul>
+                        {% for reason in ai_prediction.top_reasons %}
+                            <li>
+                                {{ reason }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}
