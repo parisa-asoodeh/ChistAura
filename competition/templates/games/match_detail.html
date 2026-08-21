@@ -3,301 +3,526 @@
 {% load game_filters %}
 
 {% block title %}
-جزئیات مسابقه
+    جزئیات مسابقه
 {% endblock %}
 
 {% block content %}
 
-<h2>
+<div class="match-detail-page">
 
-{% if match.is_complete %}
+    <!-- =========================
+         Match Header
+    ========================== -->
 
-{{ match.team1.name }}
-{{ match.score_team1 }}
+    <div class="match-detail-header card">
 
--
+        <div class="match-detail-teams">
 
-{{ match.score_team2 }}
-{{ match.team2.name }}
+            <div class="match-detail-team">
+                <span>
+                    {{ match.team1.name }}
+                </span>
 
-{% else %}
+                {% if match.is_complete %}
+                    <strong>
+                        {{ match.score_team1 }}
+                    </strong>
+                {% endif %}
+            </div>
 
-{{ match.team1.name }}
 
--
+            <div class="match-detail-vs">
 
-{{ match.team2.name }}
+                {% if match.is_complete %}
+                    -
+                {% else %}
+                    vs
+                {% endif %}
 
-{% endif %}
+            </div>
 
-</h2>
 
+            <div class="match-detail-team">
 
-<p>
-<strong>لیگ:</strong>
-{{ match.round.tournament.name }}
-</p>
+                {% if match.is_complete %}
+                    <strong>
+                        {{ match.score_team2 }}
+                    </strong>
+                {% endif %}
 
-<p>
-<strong>نوع بازی:</strong>
+                <span>
+                    {{ match.team2.name }}
+                </span>
 
-{% if match.round.tournament.game_type %}
-    {{ match.round.tournament.game_type.name }}
-{% else %}
-    تعریف نشده
-{% endif %}
-</p>
+            </div>
 
-<hr>
+        </div>
 
-<h3>وضعیت مسابقه</h3>
 
-{% if match.is_complete %}
+        <div class="match-detail-meta">
 
-<p>🟢 پایان یافته</p>
+            <div>
+                <span class="match-label">
+                    لیگ
+                </span>
 
-{% else %}
+                <strong>
+                    {{ match.round.tournament.name }}
+                </strong>
+            </div>
 
-<p>🟡 در حال برگزاری</p>
 
-{% endif %}
+            <div>
+                <span class="match-label">
+                    نوع بازی
+                </span>
 
-<p>
+                <strong>
 
-{{ completed_players }}
+                    {% if match.round.tournament.game_type %}
+                        {{ match.round.tournament.game_type.name }}
+                    {% else %}
+                        تعریف نشده
+                    {% endif %}
 
-/
+                </strong>
+            </div>
 
-{{ total_players }}
+        </div>
 
-بازیکن بازی کرده‌اند.
+    </div>
 
-</p>
 
-{% if not match.is_complete %}
+    <!-- =========================
+         Match Status
+    ========================== -->
 
-<p>
+    <div class="card match-status-card">
 
-{{ remaining_players }}
+        <div class="section-header">
 
-بازیکن باقی مانده‌اند.
+            <h2 class="card-title">
+                وضعیت مسابقه
+            </h2>
 
-</p>
+            {% if match.is_complete %}
 
-{% endif %}
+                <span class="badge badge-success">
+                    پایان یافته
+                </span>
 
-<p>
-<strong>برنده:</strong>
+            {% else %}
 
-{% if not match.is_complete %}
-    در حال برگزاری
-{% elif match.winner %}
-    {{ match.winner.name }}
-{% else %}
-    مساوی
-{% endif %}
-</p>
+                <span class="badge badge-warning">
+                    در حال برگزاری
+                </span>
 
+            {% endif %}
 
-<p>
-<strong>تاریخ:</strong>
+        </div>
 
-{{ match.played_at }}
-</p>
 
+        <div class="match-progress-info">
 
-<hr>
+            <div>
 
-<h3>{{ match.team1.name }}</h3>
+                <span class="match-label">
+                    بازیکنان بازی کرده‌اند
+                </span>
 
-<table border="1" cellpadding="6">
+                <strong>
+                    {{ completed_players }}
+                    /
+                    {{ total_players }}
+                </strong>
 
-<tr>
-    <th>بازیکن</th>
-    <th>وضعیت</th>
-    <th>امتیاز</th>
-    <th>زمان</th>
-    <th>عملیات</th>
-</tr>
+            </div>
 
-{% for player in team1_players %}
 
-<tr>
+            {% if not match.is_complete %}
 
-<td>{{ player.user.username }}</td>
+                <div>
 
-<td>
+                    <span class="match-label">
+                        بازیکنان باقی‌مانده
+                    </span>
 
-{% if player.session.status == "completed" %}
+                    <strong>
+                        {{ remaining_players }}
+                    </strong>
 
-✅ انجام شده
+                </div>
 
-{% else %}
+            {% endif %}
 
-⏳ در انتظار
 
-{% endif %}
+            <div>
 
-</td>
+                <span class="match-label">
+                    برنده
+                </span>
 
-<td>
+                <strong>
 
-{% if player.score %}
+                    {% if not match.is_complete %}
 
-{{ player.score.score }}
+                        در حال برگزاری
 
-{% else %}
+                    {% elif match.winner %}
 
--
+                        {{ match.winner.name }}
 
-{% endif %}
+                    {% else %}
 
-</td>
+                        مساوی
 
-<td>
+                    {% endif %}
 
-{% if player.score %}
+                </strong>
 
-{{ player.score.completion_time|duration }}
+            </div>
 
-{% else %}
 
--
+            <div>
 
-{% endif %}
+                <span class="match-label">
+                    تاریخ
+                </span>
 
-</td>
-<td>
+                <span>
+                    {{ match.played_at }}
+                </span>
 
-{% if player.session %}
+            </div>
 
-    {% if player.session.status != "completed" %}
+        </div>
 
-        {% if player.session.user == request.user %}
+    </div>
 
-            <a href="{% url 'game_play' player.session.id %}">
-                شروع بازی
-            </a>
 
-        {% endif %}
+    <!-- =========================
+         Team 1
+    ========================== -->
 
-    {% endif %}
+    <section class="match-team-section">
 
-{% endif %}
+        <div class="section-header">
 
-</td>
+            <h2 class="page-title">
+                {{ match.team1.name }}
+            </h2>
 
-</tr>
+        </div>
 
-{% endfor %}
 
-</table>
+        <div class="card">
 
+            <div class="table-wrapper">
 
-<br>
+                <table class="table match-players-table">
 
+                    <thead>
 
-<h3>{{ match.team2.name }}</h3>
+                        <tr>
 
-<table border="1" cellpadding="6">
+                            <th>
+                                بازیکن
+                            </th>
 
-<tr>
-    <th>بازیکن</th>
-    <th>وضعیت</th>
-    <th>امتیاز</th>
-    <th>زمان</th>
-    <th>عملیات</th>
-</tr>
+                            <th>
+                                وضعیت
+                            </th>
 
-{% for player in team2_players %}
+                            <th>
+                                امتیاز
+                            </th>
 
-<tr>
+                            <th>
+                                زمان
+                            </th>
 
-<td>{{ player.user.username }}</td>
+                            <th>
+                                عملیات
+                            </th>
 
-<td>
+                        </tr>
 
-{% if player.session.status == "completed" %}
+                    </thead>
 
-✅ انجام شده
 
-{% else %}
+                    <tbody>
 
-⏳ در انتظار
+                        {% for player in team1_players %}
 
-{% endif %}
+                            <tr>
 
-</td>
+                                <td>
+                                    <strong>
+                                        {{ player.user.username }}
+                                    </strong>
+                                </td>
 
-<td>
 
-{% if player.score %}
+                                <td>
 
-{{ player.score.score }}
+                                    {% if player.session.status == "completed" %}
 
-{% else %}
+                                        <span class="badge badge-success">
+                                            انجام شده
+                                        </span>
 
--
+                                    {% else %}
 
-{% endif %}
+                                        <span class="badge badge-warning">
+                                            در انتظار
+                                        </span>
 
-</td>
+                                    {% endif %}
 
-<td>
+                                </td>
 
-{% if player.score %}
 
-{{ player.score.completion_time|duration }}
+                                <td>
 
-{% else %}
+                                    {% if player.score %}
+                                        {{ player.score.score }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
 
--
+                                </td>
 
-{% endif %}
 
-</td>
-<td>
+                                <td>
 
-{% if player.session %}
+                                    {% if player.score %}
+                                        {{ player.score.completion_time|duration }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
 
-    {% if player.session.status != "completed" %}
+                                </td>
 
-        {% if player.session.user == request.user %}
 
-            <a href="{% url 'game_play' player.session.id %}">
-                شروع بازی
-            </a>
+                                <td>
 
-        {% endif %}
+                                    {% if player.session %}
 
-    {% endif %}
+                                        {% if player.session.status != "completed" %}
 
-{% endif %}
+                                            {% if player.session.user == request.user %}
 
-</td>
+                                                <a
+                                                    href="{% url 'game_play' player.session.id %}"
+                                                    class="btn btn-primary btn-sm"
+                                                >
+                                                    شروع بازی
+                                                </a>
 
-</tr>
+                                            {% endif %}
 
-{% endfor %}
+                                        {% endif %}
 
-</table>
+                                    {% endif %}
 
-<hr>
+                                </td>
 
-<h3>🤖 گزارش هوش مصنوعی مسابقه</h3>
+                            </tr>
 
-{% if match.report %}
+                        {% endfor %}
 
-<div>
-    {{ match.report|linebreaks }}
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         Team 2
+    ========================== -->
+
+    <section class="match-team-section">
+
+        <div class="section-header">
+
+            <h2 class="page-title">
+                {{ match.team2.name }}
+            </h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="table-wrapper">
+
+                <table class="table match-players-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                بازیکن
+                            </th>
+
+                            <th>
+                                وضعیت
+                            </th>
+
+                            <th>
+                                امتیاز
+                            </th>
+
+                            <th>
+                                زمان
+                            </th>
+
+                            <th>
+                                عملیات
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for player in team2_players %}
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        {{ player.user.username }}
+                                    </strong>
+                                </td>
+
+
+                                <td>
+
+                                    {% if player.session.status == "completed" %}
+
+                                        <span class="badge badge-success">
+                                            انجام شده
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge badge-warning">
+                                            در انتظار
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if player.score %}
+                                        {{ player.score.score }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if player.score %}
+                                        {{ player.score.completion_time|duration }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if player.session %}
+
+                                        {% if player.session.status != "completed" %}
+
+                                            {% if player.session.user == request.user %}
+
+                                                <a
+                                                    href="{% url 'game_play' player.session.id %}"
+                                                    class="btn btn-primary btn-sm"
+                                                >
+                                                    شروع بازی
+                                                </a>
+
+                                            {% endif %}
+
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         AI Report
+    ========================== -->
+
+    <section class="match-ai-section">
+
+        <div class="card ai-report-card">
+
+            <div class="section-header">
+
+                <h2 class="card-title">
+                    🤖 گزارش هوش مصنوعی مسابقه
+                </h2>
+
+            </div>
+
+
+            {% if match.report %}
+
+                <div class="ai-report-content">
+                    {{ match.report|linebreaks }}
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <p>
+                        گزارش هوش مصنوعی برای این مسابقه هنوز تولید نشده است.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
 </div>
-
-{% else %}
-
-<p>
-گزارش هوش مصنوعی برای این مسابقه هنوز تولید نشده است.
-</p>
-
-{% endif %}
 
 {% endblock %}

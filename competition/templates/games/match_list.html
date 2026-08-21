@@ -1,80 +1,189 @@
 {% extends 'base.html' %}
 
 {% block title %}
-مسابقات
+    مسابقات
 {% endblock %}
 
 {% block content %}
 
-<h2>لیست مسابقات</h2>
+<div class="match-list-page">
 
-{% if matches %}
+    <!-- =========================
+         Header
+    ========================== -->
 
-    {% for match in matches %}
+    <div class="page-header">
 
-        <hr>
+        <h1 class="page-title">
+            لیست مسابقات
+        </h1>
 
-        <p>
-        <strong>لیگ:</strong>
-        {{ match.round.tournament.name }}
+        <p class="page-description">
+            مشاهده مسابقات و نتایج ثبت‌شده
         </p>
 
-        <h3>
-            <a href="{% url 'match_detail' match.id %}">
+    </div>
 
-                {% if match.is_complete %}
 
-                {{ match.team1.name }}
-                {{ match.score_team1 }}
+    <!-- =========================
+         Matches
+    ========================== -->
 
-                -
+    {% if matches %}
 
-                {{ match.score_team2 }}
-                {{ match.team2.name }}
+        <div class="match-cards">
 
-                {% else %}
+            {% for match in matches %}
 
-                {{ match.team1.name }}
+                <div class="card match-card">
 
-                vs
+                    <!-- Tournament -->
 
-                {{ match.team2.name }}
+                    <div class="match-card__tournament">
 
-                {% endif %}
-            </a>
-        </h3>
+                        <span class="match-label">
+                            لیگ
+                        </span>
 
-        <p>
+                        <strong>
+                            {{ match.round.tournament.name }}
+                        </strong>
 
-            <strong>برنده:</strong>
+                    </div>
 
-            {% if not match.is_complete %}
 
-            🟡 در حال برگزاری
+                    <!-- Match -->
 
-            {% elif match.winner %}
+                    <a
+                        href="{% url 'match_detail' match.id %}"
+                        class="match-card__main"
+                    >
 
-            🟢 برنده:
-            {{ match.winner.name }}
+                        {% if match.is_complete %}
 
-            {% else %}
+                            <div class="match-team">
 
-            🤝 مساوی
+                                <span>
+                                    {{ match.team1.name }}
+                                </span>
 
-            {% endif %}
+                                <strong>
+                                    {{ match.score_team1 }}
+                                </strong>
 
-        </p>
+                            </div>
 
-        <p>
-            {{ match.played_at }}
-        </p>
 
-    {% endfor %}
+                            <span class="match-separator">
+                                -
+                            </span>
 
-{% else %}
 
-    <p>هنوز مسابقه‌ای ثبت نشده است.</p>
+                            <div class="match-team">
 
-{% endif %}
+                                <strong>
+                                    {{ match.score_team2 }}
+                                </strong>
+
+                                <span>
+                                    {{ match.team2.name }}
+                                </span>
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="match-team">
+
+                                <span>
+                                    {{ match.team1.name }}
+                                </span>
+
+                            </div>
+
+
+                            <span class="match-separator">
+                                vs
+                            </span>
+
+
+                            <div class="match-team">
+
+                                <span>
+                                    {{ match.team2.name }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    </a>
+
+
+                    <!-- Result -->
+
+                    <div class="match-card__result">
+
+                        <div>
+
+                            <span class="match-label">
+                                نتیجه
+                            </span>
+
+                            {% if not match.is_complete %}
+
+                                <span class="badge badge-warning">
+                                    در حال برگزاری
+                                </span>
+
+                            {% elif match.winner %}
+
+                                <span class="badge badge-success">
+                                    برنده: {{ match.winner.name }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-info">
+                                    مساوی
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        {% if match.played_at %}
+
+                            <time
+                                class="match-card__date"
+                                datetime="{{ match.played_at|date:'c' }}"
+                            >
+                                {{ match.played_at }}
+                            </time>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <p>
+                هنوز مسابقه‌ای ثبت نشده است.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}
