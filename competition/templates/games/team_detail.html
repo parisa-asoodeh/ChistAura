@@ -6,72 +6,182 @@
 
 {% block content %}
 
-<h2>{{ team.name }}</h2>
+<div class="page-header">
 
-<p>
-    <strong>کاپیتان:</strong>
-    {{ team.captain.username }}
-</p>
-{% if user == team.captain %}
+    <h1 class="page-title">
+        {{ team.name }}
+    </h1>
 
-<a href="{% url 'manage_team_members' team.id %}">
-مدیریت اعضای تیم
-</a>
+    <p class="page-description">
+        اطلاعات و آمار تیم
+    </p>
 
-{% endif %}
+</div>
 
-<p>
-    <strong>امتیاز تیم:</strong>
-    {{ points }}
-</p>
 
-<hr>
+<div class="card team-profile-card">
 
-<h3>آمار تیم</h3>
+    <div class="team-profile-card__header">
 
-<p>
-    <strong>تعداد مسابقات:</strong>
-    {{ played }}
-</p>
+        <div>
 
-<p>
-    <strong>برد:</strong>
-    {{ wins }}
-</p>
+            <h2 class="card-title">
+                {{ team.name }}
+            </h2>
 
-<p>
-    <strong>مساوی:</strong>
-    {{ draws }}
-</p>
+            <p class="team-profile-card__captain">
+                <strong>کاپیتان:</strong>
+                {{ team.captain.username }}
+            </p>
 
-<p>
-    <strong>باخت:</strong>
-    {{ losses }}
-</p>
+        </div>
 
-<hr>
-<p>
-    <strong>فرم تیم:</strong>
+
+        {% if user == team.captain %}
+
+            <a
+                href="{% url 'manage_team_members' team.id %}"
+                class="btn btn-secondary"
+            >
+                مدیریت اعضای تیم
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="team-profile-card__score">
+
+        <span>
+            امتیاز تیم
+        </span>
+
+        <strong>
+            {{ points }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="card stat-card">
+
+        <span class="stat-card__label">
+            تعداد مسابقات
+        </span>
+
+        <strong class="stat-card__value">
+            {{ played }}
+        </strong>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <span class="stat-card__label">
+            برد
+        </span>
+
+        <strong class="stat-card__value">
+            {{ wins }}
+        </strong>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <span class="stat-card__label">
+            مساوی
+        </span>
+
+        <strong class="stat-card__value">
+            {{ draws }}
+        </strong>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <span class="stat-card__label">
+            باخت
+        </span>
+
+        <strong class="stat-card__value">
+            {{ losses }}
+        </strong>
+
+    </div>
+
+</div>
+
+<div class="card">
+
+    <h2 class="card-title">
+        اعضای تیم
+    </h2>
+
+    {% if members %}
+
+        <div class="team-members">
+
+            {% for member in members %}
+
+                <div class="team-member">
+
+                    <div class="team-member__name">
+                        {{ member.user.username }}
+                    </div>
+
+                    <div class="team-member__score">
+                        امتیاز فردی:
+                        <strong>
+                            {{ member.individual_score }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <p class="text-muted">
+            هنوز عضوی برای این تیم ثبت نشده است.
+        </p>
+
+    {% endif %}
+
+</div>
+
+<div class="card">
+
+    <h2 class="card-title">
+        فرم تیم
+    </h2>
 
     {% for result in form %}
-        {{ result }}
+
+        <div class="team-result">
+            {{ result }}
+        </div>
+
     {% empty %}
-        هنوز مسابقه‌ای انجام نشده است.
-    {% endfor %}
-</p>
-<hr>
 
-<h3>اعضای تیم</h3>
+        <p class="text-muted">
+            هنوز مسابقه‌ای انجام نشده است.
+        </p>
 
-<ul>
-    {% for member in members %}
-        <li>
-            {{ member.user.username }}
-            -
-            امتیاز فردی:
-            {{ member.individual_score }}
-        </li>
     {% endfor %}
-</ul>
+
+</div>
 
 {% endblock %}

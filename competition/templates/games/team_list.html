@@ -1,29 +1,77 @@
 {% extends 'base.html' %}
 
 {% block title %}
-لیست تیم‌ها
+تیم‌ها
 {% endblock %}
 
 {% block content %}
 
-<h2>لیست تیم‌ها</h2>
+<div class="page-header">
+    <h1 class="page-title">
+        تیم‌ها
+    </h1>
+
+    <p class="page-description">
+        تیم‌های ثبت‌شده در پلتفرم
+    </p>
+</div>
+
 
 {% if teams %}
 
-    <ul>
+    <div class="card-list">
+
         {% for team in teams %}
-            <li>
-                <a href="{% url 'team_detail' team.id %}">
-                    {{ team.name }}
-                </a>
-                (امتیاز: {{ team.get_points }})
-            </li>
+
+            <div class="card team-card">
+
+                <div class="team-card__content">
+
+                    <h2 class="card-title">
+                        <a href="{% url 'team_detail' team.id %}">
+                            {{ team.name }}
+                        </a>
+                    </h2>
+
+                    <p class="team-card__score">
+                        امتیاز تیم:
+                        <strong>
+                            {{ team.get_points }}
+                        </strong>
+                    </p>
+
+                </div>
+
+                <div class="team-card__action">
+
+                    <a
+                        href="{% url 'team_detail' team.id %}"
+                        class="btn btn-secondary"
+                    >
+                        مشاهده تیم
+                    </a>
+
+                </div>
+
+            </div>
+
         {% endfor %}
-    </ul>
+
+    </div>
 
 {% else %}
 
-    <p>هنوز تیمی ثبت نشده است.</p>
+    <div class="empty-state">
+
+        <h3>
+            هنوز تیمی ثبت نشده است.
+        </h3>
+
+        <p>
+            اولین تیم را ایجاد کنید.
+        </p>
+
+    </div>
 
 {% endif %}
 
