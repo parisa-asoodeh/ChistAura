@@ -1,61 +1,202 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
+
 <head>
+
     <meta charset="UTF-8">
-    <title>{% block title %}سایت من{% endblock %}</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            سایت من
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/variables.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/base.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/components.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/responsive.css' %}"
+    >
+
 </head>
+
+
 <body>
-    <nav>
-        <a href="{% url 'home' %}">خانه</a>
 
-        {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}">پروفایل</a>
-            <a href="{% url 'my_team' %}">
-                تیم من
-            </a>
-            <a href="{% url 'match_list' %}">
-                مسابقات
-            </a>
-            <a href="{% url 'tournament_list' %}">
-                لیگ‌ها
-            </a>
-            <a href="{% url 'leaderboard' %}">
-                رتبه‌بندی
-            </a>
-            <a href="{% url 'player_leaderboard' %}">
-                بازیکنان
-            </a>
-            <!-- <a href="{% url 'logout' %}">خروج</a> -->
-             <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" style="border:none; background:none; color:blue; cursor:pointer;">
-                    خروج
-                </button>
-            </form>
+<header class="site-header">
 
-        {% else %}
-            <a href="{% url 'login' %}">ورود</a>
-            <a href="{% url 'register' %}">ثبت‌نام</a>
-        {% endif %}
+    <nav class="navbar">
+
+        <a
+            href="{% url 'home' %}"
+            class="navbar-brand"
+        >
+            Game Competition
+        </a>
+
+
+        <button
+            type="button"
+            class="navbar-toggle"
+            id="navbar-toggle"
+            aria-label="باز کردن منو"
+            aria-expanded="false"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+
+        <div
+            class="navbar-links"
+            id="navbar-links"
+        >
+
+            <a
+                href="{% url 'home' %}"
+                class="navbar-link"
+            >
+                خانه
+            </a>
+
+
+            {% if user.is_authenticated %}
+
+                <a
+                    href="{% url 'profile' %}"
+                    class="navbar-link"
+                >
+                    پروفایل
+                </a>
+
+                <a
+                    href="{% url 'my_team' %}"
+                    class="navbar-link"
+                >
+                    تیم من
+                </a>
+
+                <a
+                    href="{% url 'match_list' %}"
+                    class="navbar-link"
+                >
+                    مسابقات
+                </a>
+
+                <a
+                    href="{% url 'tournament_list' %}"
+                    class="navbar-link"
+                >
+                    لیگ‌ها
+                </a>
+
+                <a
+                    href="{% url 'leaderboard' %}"
+                    class="navbar-link"
+                >
+                    رتبه‌بندی
+                </a>
+
+                <a
+                    href="{% url 'player_leaderboard' %}"
+                    class="navbar-link"
+                >
+                    بازیکنان
+                </a>
+
+                <form
+                    action="{% url 'logout' %}"
+                    method="post"
+                    class="navbar-logout-form"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="navbar-logout"
+                    >
+                        خروج
+                    </button>
+
+                </form>
+
+
+            {% else %}
+
+                <a
+                    href="{% url 'login' %}"
+                    class="navbar-link"
+                >
+                    ورود
+                </a>
+
+                <a
+                    href="{% url 'register' %}"
+                    class="navbar-link navbar-link--primary"
+                >
+                    ثبت‌نام
+                </a>
+
+            {% endif %}
+
+        </div>
+
     </nav>
 
-    <hr>
+</header>
+
+
+<main class="main-content">
+
 
     {% if messages %}
 
         {% for message in messages %}
 
-            <p>
+            <div class="alert">
+
                 {{ message }}
-            </p>
+
+            </div>
 
         {% endfor %}
 
     {% endif %}
 
-    {% block content %}{% endblock %}
 
-    {% block scripts %}
+    {% block content %}
     {% endblock %}
+
+
+</main>
+
+
+{% block scripts %}
+{% endblock %}
+
+
 </body>
+
 </html>
