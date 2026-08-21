@@ -325,6 +325,90 @@ textarea:focus {
         0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
+/* =========================
+   Authentication
+========================= */
+
+.auth-page {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: var(--space-8) 0;
+}
+
+.auth-card {
+    padding: var(--space-7);
+
+    background-color: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.auth-header {
+    margin-bottom: var(--space-6);
+
+    text-align: center;
+}
+
+.auth-title {
+    margin-bottom: var(--space-2);
+
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.auth-subtitle {
+    color: var(--color-text-muted);
+}
+
+.auth-form p {
+    margin-bottom: var(--space-4);
+}
+
+.auth-form label {
+    display: block;
+
+    margin-bottom: var(--space-2);
+
+    font-weight: var(--font-weight-medium);
+}
+
+.auth-form input {
+    width: 100%;
+}
+
+.auth-submit {
+    width: 100%;
+    margin-top: var(--space-2);
+}
+
+.auth-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: var(--space-2);
+
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+
+    border-top: 1px solid var(--color-border);
+
+    color: var(--color-text-muted);
+
+    font-size: var(--font-size-sm);
+}
+
+.auth-footer a {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.auth-footer a:hover {
+    color: var(--color-primary-dark);
+}
 
 /* =========================
    Alerts / Messages
