@@ -1,12 +1,87 @@
 {% extends 'base.html' %}
 
-{% block title %}پروفایل{% endblock %}
+{% block title %}
+پروفایل
+{% endblock %}
 
 {% block content %}
-<h2>پروفایل کاربر</h2>
 
-<p><strong>نام کاربری:</strong> {{ user.username }}</p>
-<p><strong>ایمیل:</strong> {{ user.email }}</p>
-<p><strong>شماره موبایل:</strong> {{ user.phone }}</p>
-<p><strong>وضعیت تایید:</strong> {{ user.is_verified }}</p>
+<section class="profile-page">
+
+    <div class="profile-card">
+
+        <div class="profile-header">
+
+            <div class="profile-avatar">
+                {{ user.username|first|upper }}
+            </div>
+
+            <div>
+                <h1 class="profile-title">
+                    {{ user.username }}
+                </h1>
+
+                <p class="profile-subtitle">
+                    پروفایل کاربری
+                </p>
+            </div>
+
+        </div>
+
+        <div class="profile-info">
+
+            <div class="profile-info-item">
+                <span class="profile-label">
+                    نام کاربری
+                </span>
+
+                <span class="profile-value">
+                    {{ user.username }}
+                </span>
+            </div>
+
+            <div class="profile-info-item">
+                <span class="profile-label">
+                    ایمیل
+                </span>
+
+                <span class="profile-value">
+                    {{ user.email }}
+                </span>
+            </div>
+
+            <div class="profile-info-item">
+                <span class="profile-label">
+                    شماره موبایل
+                </span>
+
+                <span class="profile-value">
+                    {{ user.phone }}
+                </span>
+            </div>
+
+            <div class="profile-info-item">
+                <span class="profile-label">
+                    وضعیت تأیید
+                </span>
+
+                <span class="profile-value">
+                    {% if user.is_verified %}
+                        <span class="badge badge-success">
+                            تأیید شده
+                        </span>
+                    {% else %}
+                        <span class="badge badge-warning">
+                            تأیید نشده
+                        </span>
+                    {% endif %}
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endblock %}
