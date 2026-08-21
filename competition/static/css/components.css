@@ -410,6 +410,31 @@ textarea:focus {
     color: var(--color-primary-dark);
 }
 
+
+/* =========================
+   Form Errors
+========================= */
+
+.errorlist {
+    margin: var(--space-2) 0 0;
+    padding: 0;
+
+    list-style: none;
+
+    color: var(--color-danger);
+
+    font-size: var(--font-size-sm);
+}
+
+.errorlist li {
+    margin-bottom: var(--space-1);
+}
+
+.auth-form .errorlist {
+    margin-top: var(--space-2);
+}
+
+
 /* =========================
    Profile
 ========================= */
@@ -516,6 +541,10 @@ textarea:focus {
     border: 1px solid transparent;
 }
 
+.messages {
+    margin-bottom: var(--space-4);
+}
+
 .alert-success {
     background-color: #f0fdf4;
     border-color: #bbf7d0;
@@ -532,6 +561,18 @@ textarea:focus {
     background-color: #fef2f2;
     border-color: #fecaca;
     color: var(--color-danger);
+}
+
+.alert-error {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+    color: var(--color-danger);
+}
+
+.alert-info {
+    background-color: #eff6ff;
+    border-color: #bfdbfe;
+    color: var(--color-primary);
 }
 
 
