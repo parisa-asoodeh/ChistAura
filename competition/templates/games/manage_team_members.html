@@ -4,98 +4,156 @@
 مدیریت اعضای تیم
 {% endblock %}
 
-
 {% block content %}
 
-<h2>
-مدیریت اعضای {{ team.name }}
-</h2>
+<div class="team-members-page">
+
+    <div class="page-header">
+
+        <h1 class="page-title">
+            مدیریت اعضای {{ team.name }}
+        </h1>
+
+        <p class="page-description">
+            اعضای تیم را مدیریت کنید.
+        </p>
+
+    </div>
 
 
-<h3>
-اعضای فعلی
-</h3>
+    <div class="card team-members-card">
 
-<ul>
+        <h2 class="card-title">
+            اعضای فعلی
+        </h2>
 
-{% for member in members %}
+        {% if members %}
 
-<li>
+            <div class="team-members">
 
-{{ member.user.username }}
+                {% for member in members %}
 
-{% if member.user != team.captain %}
+                    <div class="team-member">
 
-<form method="post" style="display:inline;">
+                        <div class="team-member__content">
 
-{% csrf_token %}
+                            <span class="team-member__name">
+                                {{ member.user.username }}
+                            </span>
 
-<input 
-type="hidden"
-name="user_id"
-value="{{ member.user.id }}"
->
+                            {% if member.user == team.captain %}
 
+                                <span class="badge badge-primary">
+                                    کاپیتان
+                                </span>
 
-<button 
-name="action"
-value="remove">
-حذف
-</button>
+                            {% endif %}
 
-
-</form>
-
-{% else %}
-
-(کاپیتان)
-
-{% endif %}
-
-</li>
-
-{% endfor %}
-
-</ul>
+                        </div>
 
 
+                        {% if member.user != team.captain %}
 
-<hr>
+                            <form method="post">
+
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="user_id"
+                                    value="{{ member.user.id }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    name="action"
+                                    value="remove"
+                                    class="btn btn-danger"
+                                >
+                                    حذف
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                هنوز عضوی برای این تیم ثبت نشده است.
+            </div>
+
+        {% endif %}
+
+    </div>
 
 
-<h3>
-اضافه کردن عضو
-</h3>
+    <div class="card">
 
+        <h2 class="card-title">
+            اضافه کردن عضو
+        </h2>
 
-<form method="post">
+        {% if available_users %}
 
-{% csrf_token %}
+            <form method="post" class="member-add-form">
 
+                {% csrf_token %}
 
-<select name="user_id">
+                <div class="form-group">
 
-{% for user in available_users %}
+                    <label
+                        for="user_id"
+                        class="form-label"
+                    >
+                        انتخاب کاربر
+                    </label>
 
-<option value="{{ user.id }}">
+                    <select
+                        name="user_id"
+                        id="user_id"
+                        required
+                    >
 
-{{ user.username }}
+                        {% for user in available_users %}
 
-</option>
+                            <option value="{{ user.id }}">
+                                {{ user.username }}
+                            </option>
 
-{% endfor %}
+                        {% endfor %}
 
-</select>
+                    </select>
 
+                </div>
 
-<button 
-name="action"
-value="add">
-اضافه
-</button>
+                <button
+                    type="submit"
+                    name="action"
+                    value="add"
+                    class="btn btn-primary"
+                >
+                    اضافه کردن عضو
+                </button>
 
+            </form>
 
-</form>
+        {% else %}
 
+            <div class="empty-state">
+                کاربر دیگری برای اضافه کردن وجود ندارد.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
 
 {% endblock %}

@@ -326,6 +326,45 @@ textarea:focus {
 }
 
 /* =========================
+   Checkbox Groups
+========================= */
+
+.auth-form input[type="checkbox"] {
+    width: auto;
+
+    margin: 0;
+
+    flex-shrink: 0;
+
+    accent-color: var(--color-primary);
+}
+
+.auth-form #id_members {
+    margin: var(--space-2) 0 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.auth-form #id_members li {
+    margin-bottom: var(--space-2);
+}
+
+.auth-form #id_members label {
+    display: inline-flex;
+    align-items: center;
+
+    gap: var(--space-2);
+
+    margin: 0;
+
+    font-weight: var(--font-weight-normal);
+
+    cursor: pointer;
+}
+
+
+/* =========================
    Authentication
 ========================= */
 
@@ -897,4 +936,44 @@ textarea:focus {
 
 .text-muted {
     color: var(--color-text-muted);
+}
+
+/* =========================
+   Team Members Management
+========================= */
+
+.team-members-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: var(--space-8) 0;
+}
+
+.team-members-page .page-header {
+    margin-bottom: var(--space-6);
+}
+
+.team-members-card {
+    margin-bottom: var(--space-5);
+}
+
+.team-member__content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.badge-primary {
+    background-color: #e0e7ff;
+    color: var(--color-primary);
+
+    padding: 2px var(--space-2);
+
+    border-radius: var(--radius-pill);
+
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.member-add-form {
+    max-width: 500px;
 }

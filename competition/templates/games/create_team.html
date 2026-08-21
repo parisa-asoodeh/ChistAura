@@ -1,6 +1,44 @@
-<h2>ایجاد تیم جدید</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">ثبت تیم</button>
-</form>
+{% extends 'base.html' %}
+
+{% block title %}
+ایجاد تیم
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <h1 class="auth-title">
+                ایجاد تیم جدید
+            </h1>
+
+            <p class="auth-subtitle">
+                نام تیم و اعضای آن را انتخاب کنید.
+            </p>
+
+        </div>
+
+        <form method="post" class="auth-form">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button
+                type="submit"
+                class="btn btn-primary auth-submit"
+            >
+                ایجاد تیم
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
