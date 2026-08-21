@@ -56,6 +56,23 @@
     cursor: pointer;
 }
 
+.navbar-toggle span {
+    display: block;
+
+    width: 24px;
+    height: 2px;
+
+    margin: 5px 0;
+
+    background-color: var(--color-primary);
+
+    border-radius: var(--radius-pill);
+
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
 .navbar-link {
     padding: var(--space-2) var(--space-3);
 
