@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const isOpen = links.classList.contains("active");
 
+        toggle.classList.toggle("is-open" , isOpen);
+
         toggle.setAttribute(
             "aria-expanded",
             isOpen

@@ -73,6 +73,21 @@
         opacity 0.2s ease;
 }
 
+/* --------Navbar Toggle — Open State--------- */
+
+.navbar-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.navbar-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+/* ------------------------------------------- */
+
 .navbar-link {
     padding: var(--space-2) var(--space-3);
 
