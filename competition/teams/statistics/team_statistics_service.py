@@ -124,6 +124,9 @@ class TeamStatisticsService:
             if not match.is_complete:
                 continue
 
+            if match.score_team1 is None or match.score_team2 is None:
+                continue
+
             if match.team1 == team:
                 difference += (
                     match.score_team1
