@@ -78,7 +78,12 @@ class TeamStatisticsService:
                 team,
                 tournament
             )
-            if match.is_complete and match.winner is None
+            if (
+                match.is_complete
+                and match.winner is None
+                and match.score_team1 is not None
+                and match.score_team2 is not None
+            )
         )
 
     @staticmethod
