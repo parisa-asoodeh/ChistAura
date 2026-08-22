@@ -3,89 +3,174 @@
 {% load static %}
 
 {% block title %}
-بازی
+    بازی
 {% endblock %}
 
 {% block content %}
 
-<h2>
-    شروع بازی
-</h2>
+<div class="gameplay-page">
 
-<hr>
+    <!-- =========================
+         Game Header
+    ========================== -->
 
-<h3>
-    مسابقه:
-</h3>
+    <div class="card gameplay-header">
 
-<p>
-    {{ session.match.team1.name }}
-    -
-    {{ session.match.team2.name }}
-</p>
+        <div class="page-header">
 
+            <h1 class="page-title">
+                شروع بازی
+            </h1>
 
-<h3>
-    نوع بازی:
-</h3>
-
-<p>
-    {{ session.match.round.tournament.game_type.name }}
-</p>
-
-
-<h3>
-    بازیکن:
-</h3>
-
-<p>
-    {{ session.user.username }}
-</p>
-
-
-<h3>
-    وضعیت:
-</h3>
-
-<p>
-    {{ session.get_status_display }}
-</p>
-
-<hr>
-
-<h3>سؤال‌های مسابقه</h3>
-
-<form method="post">
-
-    {% csrf_token %}
-
-    {% for field in form %}
-
-        <div style="margin-bottom:25px;">
-
-            <h4>
-                {{ field.label }}
-            </h4>
-
-            {{ field }}
-
-            {% if field.errors %}
-                {{ field.errors }}
-            {% endif %}
+            <p class="page-description">
+                پاسخ‌های خود را ثبت کنید و بازی را به پایان برسانید.
+            </p>
 
         </div>
 
-    {% endfor %}
 
-    <button type="submit">
-        ثبت پاسخ‌ها
-    </button>
+        <!-- Match -->
 
-</form>
-<hr>
+        <div class="gameplay-info-grid">
 
+            <div class="gameplay-info-item">
+
+                <span class="match-label">
+                    مسابقه
+                </span>
+
+                <strong>
+                    {{ session.match.team1.name }}
+                    -
+                    {{ session.match.team2.name }}
+                </strong>
+
+            </div>
+
+
+            <!-- Game Type -->
+
+            <div class="gameplay-info-item">
+
+                <span class="match-label">
+                    نوع بازی
+                </span>
+
+                <strong>
+                    {{ session.match.round.tournament.game_type.name }}
+                </strong>
+
+            </div>
+
+
+            <!-- Player -->
+
+            <div class="gameplay-info-item">
+
+                <span class="match-label">
+                    بازیکن
+                </span>
+
+                <strong>
+                    {{ session.user.username }}
+                </strong>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="gameplay-info-item">
+
+                <span class="match-label">
+                    وضعیت
+                </span>
+
+                <span class="badge badge-info">
+                    {{ session.get_status_display }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         Questions
+    ========================== -->
+
+    <section class="gameplay-section">
+
+        <div class="section-header">
+
+            <h2 class="card-title">
+                سؤال‌های مسابقه
+            </h2>
+
+        </div>
+
+
+        <div class="card gameplay-card">
+
+            <form method="post" class="gameplay-form">
+
+                {% csrf_token %}
+
+
+                {% for field in form %}
+
+                    <div class="gameplay-question">
+
+                        <h3 class="gameplay-question__title">
+                            {{ field.label }}
+                        </h3>
+
+
+                        <div class="gameplay-question__input">
+
+                            {{ field }}
+
+                        </div>
+
+
+                        {% if field.errors %}
+
+                            <div class="errorlist">
+
+                                {{ field.errors }}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+
+                <div class="gameplay-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        ثبت پاسخ‌ها
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</div>
 
 {% endblock %}
+
 
 {% block scripts %}
 
