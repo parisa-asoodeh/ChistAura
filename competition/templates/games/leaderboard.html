@@ -1,54 +1,103 @@
 {% extends 'base.html' %}
 
 {% block title %}
-جدول رتبه‌بندی
+    جدول رتبه‌بندی
 {% endblock %}
 
 {% block content %}
 
-<h2>جدول رتبه‌بندی تیم‌ها</h2>
+<div class="leaderboard-page">
 
-<table border="1" cellpadding="10">
+    <div class="page-header">
 
-    <tr>
-        <th>رتبه</th>
-        <th>تیم</th>
-        <th>امتیاز</th>
-        <th>برد</th>
-        <th>مساوی</th>
-        <th>باخت</th>
-    </tr>
+        <h1 class="page-title">
+            جدول رتبه‌بندی تیم‌ها
+        </h1>
 
-    {% for row in table %}
+        <p class="page-description">
+            وضعیت تیم‌ها بر اساس عملکرد مسابقات
+        </p>
 
-    <tr>
+    </div>
 
-        <td>{{ forloop.counter }}</td>
 
-        <td>
-            {{ row.team.name }}
-        </td>
+    {% if table %}
 
-        <td>
-            {{ row.points }}
-        </td>
+        <div class="card">
 
-        <td>
-            {{ row.wins }}
-        </td>
+            <div class="table-wrapper">
 
-        <td>
-            {{ row.draws }}
-        </td>
+                <table class="table">
 
-        <td>
-            {{ row.losses }}
-        </td>
+                    <thead>
 
-    </tr>
+                        <tr>
+                            <th>رتبه</th>
+                            <th>تیم</th>
+                            <th>امتیاز</th>
+                            <th>برد</th>
+                            <th>مساوی</th>
+                            <th>باخت</th>
+                        </tr>
 
-    {% endfor %}
+                    </thead>
 
-</table>
+                    <tbody>
+
+                        {% for row in table %}
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        {{ forloop.counter }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ row.team.name }}
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        {{ row.points }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ row.wins }}
+                                </td>
+
+                                <td>
+                                    {{ row.draws }}
+                                </td>
+
+                                <td>
+                                    {{ row.losses }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            هنوز تیمی برای نمایش در جدول رتبه‌بندی وجود ندارد.
+
+        </div>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}
