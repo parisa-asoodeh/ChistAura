@@ -3,56 +3,168 @@
 {% load game_filters %}
 
 {% block title %}
-نتیجه بازی
+    نتیجه بازی
 {% endblock %}
 
 {% block content %}
 
-<h2>نتیجه بازی</h2>
+<div class="game-result-page">
 
-<hr>
+    <!-- =========================
+         Result Header
+    ========================== -->
 
-<p>
-<strong>بازیکن:</strong>
-{{ session.user.username }}
-</p>
+    <div class="card game-result-header">
 
-<p>
-<strong>نوع بازی:</strong>
-{{ session.match.round.tournament.game_type.name }}
-</p>
+        <div class="page-header">
 
-<p>
-<strong>امتیاز خام:</strong>
-{{ session.raw_score }}
-</p>
+            <h1 class="page-title">
+                نتیجه بازی
+            </h1>
 
-<p>
-<strong>امتیاز نهایی:</strong>
-{{ player_score.score }}
-</p>
+            <p class="page-description">
+                نتیجه ثبت‌شده برای این بازی
+            </p>
 
-<p>
-<strong>پاسخ صحیح:</strong>
-{{ session.raw_score }}
-از
-{{ question_count }}
-</p>
+        </div>
 
-<p>
-<strong>زمان:</strong>
-{{ session.completion_time|duration }}
-</p>
+    </div>
 
-<p>
-<strong>وضعیت:</strong>
-{{ session.get_status_display }}
-</p>
 
-<hr>
+    <!-- =========================
+         Result Summary
+    ========================== -->
 
-<a href="{% url 'match_detail' session.match.id %}">
-بازگشت به مسابقه
-</a>
+    <div class="game-result-card card">
+
+        <div class="game-result-grid">
+
+            <!-- Player -->
+
+            <div class="game-result-item">
+
+                <span class="game-result-label">
+                    بازیکن
+                </span>
+
+                <strong>
+                    {{ session.user.username }}
+                </strong>
+
+            </div>
+
+
+            <!-- Game Type -->
+
+            <div class="game-result-item">
+
+                <span class="game-result-label">
+                    نوع بازی
+                </span>
+
+                <strong>
+                    {{ session.match.round.tournament.game_type.name }}
+                </strong>
+
+            </div>
+
+
+            <!-- Raw Score -->
+
+            <div class="game-result-item">
+
+                <span class="game-result-label">
+                    امتیاز خام
+                </span>
+
+                <strong>
+                    {{ session.raw_score }}
+                </strong>
+
+            </div>
+
+
+            <!-- Final Score -->
+
+            <div class="game-result-item game-result-item--highlight">
+
+                <span class="game-result-label">
+                    امتیاز نهایی
+                </span>
+
+                <strong>
+                    {{ player_score.score }}
+                </strong>
+
+            </div>
+
+
+            <!-- Correct Answers -->
+
+            <div class="game-result-item">
+
+                <span class="game-result-label">
+                    پاسخ صحیح
+                </span>
+
+                <strong>
+                    {{ session.raw_score }}
+                    از
+                    {{ question_count }}
+                </strong>
+
+            </div>
+
+
+            <!-- Time -->
+
+            <div class="game-result-item">
+
+                <span class="game-result-label">
+                    زمان
+                </span>
+
+                <strong>
+                    {{ session.completion_time|duration }}
+                </strong>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="game-result-item">
+
+                <span class="game-result-label">
+                    وضعیت
+                </span>
+
+                <span class="badge badge-success">
+                    {{ session.get_status_display }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         Actions
+    ========================== -->
+
+    <div class="game-result-actions">
+
+        <a
+            href="{% url 'match_detail' session.match.id %}"
+            class="btn btn-primary"
+        >
+            بازگشت به مسابقه
+        </a>
+
+    </div>
+
+</div>
 
 {% endblock %}

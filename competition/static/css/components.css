@@ -2011,3 +2011,435 @@ textarea:focus {
     }
 
 }
+
+/* =========================
+   Gameplay
+========================= */
+
+.gameplay-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--space-8) 0;
+}
+
+
+/* =========================
+   Gameplay Header
+========================= */
+
+.gameplay-header {
+    margin-bottom: var(--space-7);
+}
+
+.gameplay-header .page-header {
+    margin-bottom: var(--space-6);
+}
+
+
+.gameplay-info-grid {
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(200px, 1fr)
+    );
+
+    gap: var(--space-4);
+}
+
+
+.gameplay-info-item {
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--space-2);
+
+    padding: var(--space-4);
+
+    background-color: var(--color-background);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+
+/* =========================
+   Questions
+========================= */
+
+.gameplay-section {
+    margin-bottom: var(--space-7);
+}
+
+
+.gameplay-card {
+    padding: var(--space-6);
+}
+
+
+.gameplay-question {
+    padding: var(--space-5) 0;
+
+    border-bottom: 1px solid var(--color-border);
+}
+
+
+.gameplay-question:first-child {
+    padding-top: 0;
+}
+
+
+.gameplay-question:last-child {
+    padding-bottom: 0;
+
+    border-bottom: 0;
+}
+
+
+.gameplay-question__title {
+    margin-bottom: var(--space-4);
+
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+
+    color: var(--color-text);
+}
+
+
+.gameplay-question__input {
+    width: 100%;
+}
+
+
+.gameplay-question__input input,
+.gameplay-question__input select,
+.gameplay-question__input textarea {
+    width: 100%;
+}
+
+
+/* =========================
+   Gameplay Actions
+========================= */
+
+.gameplay-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+
+    border-top: 1px solid var(--color-border);
+}
+
+
+/* =========================
+   Gameplay Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+    .gameplay-page {
+        padding: var(--space-6) 0;
+    }
+
+    .gameplay-card {
+        padding: var(--space-4);
+    }
+
+    .gameplay-question {
+        padding: var(--space-4) 0;
+    }
+
+    .gameplay-actions {
+        justify-content: stretch;
+    }
+
+    .gameplay-actions .btn {
+        width: 100%;
+    }
+
+}
+
+/* =========================
+   Gameplay Checkbox Alignment
+========================= */
+
+.gameplay-question__input label {
+    display: flex;
+    align-items: center;
+
+    gap: var(--space-2);
+
+    width: 100%;
+
+    text-align: right;
+
+    direction: rtl;
+
+    cursor: pointer;
+}
+
+
+.gameplay-question__input input[type="checkbox"] {
+    width: auto;
+
+    flex: 0 0 auto;
+
+    margin: 0;
+
+    vertical-align: middle;
+}
+
+
+.gameplay-question__input label span {
+    flex: 1;
+
+    min-width: 0;
+
+    text-align: right;
+}
+
+/* =========================
+   Gameplay Choice Inputs
+========================= */
+
+.gameplay-question__input input[type="radio"],
+.gameplay-question__input input[type="checkbox"] {
+    width: auto;
+
+    flex: 0 0 auto;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+.gameplay-question__input label {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: var(--space-2);
+
+    width: 100%;
+
+    direction: rtl;
+
+    text-align: right;
+
+    cursor: pointer;
+
+    line-height: 1.8;
+}
+
+/* =========================
+   Game Result
+========================= */
+
+.game-result-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--space-8) 0;
+}
+
+
+.game-result-header {
+    margin-bottom: var(--space-5);
+}
+
+
+.game-result-header .page-header {
+    margin-bottom: 0;
+}
+
+
+/* =========================
+   Result Grid
+========================= */
+
+.game-result-card {
+    margin-bottom: var(--space-5);
+}
+
+
+.game-result-grid {
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(200px, 1fr)
+    );
+
+    gap: var(--space-4);
+}
+
+
+.game-result-item {
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--space-2);
+
+    padding: var(--space-4);
+
+    background-color: var(--color-background);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+
+.game-result-label {
+    color: var(--color-text-muted);
+
+    font-size: var(--font-size-sm);
+}
+
+
+.game-result-item strong {
+    color: var(--color-text);
+
+    font-size: var(--font-size-lg);
+}
+
+
+/* =========================
+   Final Score Highlight
+========================= */
+
+.game-result-item--highlight {
+    background-color: #eef2ff;
+
+    border-color: #c7d2fe;
+}
+
+
+.game-result-item--highlight strong {
+    color: var(--color-primary);
+
+    font-size: var(--font-size-2xl);
+}
+
+
+/* =========================
+   Actions
+========================= */
+
+.game-result-actions {
+    display: flex;
+    justify-content: flex-start;
+
+    gap: var(--space-3);
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+    .game-result-page {
+        padding: var(--space-6) 0;
+    }
+
+    .game-result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-result-actions {
+        justify-content: stretch;
+    }
+
+    .game-result-actions .btn {
+        width: 100%;
+    }
+
+}
+
+/* =========================
+   Leaderboard
+========================= */
+
+.leaderboard-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--space-8) 0;
+}
+
+
+.leaderboard-page .page-header {
+    margin-bottom: var(--space-6);
+}
+
+
+/* =========================
+   Leaderboard Rank
+========================= */
+
+.leaderboard-page .table th:first-child,
+.leaderboard-page .table td:first-child {
+    width: 80px;
+
+    text-align: center;
+}
+
+
+.leaderboard-page .table td:first-child strong {
+    font-size: var(--font-size-lg);
+}
+
+
+/* =========================
+   Top Rank
+========================= */
+
+.leaderboard-page .table tbody tr:first-child {
+    background-color: #eef2ff;
+}
+
+
+.leaderboard-page .table tbody tr:first-child td {
+    font-weight: var(--font-weight-medium);
+}
+
+
+/* =========================
+   Team Name
+========================= */
+
+.leaderboard-page .table td:nth-child(2) {
+    font-weight: var(--font-weight-medium);
+}
+
+
+/* =========================
+   Points
+========================= */
+
+.leaderboard-page .table td:nth-child(3) strong {
+    color: var(--color-primary);
+
+    font-size: var(--font-size-lg);
+}
+
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 768px) {
+
+    .leaderboard-page {
+        padding: var(--space-6) 0;
+    }
+
+    .leaderboard-page .table {
+        min-width: 650px;
+    }
+
+}
