@@ -12,6 +12,11 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <meta
+        name="description"
+        content="{% block meta_description %}پلتفرم برگزاری و مدیریت مسابقات بازی{% endblock %}"
+    >
+
     <title>
         {% block title %}
             سایت من
@@ -38,9 +43,12 @@
         href="{% static 'css/responsive.css' %}"
     >
 
-</head>
+    <script
+        src="{% static 'js/navbar.js' %}"
+        defer
+    ></script>
 
-<script src="{% static 'js/navbar.js' %}"></script>
+</head>
 
 <body>
 
@@ -199,7 +207,6 @@
 
 {% block scripts %}
 {% endblock %}
-
 
 </body>
 
