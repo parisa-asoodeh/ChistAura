@@ -56,13 +56,13 @@ class TeamCreateForm(forms.ModelForm):
     def clean_members(self):
         # -----------------------------
         # اعتبارسنجی تعداد اعضا
-        # باید حداقل ۲ نفر انتخاب شود
+        # دقیقا باید 2 نفر انتخاب شوند
         # -----------------------------
         members = self.cleaned_data.get('members')
 
-        if members.count() < 2:
+        if members.count() != 2:
             raise forms.ValidationError(
-                "حداقل ۲ هم‌تیمی انتخاب کنید."
+                "تعداد هم‌تیمی‌ها باید دقیقاً ۳ نفر باشد."
             )
 
         # -----------------------------
