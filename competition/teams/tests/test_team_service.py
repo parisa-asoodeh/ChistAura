@@ -275,6 +275,25 @@ class TeamMemberServiceTest(TestCase):
             ).exists()
         )
 
+
+    def test_add_member_when_team_already_has_three_members(
+        self,
+    ):
+
+        # Arrange
+        TeamMembership.objects.create(
+            team=self.team,
+            user=self.user2,
+        )
+
+        # Act & Assert
+        with self.assertRaises(ValidationError):
+            TeamMemberService.add_member(
+                team=self.team,
+                user=self.user3,
+            )
+
+
     def test_add_member_when_user_is_already_in_team(
         self,
     ):
@@ -328,14 +347,39 @@ class TeamMemberServiceTest(TestCase):
                 user=self.user2,
             )
 
-    def test_remove_member_successfully(
+    def test_remove_member_when_team_has_three_members(
         self,
     ):
 
-        # Act
-        TeamMemberService.remove_member(
+        # Arrange
+        TeamMembership.objects.create(
             team=self.team,
-            user=self.user1,
+            user=self.user2,
+        )
+
+        # Act & Assert
+        with self.assertRaises(ValidationError):
+            TeamMemberService.remove_member(
+                team=self.team,
+                user=self.user1,
+            )
+
+
+    def test_replace_member_successfully(
+        self,
+    ):
+
+        # Arrange
+        TeamMembership.objects.create(
+            team=self.team,
+            user=self.user2,
+        )
+
+        # Act
+        TeamMemberService.replace_member(
+            team=self.team,
+            old_user=self.user1,
+            new_user=self.user3,
         )
 
         # Assert
@@ -345,6 +389,115 @@ class TeamMemberServiceTest(TestCase):
                 user=self.user1,
             ).exists()
         )
+
+        self.assertTrue(
+            TeamMembership.objects.filter(
+                team=self.team,
+                user=self.user3,
+            ).exists()
+        )
+
+        self.assertEqual(
+            TeamMembership.objects.filter(
+                team=self.team,
+            ).count(),
+            3,
+        )
+
+
+    def test_replace_member_when_old_user_is_captain(
+        self,
+    ):
+
+        # Arrange
+        TeamMembership.objects.create(
+            team=self.team,
+            user=self.user2,
+        )
+
+        # Act & Assert
+        with self.assertRaises(ValidationError):
+            TeamMemberService.replace_member(
+                team=self.team,
+                old_user=self.captain,
+                new_user=self.user3,
+            )
+
+
+    def test_replace_member_when_new_user_belongs_to_another_team(
+        self,
+    ):
+
+        # Arrange
+        TeamMembership.objects.create(
+            team=self.team,
+            user=self.user2,
+        )
+
+        other_team = Team.objects.create(
+            name="Other Team",
+            captain=self.user3,
+        )
+
+        TeamMembership.objects.create(
+            team=other_team,
+            user=self.user3,
+        )
+
+        # Act & Assert
+        with self.assertRaises(ValidationError):
+            TeamMemberService.replace_member(
+                team=self.team,
+                old_user=self.user1,
+                new_user=self.user3,
+            )
+
+
+    def test_replace_member_when_team_is_in_active_tournament(
+        self,
+    ):
+
+        # Arrange
+        TeamMembership.objects.create(
+            team=self.team,
+            user=self.user2,
+        )
+
+        TournamentTeam.objects.create(
+            tournament=self.tournament,
+            team=self.team,
+        )
+
+        self.tournament.status = "active"
+        self.tournament.save()
+
+        # Act & Assert
+        with self.assertRaises(ValidationError):
+            TeamMemberService.replace_member(
+                team=self.team,
+                old_user=self.user1,
+                new_user=self.user3,
+            )
+
+
+    def test_replace_member_when_old_user_is_not_member(
+        self,
+    ):
+
+        # Arrange
+        TeamMembership.objects.create(
+            team=self.team,
+            user=self.user2,
+        )
+
+        # Act & Assert
+        with self.assertRaises(ValidationError):
+            TeamMemberService.replace_member(
+                team=self.team,
+                old_user=self.user3,
+                new_user=self.user2,
+            )
+
 
     def test_remove_member_when_user_is_captain(
         self,

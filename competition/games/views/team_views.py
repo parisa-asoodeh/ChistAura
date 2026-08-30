@@ -109,6 +109,7 @@ def my_team(request):
 
 User = get_user_model()
 
+
 @login_required
 def manage_team_members(request, team_id):
 
@@ -129,27 +130,42 @@ def manage_team_members(request, team_id):
     if request.method == "POST":
 
         action = request.POST.get('action')
-        user_id = request.POST.get('user_id')
-
-        user = get_object_or_404(
-            User,
-            id=user_id
-        )
 
         try:
 
             if action == "add":
+
+                user_id = request.POST.get('user_id')
+
+                user = get_object_or_404(
+                    User,
+                    id=user_id
+                )
 
                 TeamMemberService.add_member(
                     team=team,
                     user=user
                 )
 
-            elif action == "remove":
+            elif action == "replace":
 
-                TeamMemberService.remove_member(
+                old_user_id = request.POST.get('old_user_id')
+                new_user_id = request.POST.get('new_user_id')
+
+                old_user = get_object_or_404(
+                    User,
+                    id=old_user_id
+                )
+
+                new_user = get_object_or_404(
+                    User,
+                    id=new_user_id
+                )
+
+                TeamMemberService.replace_member(
                     team=team,
-                    user=user
+                    old_user=old_user,
+                    new_user=new_user
                 )
 
         except Exception as e:
@@ -166,7 +182,7 @@ def manage_team_members(request, team_id):
     )
 
     available_users = User.objects.exclude(
-        id__in=members.values_list(
+        id__in=TeamMembership.objects.values_list(
             'user_id',
             flat=True
         )

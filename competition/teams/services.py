@@ -66,15 +66,23 @@ class TeamService:
 
         return team
     
+
 class TeamMemberService:
-    
+
     @staticmethod
     def add_member(*, team, user):
+
+        # RULE: team must have exactly 3 members
+        if team.members.count() >= 3:
+            raise ValidationError(
+                "تعداد اعضای تیم نمی‌تواند بیشتر از ۳ نفر باشد."
+            )
 
         if team.members.filter(user=user).exists():
             raise ValidationError(
                 "این کاربر قبلاً عضو تیم است."
             )
+
         if TeamMembership.objects.filter(
             user=user
         ).exists():
@@ -126,4 +134,75 @@ class TeamMemberService:
                 "این کاربر عضو این تیم نیست."
             )
 
+        # RULE: team must remain exactly 3 members
+        if team.members.count() <= 3:
+            raise ValidationError(
+                "تعداد اعضای تیم باید دقیقاً ۳ نفر باشد. "
+                "برای تغییر عضو، از گزینه تعویض عضو استفاده کنید."
+            )
+
         membership.delete()
+
+
+    @staticmethod
+    @transaction.atomic
+    def replace_member(*, team, old_user, new_user):
+
+        # RULE: captain cannot be replaced
+        if team.captain == old_user:
+            raise ValidationError(
+                "کاپیتان قابل تعویض نیست."
+            )
+
+        # RULE: team must have exactly 3 members
+        if team.members.count() != 3:
+            raise ValidationError(
+                "تعداد اعضای تیم باید دقیقاً ۳ نفر باشد."
+            )
+
+        # RULE: team cannot be modified during active tournament
+        active_team = TournamentTeam.objects.filter(
+            team=team,
+            tournament__status='active'
+        ).exists()
+
+        if active_team:
+            raise ValidationError(
+                "در زمان برگزاری لیگ امکان تغییر اعضای تیم وجود ندارد."
+            )
+
+        # RULE: old user must actually be a member of this team
+        old_membership = TeamMembership.objects.filter(
+            team=team,
+            user=old_user
+        ).first()
+
+        if not old_membership:
+            raise ValidationError(
+                "عضو موردنظر عضو این تیم نیست."
+            )
+
+        # RULE: new user must not already be a member of this team
+        if team.members.filter(
+            user=new_user
+        ).exists():
+            raise ValidationError(
+                "کاربر جدید قبلاً عضو این تیم است."
+            )
+
+        # RULE: new user must not belong to another team
+        if TeamMembership.objects.filter(
+            user=new_user
+        ).exists():
+            raise ValidationError(
+                "این کاربر قبلاً عضو تیم دیگری است."
+            )
+
+        # Replace the member atomically
+        old_membership.delete()
+
+        TeamMembership.objects.create(
+            team=team,
+            user=new_user
+        )
+
