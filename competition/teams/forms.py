@@ -62,7 +62,7 @@ class TeamCreateForm(forms.ModelForm):
 
         if members.count() != 2:
             raise forms.ValidationError(
-                "تعداد هم‌تیمی‌ها باید دقیقاً ۳ نفر باشد."
+                "تعداد اعضای تیم باید دقیقاً ۳ نفر باشد."
             )
 
         # -----------------------------
