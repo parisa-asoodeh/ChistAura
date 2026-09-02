@@ -15,14 +15,14 @@
         </span>
 
         <h1 class="hero-title">
-            به پلتفرم مسابقات خوش آمدید
+            به مسابقه چیستا خوش آمدید
         </h1>
 
         {% if user.is_authenticated %}
 
             <p class="hero-text">
                 سلام {{ user.username }}،
-                خوش آمدی!
+                برای بازی آماده ای؟!
             </p>
 
             <div class="hero-actions">
@@ -46,7 +46,7 @@
         {% else %}
 
             <p class="hero-text">
-                در مسابقات شرکت کن، تیم خودت را بساز
+                ثبت نام کن، تیم خودتو بساز
                 و برای قهرمانی رقابت کن.
             </p>
 
