@@ -407,45 +407,36 @@
 
     </div>
 
-
     <!-- =========================
-         Teams
+         Ranking
     ========================== -->
 
-    <div class="card">
+    {% if tournament.status == 'active' or tournament.status == 'finished' %}
 
-        <h2 class="card-title">
-            تیم‌های لیگ
-        </h2>
+        <div class="card tournament-ranking-link">
 
-        {% if teams %}
+            <div>
 
-            <div class="tournament-team-list">
+                <h2 class="card-title">
+                    جدول رده‌بندی
+                </h2>
 
-                {% for tt in teams %}
-
-                    <div class="tournament-team-item">
-
-                        <span>
-                            {{ tt.team.name }}
-                        </span>
-
-                    </div>
-
-                {% endfor %}
+                <p class="card-description">
+                    مشاهده وضعیت و رتبه تیم‌ها در لیگ
+                </p>
 
             </div>
 
-        {% else %}
+            <a
+                href="{% url 'tournament_leaderboard' tournament.id %}"
+                class="btn btn-primary"
+            >
+                مشاهده جدول رده‌بندی
+            </a>
 
-            <div class="empty-state">
-                هنوز تیمی در این لیگ ثبت نشده است.
-            </div>
+        </div>
 
-        {% endif %}
-
-    </div>
-
+    {% endif %}
 
     <!-- =========================
          Matches
@@ -539,37 +530,43 @@
 
     {% endif %}
 
-
     <!-- =========================
-         Ranking
+         Teams
     ========================== -->
 
-    {% if tournament.status == 'active' or tournament.status == 'finished' %}
+    <div class="card">
 
-        <div class="card tournament-ranking-link">
+        <h2 class="card-title">
+            تیم‌های لیگ
+        </h2>
 
-            <div>
+        {% if teams %}
 
-                <h2 class="card-title">
-                    جدول رده‌بندی
-                </h2>
+            <div class="tournament-team-list">
 
-                <p class="card-description">
-                    مشاهده وضعیت و رتبه تیم‌ها در لیگ
-                </p>
+                {% for tt in teams %}
+
+                    <div class="tournament-team-item">
+
+                        <span>
+                            {{ tt.team.name }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
 
             </div>
 
-            <a
-                href="{% url 'tournament_leaderboard' tournament.id %}"
-                class="btn btn-primary"
-            >
-                مشاهده جدول رده‌بندی
-            </a>
+        {% else %}
 
-        </div>
+            <div class="empty-state">
+                هنوز تیمی در این لیگ ثبت نشده است.
+            </div>
 
-    {% endif %}
+        {% endif %}
+
+    </div>
 
 
     <!-- =========================
