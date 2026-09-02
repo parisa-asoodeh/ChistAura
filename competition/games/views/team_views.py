@@ -48,7 +48,7 @@ def create_team(request):
 
 def team_list(request):
     teams = sorted(
-        Team.objects.all(),
+        Team.objects.all()[:30],
         key=lambda t: t.get_points(),
         reverse=True
     )

@@ -24,7 +24,7 @@ def leaderboard(request):
     table.sort(key=lambda x: x['points'], reverse=True)
 
     # فقط ۱۰ تیم برتر 
-    table = table[:10]
+    table = table[:15]
 
     return render(
         request,
@@ -40,7 +40,7 @@ def leaderboard(request):
 def player_leaderboard(request):
 
     table = (
-        PlayerRankingService.build_leaderboard()[:20]
+        PlayerRankingService.build_leaderboard()[:30]
     )
 
     return render(
