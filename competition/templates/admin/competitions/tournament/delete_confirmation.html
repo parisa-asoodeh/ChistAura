@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<div id="content-main">
+
+    <h1>حذف لیگ</h1>
+
+    <p>
+        آیا مطمئن هستید که می‌خواهید لیگ
+        <strong>«{{ object.name }}»</strong>
+        را حذف کنید؟
+    </p>
+
+    <p>
+        تمام Roundها، Matchها، Pairingها، سوالات مربوط به Round
+        و اطلاعات بازی‌های این لیگ نیز حذف خواهند شد.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="submit-row">
+            <input
+                type="submit"
+                value="بله، حذف شود"
+                class="deletelink"
+            >
+
+            <a href="{% url 'admin:competitions_tournament_change' object.pk %}"
+               class="button cancel-link">
+                انصراف
+            </a>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}

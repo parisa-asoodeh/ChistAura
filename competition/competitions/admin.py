@@ -11,6 +11,10 @@ from .models import (
 )
 
 from .tournament_execution_service import TournamentExecutionService
+from .tournament_deletion_service import TournamentDeletionService
+
+from django.shortcuts import get_object_or_404, redirect
+from django.template.response import TemplateResponse
 
 
 class RoundInline(admin.TabularInline):
@@ -124,6 +128,71 @@ class TournamentAdmin(admin.ModelAdmin):
                 f"{tournament.total_rounds} عدد باشد."
             )
 
+    def delete_model(self, request, obj):
+        if not request.user.is_superuser:
+            self.message_user(
+                request,
+                "فقط Superuser می‌تواند Tournament را حذف کند.",
+                level=messages.ERROR,
+            )
+            return
+
+        TournamentDeletionService.delete_tournament(obj)
+
+
+    def delete_view(self, request, object_id, extra_context=None):
+
+        if not request.user.is_superuser:
+            self.message_user(
+                request,
+                "فقط Superuser می‌تواند Tournament را حذف کند.",
+                level=messages.ERROR,
+            )
+            return redirect("admin:competitions_tournament_changelist")
+
+        obj = get_object_or_404(
+            self.model,
+            pk=object_id,
+        )
+
+        if request.method == "POST":
+            TournamentDeletionService.delete_tournament(obj)
+
+            self.message_user(
+                request,
+                f'لیگ «{obj.name}» با موفقیت حذف شد.',
+                level=messages.SUCCESS,
+            )
+
+            return redirect(
+                "admin:competitions_tournament_changelist"
+            )
+
+        context = {
+            **self.admin_site.each_context(request),
+            "title": f"حذف لیگ «{obj.name}»",
+            "object": obj,
+            "opts": self.model._meta,
+            "object_name": self.model._meta.verbose_name,
+            "app_label": self.model._meta.app_label,
+            "preserved_filters": self.get_preserved_filters(request),
+            "is_popup": False,
+            "to_field": None,
+            "media": self.media,
+            "deleted_objects": [],
+            "perms_lacking": set(),
+            "protected": [],
+        }
+
+        if extra_context:
+            context.update(extra_context)
+
+        return TemplateResponse(
+            request,
+            "admin/competitions/tournament/delete_confirmation.html",
+            context,
+        )
+
 
 @admin.register(TournamentTeam)
 class TournamentTeamAdmin(admin.ModelAdmin):
@@ -235,6 +304,9 @@ class RoundAdmin(admin.ModelAdmin):
 
 
     def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        
         if obj is not None and obj.tournament.status != 'draft':
             return False
 
