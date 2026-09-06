@@ -84,7 +84,7 @@
     }
 
     .navbar-links {
-        display: none;
+        display: flex;
 
         width: 100%;
 
@@ -93,10 +93,28 @@
 
         margin-top: var(--space-3);
         gap: 0;
+
+        max-height: 0;
+        overflow: hidden;
+
+        opacity: 0;
+        transform: translateY(-20px);
+
+        pointer-events: none;
+
+        transition:
+            max-height 0.6s ease,
+            opacity 0.45s ease,
+            transform 0.6s ease;
     }
 
     .navbar-links.active {
-        display: flex;
+        max-height: 500px;
+
+        opacity: 1;
+        transform: translateY(0);
+
+        pointer-events: auto;
     }
 
     .navbar-link,
