@@ -23,7 +23,7 @@
             </h1>
 
             <p class="page-description">
-                نتیجه ثبت‌شده برای این بازی
+                نتیجه ثبت‌شده برای شما
             </p>
 
         </div>
@@ -49,21 +49,6 @@
 
                 <strong>
                     {{ session.user.username }}
-                </strong>
-
-            </div>
-
-
-            <!-- Game Type -->
-
-            <div class="game-result-item">
-
-                <span class="game-result-label">
-                    نوع بازی
-                </span>
-
-                <strong>
-                    {{ session.match.round.tournament.game_type.name }}
                 </strong>
 
             </div>
@@ -160,7 +145,7 @@
             href="{% url 'match_detail' session.match.id %}"
             class="btn btn-primary"
         >
-            بازگشت به مسابقه
+            مشاهده جزئیات مسابقه
         </a>
 
     </div>
