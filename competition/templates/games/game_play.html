@@ -19,78 +19,20 @@
         <div class="page-header">
 
             <h1 class="page-title">
-                شروع بازی
+                {% if review_mode %}
+                    مرور پاسخ‌ها
+                {% else %}
+                    شروع کن!
+                {% endif %}
             </h1>
 
             <p class="page-description">
-                پاسخ‌های خود را ثبت کنید و بازی را به پایان برسانید.
+                {% if review_mode %}
+                    اکنون می‌توانید پاسخ صحیح سوال‌ها را مشاهده کنید
+                {% else %}
+                    پاسخ‌های خود را ثبت کن و بازی را به پایان برسان.
+                {% endif %}
             </p>
-
-        </div>
-
-
-        <!-- Match -->
-
-        <div class="gameplay-info-grid">
-
-            <div class="gameplay-info-item">
-
-                <span class="match-label">
-                    مسابقه
-                </span>
-
-                <strong>
-                    {{ session.match.team1.name }}
-                    -
-                    {{ session.match.team2.name }}
-                </strong>
-
-            </div>
-
-
-            <!-- Game Type -->
-
-            <div class="gameplay-info-item">
-
-                <span class="match-label">
-                    نوع بازی
-                </span>
-
-                <strong>
-                    {{ session.match.round.tournament.game_type.name }}
-                </strong>
-
-            </div>
-
-
-            <!-- Player -->
-
-            <div class="gameplay-info-item">
-
-                <span class="match-label">
-                    بازیکن
-                </span>
-
-                <strong>
-                    {{ session.user.username }}
-                </strong>
-
-            </div>
-
-
-            <!-- Status -->
-
-            <div class="gameplay-info-item">
-
-                <span class="match-label">
-                    وضعیت
-                </span>
-
-                <span class="badge badge-info">
-                    {{ session.get_status_display }}
-                </span>
-
-            </div>
 
         </div>
 
@@ -106,7 +48,11 @@
         <div class="section-header">
 
             <h2 class="card-title">
-                سؤال‌های مسابقه
+                {% if review_mode %}
+                    مرور پاسخ‌ها
+                {% else %}
+                    سؤال‌های مسابقه
+                {% endif %}
             </h2>
 
         </div>
@@ -114,54 +60,224 @@
 
         <div class="card gameplay-card">
 
-            <form method="post" class="gameplay-form">
+            {% if review_mode %}
 
-                {% csrf_token %}
+                <!-- =========================
+                     Review Mode
+                ========================== -->
+
+                <div class="gameplay-review">
+
+                    {% for answer in review_answers %}
+
+                        {% with question=answer.match_question.round_question.question %}
+
+                            <div class="gameplay-question gameplay-question--review">
+
+                                <h3 class="gameplay-question__title">
+                                    {{ answer.match_question.order }}.
+                                    {{ question.question }}
+                                </h3>
 
 
-                {% for field in form %}
+                                <div class="gameplay-review-options">
 
-                    <div class="gameplay-question">
+                                    <!-- Option A -->
 
-                        <h3 class="gameplay-question__title">
-                            {{ field.label }}
-                        </h3>
+                                    <div class="
+                                        gameplay-review-option
+                                        {% if question.correct_answer == 'A' %}
+                                            gameplay-review-option--correct
+                                        {% elif answer.selected_answer == 'A' %}
+                                            gameplay-review-option--wrong
+                                        {% endif %}
+                                    ">
+
+                                        <span class="gameplay-review-option__letter">
+                                            A
+                                        </span>
+
+                                        <span class="gameplay-review-option__text">
+                                            {{ question.option_a }}
+                                        </span>
+
+                                    </div>
 
 
-                        <div class="gameplay-question__input">
+                                    <!-- Option B -->
 
-                            {{ field }}
+                                    <div class="
+                                        gameplay-review-option
+                                        {% if question.correct_answer == 'B' %}
+                                            gameplay-review-option--correct
+                                        {% elif answer.selected_answer == 'B' %}
+                                            gameplay-review-option--wrong
+                                        {% endif %}
+                                    ">
 
-                        </div>
+                                        <span class="gameplay-review-option__letter">
+                                            B
+                                        </span>
+
+                                        <span class="gameplay-review-option__text">
+                                            {{ question.option_b }}
+                                        </span>
+
+                                    </div>
 
 
-                        {% if field.errors %}
+                                    <!-- Option C -->
 
-                            <div class="errorlist">
+                                    <div class="
+                                        gameplay-review-option
+                                        {% if question.correct_answer == 'C' %}
+                                            gameplay-review-option--correct
+                                        {% elif answer.selected_answer == 'C' %}
+                                            gameplay-review-option--wrong
+                                        {% endif %}
+                                    ">
 
-                                {{ field.errors }}
+                                        <span class="gameplay-review-option__letter">
+                                            C
+                                        </span>
+
+                                        <span class="gameplay-review-option__text">
+                                            {{ question.option_c }}
+                                        </span>
+
+                                    </div>
+
+
+                                    <!-- Option D -->
+
+                                    <div class="
+                                        gameplay-review-option
+                                        {% if question.correct_answer == 'D' %}
+                                            gameplay-review-option--correct
+                                        {% elif answer.selected_answer == 'D' %}
+                                            gameplay-review-option--wrong
+                                        {% endif %}
+                                    ">
+
+                                        <span class="gameplay-review-option__letter">
+                                            D
+                                        </span>
+
+                                        <span class="gameplay-review-option__text">
+                                            {{ question.option_d }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Answer Status -->
+
+                                <div class="gameplay-review-status">
+
+                                    {% if answer.is_correct %}
+
+                                        <span class="badge badge-success">
+                                            پاسخ شما صحیح بود
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge badge-danger">
+                                            پاسخ شما نادرست بود
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
 
                             </div>
 
-                        {% endif %}
+                        {% endwith %}
+
+                    {% empty %}
+
+                        <div class="gameplay-review-empty">
+                            برای این بازی پاسخی ثبت نشده است.
+                        </div>
+
+                    {% endfor %}
+
+
+                    <!-- Result Button -->
+
+                    <div class="gameplay-actions">
+
+                        <a
+                            href="{% url 'game_result' session.id %}"
+                            class="btn btn-primary"
+                        >
+                            مشاهده نتیجه بازی
+                        </a>
 
                     </div>
 
-                {% endfor %}
-
-
-                <div class="gameplay-actions">
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        ثبت پاسخ‌ها
-                    </button>
-
                 </div>
 
-            </form>
+
+            {% else %}
+
+                <!-- =========================
+                     Normal Game Mode
+                ========================== -->
+
+                <form method="post" class="gameplay-form">
+
+                    {% csrf_token %}
+
+
+                    {% for field in form %}
+
+                        <div class="gameplay-question">
+
+                            <h3 class="gameplay-question__title">
+                                {{ forloop.counter }}.
+                                {{ field.label }}
+                            </h3>
+
+
+                            <div class="gameplay-question__input">
+
+                                {{ field }}
+
+                            </div>
+
+
+                            {% if field.errors %}
+
+                                <div class="errorlist">
+
+                                    {{ field.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+
+                    <div class="gameplay-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            ثبت پاسخ‌ها و دیدن پاسخ صحیح
+                        </button>
+
+                    </div>
+
+                </form>
+
+            {% endif %}
 
         </div>
 
@@ -174,6 +290,8 @@
 
 {% block scripts %}
 
+{% if not review_mode %}
+
 <script>
     const RESUME_CONFIG = {
         sessionId: "{{ session.id }}",
@@ -184,5 +302,7 @@
 
 <script src="{% static 'games/js/resume.js' %}"></script>
 <script src="{% static 'games/js/quiz_play.js' %}"></script>
+
+{% endif %}
 
 {% endblock %}

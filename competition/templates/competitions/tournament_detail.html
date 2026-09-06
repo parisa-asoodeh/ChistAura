@@ -406,7 +406,7 @@
         {% endif %}
 
     </div>
-
+    <br>
     <!-- =========================
          Ranking
     ========================== -->
@@ -415,17 +415,6 @@
 
         <div class="card tournament-ranking-link">
 
-            <div>
-
-                <h2 class="card-title">
-                    جدول رده‌بندی
-                </h2>
-
-                <p class="card-description">
-                    مشاهده وضعیت و رتبه تیم‌ها در لیگ
-                </p>
-
-            </div>
 
             <a
                 href="{% url 'tournament_leaderboard' tournament.id %}"
@@ -529,45 +518,7 @@
         </div>
 
     {% endif %}
-
-    <!-- =========================
-         Teams
-    ========================== -->
-
-    <div class="card">
-
-        <h2 class="card-title">
-            تیم‌های لیگ
-        </h2>
-
-        {% if teams %}
-
-            <div class="tournament-team-list">
-
-                {% for tt in teams %}
-
-                    <div class="tournament-team-item">
-
-                        <span>
-                            {{ tt.team.name }}
-                        </span>
-
-                    </div>
-
-                {% endfor %}
-
-            </div>
-
-        {% else %}
-
-            <div class="empty-state">
-                هنوز تیمی در این لیگ ثبت نشده است.
-            </div>
-
-        {% endif %}
-
-    </div>
-
+    <br>
 
     <!-- =========================
          AI Prediction
@@ -725,5 +676,42 @@
     {% endif %}
 
 </div>
+    <!-- =========================
+         Teams
+    ========================== -->
+
+    <div class="card">
+
+        <h2 class="card-title">
+            تیم‌های لیگ
+        </h2>
+
+        {% if teams %}
+
+            <div class="tournament-team-list">
+
+                {% for tt in teams %}
+
+                    <div class="tournament-team-item">
+
+                        <span>
+                            {{ tt.team.name }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                هنوز تیمی در این لیگ ثبت نشده است.
+            </div>
+
+        {% endif %}
+
+    </div>
 
 {% endblock %}
