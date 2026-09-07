@@ -4,15 +4,15 @@
     ========================= */
 
     /* Main Theme */
-    --color-primary: #38bdf8;
-    --color-primary-dark: #0284c7;
+    --color-primary: #40b0e0;
+    --color-primary-dark: #1779a9;
 
     /* Background & Surfaces */
     --color-background: #051923;
-    --color-surface: #1a2f3d;
+    --color-surface: #01404e;
 
     /* Text */
-    --color-text: #e6f4f1;
+    --color-text: #8bf1db;
     --color-text-muted: #8fa9b5;
 
     /* Semantic Colors */

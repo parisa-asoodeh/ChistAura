@@ -25,7 +25,6 @@
     padding: var(--space-7) var(--space-5);
 }
 
-
 /* =========================
    Navbar
 ========================= */
@@ -135,6 +134,8 @@
 .navbar-logout:hover {
     background-color: #f9bcbc;
 }
+
+
 
 /* =========================
    Hero
@@ -261,7 +262,7 @@
 ========================= */
 
 .card {
-    background-color: #1a2f3d;
+    background-color: #01404e;
 
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -2469,7 +2470,7 @@ textarea:focus {
 
 .gameplay-review-option {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 
     gap: var(--space-3);
 
@@ -2525,6 +2526,11 @@ textarea:focus {
     text-align: right;
 
     direction: rtl;
+}
+
+.gameplay-review-option__text mjx-container {
+    direction: ltr !important;
+    unicode-bidi: isolate;
 }
 
 
