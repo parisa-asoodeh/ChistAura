@@ -75,8 +75,13 @@
                             <div class="gameplay-question gameplay-question--review">
 
                                 <h3 class="gameplay-question__title">
-                                    {{ answer.match_question.order }}.
-                                    {{ question.question }}
+                                    <span class="question-number">
+                                        {{ answer.match_question.order }}.
+                                    </span>
+
+                                    <span class="question-text mathjax-process">
+                                        {{ question.question }}
+                                    </span>
                                 </h3>
 
 
@@ -97,7 +102,7 @@
                                             A
                                         </span>
 
-                                        <span class="gameplay-review-option__text">
+                                        <span class="gameplay-review-option__text mathjax-process">
                                             {{ question.option_a }}
                                         </span>
 
@@ -119,7 +124,7 @@
                                             B
                                         </span>
 
-                                        <span class="gameplay-review-option__text">
+                                        <span class="gameplay-review-option__text mathjax-process">
                                             {{ question.option_b }}
                                         </span>
 
@@ -141,7 +146,7 @@
                                             C
                                         </span>
 
-                                        <span class="gameplay-review-option__text">
+                                        <span class="gameplay-review-option__text mathjax-process">
                                             {{ question.option_c }}
                                         </span>
 
@@ -163,7 +168,7 @@
                                             D
                                         </span>
 
-                                        <span class="gameplay-review-option__text">
+                                        <span class="gameplay-review-option__text mathjax-process">
                                             {{ question.option_d }}
                                         </span>
 
@@ -412,7 +417,7 @@
 
         // Preserve newlines in options
         document.querySelectorAll(
-            ".mathjax-options .option-text"
+            ".mathjax-options .option-text, .gameplay-review-option__text"
         ).forEach((element) => {
             preserveNewlines(element);
         });
