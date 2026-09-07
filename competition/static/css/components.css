@@ -26,6 +26,23 @@
 }
 
 /* =========================
+   Glass Navbar
+========================= */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: rgba(3, 44, 53, 0.72);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border-bottom: 1px solid rgba(60, 122, 151, 0.35);
+}
+
+/* =========================
    Navbar
 ========================= */
 
