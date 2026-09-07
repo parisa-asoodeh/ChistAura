@@ -237,14 +237,26 @@
                         <div class="gameplay-question">
 
                             <h3 class="gameplay-question__title">
-                                {{ forloop.counter }}.
-                                {{ field.label }}
+                                <span class="question-number">
+                                    {{ forloop.counter }}.
+                                </span>
+
+                                <span class="question-text mathjax-process">
+                                    {{ field.label }}
+                                </span>
                             </h3>
 
 
-                            <div class="gameplay-question__input">
+                            <div class="gameplay-question__input mathjax-options">
 
-                                {{ field }}
+                                {% for radio in field %}
+
+                                    <label for="{{ radio.id_for_label }}">
+                                        {{ radio.tag }}
+                                        <span class="option-text mathjax-process">{{ radio.choice_label }}</span>
+                                    </label>
+
+                                {% endfor %}
 
                             </div>
 
@@ -289,6 +301,167 @@
 
 
 {% block scripts %}
+
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['\\(', '\\)']],
+            displayMath: [['\\[', '\\]']]
+        },
+        options: {
+            processHtmlClass: 'mathjax-process',
+            ignoreHtmlClass: 'mathjax-ignore'
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+</script>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js"
+    defer>
+</script>
+
+<script>
+    window.addEventListener("load", async () => {
+
+        if (!window.MathJax) {
+            return;
+        }
+        function preserveNewlines(element) {
+
+            const textNodes = [];
+
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT
+            );
+
+            let node;
+
+            while (node = walker.nextNode()) {
+                textNodes.push(node);
+            }
+
+            textNodes.forEach((textNode) => {
+
+                let text = textNode.textContent;
+
+                /*
+                * Ignore whitespace-only nodes.
+                */
+                if (!text.trim()) {
+                    return;
+                }
+
+                /*
+                * Remove only the formatting newline
+                * created by the HTML template itself.
+                *
+                * Real newlines inside the actual content
+                * are preserved.
+                */
+                text = text
+                    .replace(/^[ \t]*\r?\n[ \t]*/, "")
+                    .replace(/[ \t]*\r?\n[ \t]*$/, "");
+
+                if (!text.includes("\n") && !text.includes("\r")) {
+
+                    textNode.textContent = text;
+
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+
+                const lines = text.split(/\r?\n/);
+
+                lines.forEach((line, index) => {
+
+                    fragment.appendChild(
+                        document.createTextNode(line)
+                    );
+
+                    if (index < lines.length - 1) {
+
+                        fragment.appendChild(
+                            document.createElement("br")
+                        );
+
+                    }
+
+                });
+
+                textNode.parentNode.replaceChild(
+                    fragment,
+                    textNode
+                );
+
+            });
+
+        }
+
+    
+        // Preserve newlines in questions
+        document.querySelectorAll(
+            ".question-text"
+        ).forEach((element) => {
+            preserveNewlines(element);
+        });
+
+        // Preserve newlines in options
+        document.querySelectorAll(
+            ".mathjax-options .option-text"
+        ).forEach((element) => {
+            preserveNewlines(element);
+        });
+
+        /*
+         * =========================
+         * Render MathJax
+         * =========================
+         */
+
+        await MathJax.typesetPromise();
+
+    });
+</script>
+<style>
+    .gameplay-question__title mjx-container {
+        direction: ltr !important;
+        unicode-bidi: isolate;
+    }
+
+    .mathjax-options mjx-container {
+        direction: ltr !important;
+        unicode-bidi: isolate;
+    }
+
+    .mathjax-options label {
+        direction: rtl;
+        unicode-bidi: normal;
+    }
+
+    .mathjax-options label mjx-container {
+        direction: ltr !important;
+        unicode-bidi: isolate;
+    }
+
+    .mathjax-options label {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .mathjax-options label input[type="radio"] {
+        flex-shrink: 0;
+        margin-top: 4px;
+    }
+
+    .mathjax-options label .option-text {
+        min-width: 0;
+    }
+</style>
 
 {% if not review_mode %}
 

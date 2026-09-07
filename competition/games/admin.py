@@ -13,6 +13,8 @@ from competitions.models import (
     Category,
 )
 
+from django import forms
+
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
@@ -108,9 +110,44 @@ class CategoryFilter(admin.SimpleListFilter):
 
         return queryset
 
+
+class QuizQuestionAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = QuizQuestion
+        fields = "__all__"
+
+        widgets = {
+            "option_a": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "style": "width: 100%; resize: vertical;",
+                }
+            ),
+            "option_b": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "style": "width: 100%; resize: vertical;",
+                }
+            ),
+            "option_c": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "style": "width: 100%; resize: vertical;",
+                }
+            ),
+            "option_d": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "style": "width: 100%; resize: vertical;",
+                }
+            ),
+        }
     
 @admin.register(QuizQuestion)
 class QuizQuestionAdmin(admin.ModelAdmin):
+
+    form = QuizQuestionAdminForm
 
     list_display = (
         'get_subject',
@@ -132,6 +169,45 @@ class QuizQuestionAdmin(admin.ModelAdmin):
         'category__name',
         'category__subject__name',
     )
+
+    fieldsets = (
+        (
+            "اطلاعات سؤال",
+            {
+                "fields": (
+                    "category",
+                    "difficulty",
+                    "is_active",
+                )
+            }
+        ),
+        (
+            "متن سؤال",
+            {
+                "fields": (
+                    "question",
+                )
+            }
+        ),
+        (
+            "گزینه‌ها",
+            {
+                "fields": (
+                    "option_a",
+                    "option_b",
+                    "option_c",
+                    "option_d",
+                    "correct_answer",
+                )
+            }
+        ),
+    )
+
+    class Media:
+        js = (
+            "https://cdn.jsdelivr.net/npm/mathlive@0.110.0",
+            "games/js/mathlive_quiz.js",
+        )
 
     def short_question(self, obj):
         return obj.question[:50]
