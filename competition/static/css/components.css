@@ -34,7 +34,7 @@
     top: 0;
     z-index: 1000;
 
-    width: calc(100% - var(--space-6));
+    width: calc(100% - var(--space-8));
     max-width: var(--container-width);
 
     margin: 0 auto;
