@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .services import TournamentService
-from teams.models import Team
+from teams.models import Team, TeamMembership
 from teams.ai.predictors.champion_predictor import ChampionPredictor
+from django.db.models import Q
 
 
 
@@ -94,9 +95,7 @@ def tournament_detail(request, tournament_id):
     )
     rounds = tournament.rounds.all()
 
-    rounds = tournament.rounds.all()
-
-    matches = Match.objects.filter(
+    all_matches = Match.objects.filter(
         round__tournament=tournament,
     ).select_related(
         'team1',
@@ -104,13 +103,35 @@ def tournament_detail(request, tournament_id):
         'round',
     )
 
-    total_matches = matches.count()
+    total_matches = all_matches.count()
 
     played_matches = sum(
         1
-        for match in matches
+        for match in all_matches
         if match.is_complete
     )
+
+    matches = all_matches
+
+    if request.user.is_authenticated and not request.user.is_staff:
+
+        user_team = TeamMembership.objects.filter(
+            user=request.user
+        ).values_list(
+            'team_id',
+            flat=True
+        ).first()
+
+        if user_team:
+
+            matches = matches.filter(
+                Q(team1_id=user_team) |
+                Q(team2_id=user_team)
+            )
+
+        else:
+
+            matches = matches.none()
 
     progress = 0
 
