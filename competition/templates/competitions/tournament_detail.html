@@ -505,7 +505,7 @@
         </div>
 
     {% endif %}
-    
+
     <!-- =========================
          AI Prediction
     ========================== -->
@@ -602,7 +602,7 @@
 
                             <tbody>
 
-                                {% for item in ai_prediction.ranking %}
+                                {% for item in ai_prediction.ranking|slice:":3" %}
 
                                     <tr>
 
