@@ -22,7 +22,7 @@ def tournament_leaderboard(request, tournament_id):
 
     teams = TournamentRankingService.rank_teams(
         tournament
-    )
+    )[:6]
 
     table = []
 
