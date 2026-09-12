@@ -664,40 +664,43 @@
 </div>
     <!-- =========================
          Teams
-    ========================== 
+    ==========================--> 
+    {% if request.user.is_staff or request.user.is_superuser %}
 
-    <div class="card">
+        <div class="card">
 
-        <h2 class="card-title">
-            تیم‌های لیگ
-        </h2>
+            <h2 class="card-title">
+                تیم‌های لیگ
+            </h2>
 
-        {% if teams %}
+            {% if teams %}
 
-            <div class="tournament-team-list">
+                <div class="tournament-team-list">
 
-                {% for tt in teams %}
+                    {% for tt in teams %}
 
-                    <div class="tournament-team-item">
+                        <div class="tournament-team-item">
 
-                        <span>
-                            {{ tt.team.name }}
-                        </span>
+                            <span>
+                                {{ tt.team.name }}
+                            </span>
 
-                    </div>
+                        </div>
 
-                {% endfor %}
+                    {% endfor %}
 
-            </div>
+                </div>
 
-        {% else %}
+            {% else %}
 
-            <div class="empty-state">
-                هنوز تیمی در این لیگ ثبت نشده است.
-            </div>
+                <div class="empty-state">
+                    هنوز تیمی در این لیگ ثبت نشده است.
+                </div>
 
-        {% endif %}
+            {% endif %}
 
-    </div>==========-->
+        </div>
+        
+    {% endif %}
 
 {% endblock %}
