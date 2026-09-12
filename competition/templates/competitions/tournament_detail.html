@@ -392,25 +392,6 @@
 
     </div>
     <br>
-    <!-- =========================
-         Ranking
-    ========================== -->
-
-    {% if tournament.status == 'active' or tournament.status == 'finished' %}
-
-        <div class="card tournament-ranking-link">
-
-
-            <a
-                href="{% url 'tournament_leaderboard' tournament.id %}"
-                class="btn btn-primary"
-            >
-                مشاهده جدول رده‌بندی
-            </a>
-
-        </div>
-
-    {% endif %}
 
     <!-- =========================
          Matches
@@ -505,6 +486,26 @@
     {% endif %}
     <br>
 
+    <!-- =========================
+         Ranking
+    ========================== -->
+
+    {% if tournament.status == 'active' or tournament.status == 'finished' %}
+
+        <div class="card tournament-ranking-link">
+
+
+            <a
+                href="{% url 'tournament_leaderboard' tournament.id %}"
+                class="btn btn-primary"
+            >
+                مشاهده جدول رده‌بندی
+            </a>
+
+        </div>
+
+    {% endif %}
+    
     <!-- =========================
          AI Prediction
     ========================== -->
