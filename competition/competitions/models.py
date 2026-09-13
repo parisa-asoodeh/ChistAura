@@ -157,6 +157,18 @@ class Tournament(models.Model):
     verbose_name='نوع بازی'
     )
 
+    def save(self, *args, **kwargs):
+        old_image = None
+
+        if self.pk:
+            old_tournament = Tournament.objects.get(pk=self.pk)
+            old_image = old_tournament.image
+
+        super().save(*args, **kwargs)
+
+        if old_image and old_image != self.image:
+            old_image.delete(save=False)
+
     def __str__(self):
         return self.name
 

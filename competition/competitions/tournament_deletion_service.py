@@ -64,5 +64,9 @@ class TournamentDeletionService:
             tournament=tournament
         ).delete()
 
+        # فایل تصویر لیگ را نیز حذف می‌کنیم.
+        if tournament.image:
+            tournament.image.delete(save=False)
+
         # در نهایت خود Tournament حذف می‌شود.
         tournament.delete()
