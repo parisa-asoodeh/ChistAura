@@ -106,6 +106,13 @@ class Tournament(models.Model):
         verbose_name="نام لیگ"
     )
 
+    image = models.ImageField(
+        upload_to='tournaments/',
+        null=True,
+        blank=True,
+        verbose_name='تصویر لیگ'
+    )
+
     total_rounds = models.PositiveIntegerField(
         verbose_name="تعداد کل دورها"
     )

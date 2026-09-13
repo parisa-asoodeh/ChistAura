@@ -29,6 +29,15 @@
 
                 <article class="card tournament-card">
 
+                    {% if tournament.image %}
+                        <div class="tournament-card__image">
+                            <img
+                                src="{{ tournament.image.url }}"
+                                alt="{{ tournament.name }}"
+                            >
+                        </div>
+                    {% endif %}
+
                     <div class="tournament-card__header">
 
                         <div class="tournament-card__title">
@@ -117,7 +126,7 @@
                             href="{% url 'tournament_detail' tournament.id %}"
                             class="btn btn-primary"
                         >
-                            مشاهده جزئیات
+                            مشاهده و ثبت نام
                         </a>
 
                     </div>
