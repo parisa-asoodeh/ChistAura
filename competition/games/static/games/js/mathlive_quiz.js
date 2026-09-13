@@ -99,10 +99,45 @@ document.addEventListener("DOMContentLoaded", () => {
         cancelButton.style.cursor = "pointer";
 
 
+        // =========================
+        // Piecewise function button
+        // =========================
+
+        const piecewiseButton = document.createElement("button");
+
+        piecewiseButton.type = "button";
+        piecewiseButton.textContent = "تابع چندضابطه‌ای";
+
+        piecewiseButton.style.marginLeft = "8px";
+        piecewiseButton.style.padding = "7px 12px";
+        piecewiseButton.style.cursor = "pointer";
+
+
+        // Insert buttons
+
+        buttonsContainer.appendChild(piecewiseButton);
         buttonsContainer.appendChild(insertButton);
         buttonsContainer.appendChild(cancelButton);
 
         formulaEditor.appendChild(buttonsContainer);
+
+
+        // =========================
+        // Piecewise function
+        // =========================
+
+        piecewiseButton.addEventListener("click", () => {
+
+            mathField.value =
+                "\\begin{cases}" +
+                " & " +
+                "\\\\" +
+                " & " +
+                "\\end{cases}";
+
+            mathField.focus();
+
+        });
 
 
         // =========================
