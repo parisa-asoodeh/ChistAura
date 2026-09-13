@@ -22,10 +22,6 @@
                     {{ tournament.name }}
                 </h1>
 
-                <p class="page-description">
-                    {{ tournament.get_status_display }}
-                </p>
-
             </div>
 
             {% if tournament.status == 'draft' %}
@@ -51,68 +47,6 @@
         </div>
 
     </div>
-
-
-    <!-- =========================
-         Basic Information
-    ========================== -->
-
-    <div class="card tournament-info-card">
-
-        <h2 class="card-title">
-            اطلاعات لیگ
-        </h2>
-
-        <div class="tournament-detail-info">
-
-            <div class="tournament-info-item">
-
-                <span class="tournament-info-label">
-                    وضعیت
-                </span>
-
-                <span class="tournament-info-value">
-                    {{ tournament.get_status_display }}
-                </span>
-
-            </div>
-
-
-            <div class="tournament-info-item">
-
-                <span class="tournament-info-label">
-                    نوع بازی
-                </span>
-
-                <span class="tournament-info-value">
-
-                    {% if tournament.game_type %}
-                        {{ tournament.game_type.name }}
-                    {% else %}
-                        تعریف نشده
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <div class="tournament-info-item">
-
-                <span class="tournament-info-label">
-                    تعداد دورها
-                </span>
-
-                <span class="tournament-info-value">
-                    {{ tournament.total_rounds }}
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
 
     <!-- =========================
          Team Registration
